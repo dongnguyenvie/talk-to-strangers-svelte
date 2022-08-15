@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TheSidebar from '$lib/components/theHeader/Header.svelte';
+	import TheSidebar from '$lib/components/theHeader/TheHeader.svelte';
 	import '../app.css';
 </script>
 
