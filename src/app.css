@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* @import '@fontsource/fira-mono';yarn d */
+
+.text-overline {
+	@apply text-[10px] font-[700] uppercase;
+}
+
+.text-caption {
+	@apply text-[12px] font-[400];
+}
+
+.text-button {
+	@apply text-[16px] font-[700];
+}
+
+.text-body2 {
+	@apply text-[14px] font-[400];
+}
+
+.text-body1 {
+	@apply text-[16px] font-[400];
+}
+
+.text-subtitle2 {
+	@apply text-[14px] font-[700];
+}
+
+.text-subtitle2 {
+	@apply text-[16px] font-[700];
+}
+
+.text-h6 {
+	@apply text-[20px] font-[500];
+}
+
+.text-h5 {
+	@apply text-[24px] font-[500];
+}
+
+.text-h4 {
+	@apply text-[34px] font-[500];
+}
+
+.text-h3 {
+	@apply text-[48px] font-[700];
+}
+
+.text-h2 {
+	@apply text-[60px] font-[700];
+}
+
+.text-h2 {
+	@apply text-[96px] font-[700];
+}
