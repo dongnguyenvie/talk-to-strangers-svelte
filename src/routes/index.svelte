@@ -30,6 +30,7 @@
 		onButtonClick={() => {}}
 		emotions={['1', '2', '3']}
 		id="xxx"
+		isFull
 	/>
 </section>
 

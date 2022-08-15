@@ -2,6 +2,7 @@
 </script>
 
 <script lang="ts">
+	import Button from '$lib/components/Button.svelte';
 	import RoomCard from '$lib/components/RoomCard.svelte';
 </script>
 
@@ -29,14 +30,18 @@
 		emotions={['1', '2', '3']}
 		id="xxx"
 	/>
+	<div class="h-[1px] bg-red-700 w-full my-2" />
+	<div>
+		<Button className="bg-main-500 rounded-lg hover:bg-main-800">xx1</Button>
+	</div>
 </section>
 
 <style>
 	section {
-		display: flex;
+		/* display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		flex: 1;
+		flex: 1; */
 	}
 </style>

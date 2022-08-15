@@ -1,45 +1,19 @@
 <script lang="ts">
-	import Header from '$lib/header/Header.svelte';
+	import TheHeader from '$lib/components/theHeader/TheHeader.svelte';
+	import TheSidebar from '$lib/components/theSidebar/TheSidebar.svelte';
 	import '../app.css';
 </script>
 
-<Header />
+<TheHeader />
+<div class="bg-white my-5 w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+	<TheSidebar className="w-64" />
 
-<main>
-	<slot />
-</main>
+	<main class="w-full px-5 py-40 bg-main-100">
+		<slot />
+	</main>
+</div>
 
-<footer>
-	<p>visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to learn SvelteKit</p>
-</footer>
+<footer />
 
 <style>
-	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
-		width: 100%;
-		max-width: 1024px;
-		margin: 0 auto;
-		box-sizing: border-box;
-	}
-
-	footer {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		padding: 40px;
-	}
-
-	footer a {
-		font-weight: bold;
-	}
-
-	@media (min-width: 480px) {
-		footer {
-			padding: 40px 0;
-		}
-	}
 </style>

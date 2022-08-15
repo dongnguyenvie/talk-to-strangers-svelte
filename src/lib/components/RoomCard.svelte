@@ -2,6 +2,7 @@
 	import Tag from './Tag.svelte';
 	import errorIcon from '$lib/icons/error.svg?raw';
 	import Icon from 'svelte-icon/Icon.svelte';
+	import Button from './Button.svelte';
 
 	export let id: string;
 	export let title: string;
@@ -11,6 +12,7 @@
 	export let emotions: string[];
 	export let buttonLabel: string = 'Trò truyện';
 	export let onButtonClick: () => void;
+	export let isFull: boolean = false;
 </script>
 
 <div
@@ -34,14 +36,17 @@
 				<Tag className="mb-2">{tag}</Tag>
 			{/each}
 		</div>
+
 		<div class="mt-[70px]">
-			<a
-				href={null}
-				class="inline-flex items-center justify-center py-2 px-4 text-sm font-medium text-center text-white bg-main-500 rounded-lg hover:bg-main-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-[172px]"
-				on:click={onButtonClick}
-			>
-				{buttonLabel}
-			</a>
+			{#if isFull}
+				<Button className="bg-main-c5B5B5B rounded-lg cursor-not-allowed">Phòng Đầy</Button>
+			{/if}
+
+			{#if !isFull}
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" on:click={onButtonClick}>
+					{buttonLabel}
+				</Button>
+			{/if}
 		</div>
 	</div>
 </div>
