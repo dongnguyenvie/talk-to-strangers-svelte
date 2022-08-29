@@ -2,10 +2,10 @@
 	"name": "talk-to-strangers",
 	"version": "0.0.1",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite --host 0.0.0.0 dev",
 		"build": "vite build",
 		"package": "svelte-kit package",
-		"preview": "vite preview",
+		"preview": "vite --host 0.0.0.0 preview",
 		"test": "playwright test",
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
@@ -13,10 +13,13 @@
 		"format": "prettier --write --plugin-search-dir=. ."
 	},
 	"devDependencies": {
+		"@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+		"@esbuild-plugins/node-modules-polyfill": "^0.1.4",
 		"@playwright/test": "^1.22.2",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@types/cookie": "^0.5.1",
+		"@types/simple-peer": "^9.11.5",
 		"autoprefixer": "^10.4.8",
 		"flowbite-svelte": "^0.24.8",
 		"postcss": "^8.4.16",
@@ -35,6 +38,10 @@
 	"dependencies": {
 		"@fontsource/fira-mono": "^4.5.0",
 		"cookie": "^0.4.1",
-		"peerjs": "^1.4.7"
+		"events": "^3.3.0",
+		"peerjs": "^1.4.7",
+		"simple-peer": "^9.11.1",
+		"socket.io-client": "^4.5.1",
+		"util": "^0.12.4"
 	}
 }
