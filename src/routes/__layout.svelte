@@ -2,8 +2,7 @@
 	import type { Load } from '@sveltejs/kit';
 	import { authGuard } from '$lib/guards';
 
-	export const load: Load = async ({ params, url: { pathname, hostname, search } }) => {
-		console.log({ pathname, hostname, search });
+	export const load: Load = async ({ params, url: { pathname, hostname } }) => {
 		return await authGuard({ path: pathname });
 	};
 
