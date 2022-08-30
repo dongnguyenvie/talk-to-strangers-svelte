@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let className: string = '';
-	export let click:
+	export let onClick:
 		| ((
 				e: MouseEvent & {
 					currentTarget: EventTarget & HTMLButtonElement;
@@ -11,7 +11,7 @@
 
 <button
 	class={`inline-flex items-center justify-center py-2 px-4 text-sm font-medium text-center text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 w-[172px] shadow-button ${className}`}
-	on:click={click}
+	on:click={onClick}
 >
 	<slot />
 </button>

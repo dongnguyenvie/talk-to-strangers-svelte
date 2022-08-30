@@ -2,9 +2,9 @@
 	import type { Load } from '@sveltejs/kit';
 	import { authGuard } from '$lib/guards';
 
-	export const load: Load = async ({ params, url: { pathname, hostname } }) => {
-		return await authGuard({ path: pathname });
-	};
+	// export const load: Load = async ({ params, url: { pathname, hostname } }) => {
+	// 	return await authGuard({ path: pathname });
+	// };
 
 	// export async function load({ params }: any): Promise<any> {
 	// 	console.log({ params });
@@ -17,6 +17,8 @@
 	import TheSidebar from '$lib/components/theSidebar/TheSidebar.svelte';
 	// import { authGuard } from '$lib/guards';
 	import '../app.css';
+	import { auth } from '$lib/state';
+	import Redirect from '$lib/components/redirect/Redirect.svelte';
 	// import type { Load, LoadOutput } from '@sveltejs/kit';
 
 	// export async function load({ page, fetch, session, context }: LoadInput): Promise<LoadOutput> {
@@ -34,15 +36,17 @@
 </script>
 
 <TheHeader />
-<div class="bg-white my-5 w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-	<TheSidebar className="w-64" />
-
-	<main class="w-full px-5 py-40 bg-main-100">
-		<slot />
-	</main>
-</div>
-
-<footer />
+{#if $auth.loggedIn}
+	<div class="bg-white my-5 w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
+		<TheSidebar className="w-64" />
+		<main class="w-full px-5 py-40 bg-main-100">
+			<slot />
+		</main>
+	</div>
+	<footer />
+{:else}
+	<Redirect auth={$auth} to="/login" />
+{/if}
 
 <style>
 </style>
