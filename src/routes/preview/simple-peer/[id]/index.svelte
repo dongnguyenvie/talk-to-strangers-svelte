@@ -7,6 +7,7 @@
 	import { getUserMediaHelper } from '$lib/@shared/util/media';
 	// import { SimplePeer } from 'simple-peer';
 	import type SimplePeer from 'simple-peer';
+	import { EVENT_ROOM_CLIENT, EVENT_ROOM_SERVER } from '$lib/@core/constants';
 
 	const roomId = $page.params.id;
 	const token = $page.url.searchParams.get('token') as string;
@@ -30,7 +31,7 @@
 		console.log({ peer });
 
 		// console.log({ token });
-		socket = io('http://192.168.1.19:1080/rooms', {
+		socket = io('http://localhost:1080/rooms', {
 			extraHeaders: {
 				// token: token
 			},
@@ -57,7 +58,7 @@
 
 		const getUserMedia = getUserMediaHelper();
 		const configuration = {};
-		socket.emit('join-room', { roomId });
+		socket.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
 
 		getUserMedia(
 			{
@@ -77,17 +78,19 @@
 
 		// // RENDER YOU WEBCAM HERE
 
-		socket.on('client-connect', (event) => {
+		socket.on(EVENT_ROOM_CLIENT.registerToJoinRoom, (event) => {
 			console.log('client-connect', { event });
 			const { roomId, socketId } = event;
 			addPeer(socketId, false);
 		});
 
 		// incoming call
-		socket.on('client-call', (event) => {
+		socket.on(EVENT_ROOM_CLIENT.call, (event) => {
 			console.log('client-call', { event });
 			const { signal } = event;
-			peers[socket.id].signal(signal);
+			if (peers[socket.id]) {
+				peers[socket.id].signal(signal);
+			}
 			// addPeer(socketId, false);
 		});
 
@@ -100,7 +103,7 @@
 
 			peers[socketId].on('signal', (data) => {
 				mySignal = data;
-				socket.emit('call', { roomId, signal: mySignal });
+				socket.emit(EVENT_ROOM_SERVER.call, { roomId, signal: mySignal });
 				console.log('call signal');
 				// socket.emit('signal', {
 				// 	signal: data,
@@ -135,7 +138,7 @@
 	});
 
 	const handleClickToWebrtc = () => {
-		socket.emit('join-room', { roomId });
+		socket.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
 		// addPeer
 		// console.log({ peer });
 	};
