@@ -1,0 +1,236 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateOneRoomInput {
+  capacity: Float!
+  description: String
+  language: String!
+  topic: String!
+}
+
+type CreateOneRoomOutput {
+  id: String!
+}
+
+input CreateRoleIntput {
+  isDefault: Boolean
+  scp: [String!]!
+  title: String!
+}
+
+type CreateRoleOutput {
+  id: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+input DeleteRoleIntput {
+  id: String!
+}
+
+type DeleteRoleOutput {
+  id: String!
+}
+
+input GetRoleByIdInput {
+  id: String!
+  relations: [String!] = []
+}
+
+type GetRoleByIdOutput {
+  id: String!
+  isDefault: Boolean!
+  scp: [String!]!
+  title: String!
+}
+
+type GetRolesOutput {
+  id: String!
+  isDefault: Boolean!
+  scp: [String!]!
+  title: String!
+}
+
+type GetRolesWasDeletedOutput {
+  id: String!
+  isDefault: Boolean!
+  scp: [String!]!
+  title: String!
+}
+
+input GetRoomsIntput {
+  pagination: PaginationIntput!
+  relations: [String!] = []
+}
+
+type GetRoomsOutput {
+  data: [RoomEntity!]!
+  pagination: Pagination!
+}
+
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSON
+
+type Mutation {
+  """
+  {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
+  createOneRoom(input: CreateOneRoomInput!): CreateOneRoomOutput!
+
+  """
+  {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  createRole(input: CreateRoleIntput!): CreateRoleOutput!
+
+  """
+  {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  deleteRole(input: DeleteRoleIntput!): DeleteRoleOutput!
+
+  """
+  {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  """
+  recoverRole(input: RecoverRoleIntput!): RecoverRoleOutput!
+
+  """
+  {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
+  signin(input: SigninIntput!): SigninOutput!
+
+  """
+  {"publ":true,"t":"Đăng kí","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
+  signup(input: Signup!): SignupOutput!
+
+  """
+  {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  updateRole(input: UpdateRoleIntput!): UpdateRoleOuput!
+}
+
+type Pagination {
+  limit: Float!
+  page: Float!
+  totalCount: Float!
+}
+
+input PaginationIntput {
+  limit: Float!
+  page: Float!
+  totalCount: Float
+}
+
+enum Privilege {
+  SuperAdmin
+}
+
+type Query {
+  """
+  {"publ":true,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  getRoleById(input: GetRoleByIdInput!): GetRoleByIdOutput!
+
+  """
+  {"publ":true,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  getRoles: [GetRolesOutput!]!
+
+  """
+  {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  """
+  getRolesWasDeleted: [GetRolesWasDeletedOutput!]!
+
+  """
+  {"publ":false,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
+  getRooms(input: GetRoomsIntput!): GetRoomsOutput!
+}
+
+input RecoverRoleIntput {
+  id: String!
+}
+
+type RecoverRoleOutput {
+  id: String!
+}
+
+type RoleEntity {
+  createdAt: DateTime
+  id: String
+  isDefault: Boolean
+  scp: [String!]
+  title: String!
+  updatedAt: DateTime
+}
+
+type RoomEntity {
+  capacity: Float!
+  clients: [UserEntity!]
+  createdAt: DateTime
+  creator: UserEntity!
+  description: String
+  id: String
+  language: String!
+  topic: String!
+  updatedAt: DateTime
+}
+
+input SigninIntput {
+  email: String!
+  password: String!
+}
+
+type SigninOutput {
+  email: String!
+  id: String!
+  memberships: JSON!
+  refreshToken: String
+  scp: [String!]!
+  token: String!
+}
+
+input Signup {
+  """Email to login"""
+  email: String!
+
+  """Password"""
+  password: String!
+}
+
+type SignupOutput {
+  email: String!
+  id: String!
+  refreshToken: String
+  scp: [String!]!
+  token: String!
+}
+
+input UpdateRoleIntput {
+  id: String!
+  isDefault: Boolean
+  scp: [String!]
+  title: String
+}
+
+type UpdateRoleOuput {
+  id: String!
+}
+
+type UserEntity {
+  createdAt: DateTime
+  email: String!
+  emailVerified: Boolean
+  fullName: String
+  id: String
+  image: String
+  phone: String
+  privilege: [Privilege!]
+  roles: [RoleEntity!]
+  updatedAt: DateTime
+}

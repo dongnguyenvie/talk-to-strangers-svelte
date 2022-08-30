@@ -1,0 +1,33 @@
+# schema: http://my-graphql-api.com/graphql # Or schema: ./src/schema.graphql
+# schema: 'src/lib/@shared/graphql/schema.graphql'
+# documents: './src/**/*.gql'
+# generates:
+#   './src/lib/@shared/graphql/generated.ts':
+#     plugins:
+#       - typescript
+#       - typescript-operations
+#       - typed-document-node
+#       - '@kitql/graphql-codegen'
+#       - "named-operations-object"
+# # plugins:
+# #   - typescript
+# #   - typescript-operations
+# #   - '@kitql/graphql-codegen'
+# # - typescript-react-apollo
+schema: 'src/lib/@shared/graphql/schema.graphql'
+documents: "./src/**/*.gql"
+generates:
+  ./src/lib/@shared/graphql/_kitql/graphqlTypes.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typed-document-node
+      - "named-operations-object"
+      # - typescript-document-nodes
+  ./src/lib/@shared/graphql/_kitql/graphqlStores.ts:
+    plugins:
+      - "@kitql/graphql-codegen"
+    # config:
+    #   importBaseTypesFrom: $lib/graphql/_kitql/graphqlTypes
+config:
+  useTypeImports: true
