@@ -23,11 +23,12 @@ generates:
       - typescript-operations
       - typed-document-node
       - "named-operations-object"
+      # - "@kitql/graphql-codegen"
       # - typescript-document-nodes
   ./src/lib/@shared/graphql/_kitql/graphqlStores.ts:
     plugins:
       - "@kitql/graphql-codegen"
-    # config:
-    #   importBaseTypesFrom: $lib/graphql/_kitql/graphqlTypes
+    config:
+      importBaseTypesFrom: $lib/@shared/graphql/_kitql/graphqlTypes
 config:
   useTypeImports: true

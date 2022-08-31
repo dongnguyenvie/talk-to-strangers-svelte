@@ -1,3 +1,9 @@
 export interface Auth {
-	loggedIn: boolean;
+	username: string;
+	email: string;
+	scp: string[];
+	sub: string;
+	id: string;
+	iat: number;
+	exp: number;
 }

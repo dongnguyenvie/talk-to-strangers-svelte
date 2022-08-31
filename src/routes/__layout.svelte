@@ -35,8 +35,12 @@
 	// };
 </script>
 
-<TheHeader />
-{#if $auth.loggedIn}
+{#if !$auth.id}
+	<Redirect to="/login" />
+{/if}
+
+{#if !!$auth.id}
+	<TheHeader />
 	<div class="bg-white my-5 w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
 		<TheSidebar className="w-64" />
 		<main class="w-full px-5 py-40 bg-main-100">
@@ -44,8 +48,6 @@
 		</main>
 	</div>
 	<footer />
-{:else}
-	<Redirect auth={$auth} to="/login" />
 {/if}
 
 <style>

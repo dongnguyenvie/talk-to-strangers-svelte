@@ -3,12 +3,9 @@
 
 	import { goto } from '$app/navigation';
 
-	import type { Auth } from '$lib/types';
-
-	export let auth!: Auth;
 	export let to: string;
 
-	if (browser && !auth.loggedIn) {
+	if (browser) {
 		goto(to);
 	}
 </script>

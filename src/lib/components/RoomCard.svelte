@@ -11,7 +11,7 @@
 	export let tags: string[];
 	export let emotions: string[];
 	export let buttonLabel: string = 'Trò truyện';
-	export let onButtonClick: () => void;
+	export let onClick: () => void;
 	export let isFull: boolean = false;
 </script>
 
@@ -43,7 +43,7 @@
 			{/if}
 
 			{#if !isFull}
-				<Button className="bg-main-500 rounded-lg hover:bg-main-800" on:click={onButtonClick}>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" on:click={onClick}>
 					{buttonLabel}
 				</Button>
 			{/if}

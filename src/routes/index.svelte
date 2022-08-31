@@ -27,7 +27,7 @@
 			'Coffee',
 			'Du lịch'
 		]}
-		onButtonClick={() => {}}
+		onClick={() => {}}
 		emotions={['1', '2', '3']}
 		id="xxx"
 		isFull
