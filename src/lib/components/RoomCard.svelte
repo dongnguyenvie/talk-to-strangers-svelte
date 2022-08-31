@@ -43,7 +43,7 @@
 			{/if}
 
 			{#if !isFull}
-				<Button className="bg-main-500 rounded-lg hover:bg-main-800" on:click={onClick}>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" {onClick}>
 					{buttonLabel}
 				</Button>
 			{/if}

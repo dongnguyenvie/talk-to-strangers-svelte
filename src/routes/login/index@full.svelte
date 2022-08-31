@@ -48,7 +48,7 @@
 				const token = data?.signin.token!;
 				const user = jwtDecode(token) as Auth;
 				auth.set(user);
-				goto(ROUTES.free4Talk);
+				goto(ROUTES.rooms);
 			} catch (error) {}
 		}
 	});

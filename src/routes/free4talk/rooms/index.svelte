@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { ROUTES } from '$lib/@core/constants';
 	import { KQL_GetRooms } from '$lib/@shared/graphql/_kitql/graphqlStores';
 	import RoomCard from '$lib/components/RoomCard.svelte';
 
@@ -12,6 +13,10 @@
 			}
 		}
 	});
+
+	const handleJoinRoom = (id: string) => () => {
+		window.open(ROUTES.roomDetail.replace('{{id}}', id), '_blank');
+	};
 </script>
 
 <div class="flex flex-wrap">
@@ -25,9 +30,8 @@
 					avatar={''}
 					emotions={[]}
 					id={room.id || ''}
-					onClick={() => {
-						alert(1);
-					}}
+					isFull={false}
+					onClick={handleJoinRoom(room.id || '')}
 				/>
 			</div>
 		{/each}
