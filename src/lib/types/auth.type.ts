@@ -6,4 +6,5 @@ export interface Auth {
 	id: string;
 	iat: number;
 	exp: number;
+	token: string;
 }

@@ -9,7 +9,7 @@ interface authGuardProps {
 	path: string;
 }
 export async function authGuard({ path }: authGuardProps): Promise<LoadOutput> {
-	const loggedIn = me.loggedIn;
+	const loggedIn = !!me.id;
 
 	if (loggedIn && path === '/login') {
 		return { status: 302, redirect: '/' };

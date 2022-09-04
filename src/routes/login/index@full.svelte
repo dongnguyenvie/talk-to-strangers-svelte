@@ -47,7 +47,7 @@
 				}
 				const token = data?.signin.token!;
 				const user = jwtDecode(token) as Auth;
-				auth.set(user);
+				auth.set({ ...user, token });
 				goto(ROUTES.rooms);
 			} catch (error) {}
 		}

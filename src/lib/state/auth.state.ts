@@ -5,7 +5,7 @@ import { writable } from 'svelte/store';
 const stored = browser && localStorage.auth && JSON.parse(localStorage.auth);
 
 const initialAuthState = {
-	loggedIn: false
+	id: null
 } as unknown as Auth;
 export const auth = writable<Auth>(stored || initialAuthState);
 
