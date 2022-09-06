@@ -1,4 +1,4 @@
-import type { Peer } from '$lib/types/peer';
+import type { Peer } from '$lib/types';
 import { SocketStatus } from '$lib/types/socket';
 import { writable, get } from 'svelte/store';
 import { auth } from './auth.state';
@@ -32,6 +32,13 @@ export const room = {
 			data.clients = [...Object.values(clientsMap)];
 			return { ...data };
 		});
+	},
+	removePeer: (peer: Peer) => {
+		update((data) => {
+			delete clientsMap[peer.socketId];
+			data.clients = [...Object.values(clientsMap)];
+			return { ...data };
+		});
 	}
 
 	// setConnected(connected: boolean) {
@@ -51,3 +58,7 @@ export const room = {
 	// 	}
 	// }
 };
+
+subscribe((data) => {
+	console.log('log::', data);
+});

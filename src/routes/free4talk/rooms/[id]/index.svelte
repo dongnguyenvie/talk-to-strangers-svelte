@@ -22,10 +22,6 @@
 	};
 	const handleOpenMic = () => {};
 
-	room.subscribe((data) => {
-		console.log(data);
-	});
-
 	const socketId = derived(socketState, ($socket) => $socketState.id);
 
 	export const myCam = derived(room, ($room) => {
@@ -37,6 +33,8 @@
 			className: 'live-webcam'
 		};
 	});
+
+	const users = derived(room, ($room) => $room.clients.map((c) => c.socketId));
 
 	export const othersCam = derived(room, ($room) => {
 		const infos = $room.clients.filter((client) => !client.isInitiator);
@@ -61,6 +59,12 @@
 		open mic
 	</Button>
 	<hr />
+	<div class="scroll-m-9">
+		{#each $users as u}
+			<h3>{u}</h3>
+		{/each}
+	</div>
+	<hr />
 	{#if !!$myCam?.srcObject}
 		<section>
 			<h3>my cam</h3>
@@ -71,11 +75,13 @@
 	{/if}
 
 	{#each $othersCam as c}
-		<section>
-			<h3>{c.id}</h3>
-			<video use:srcObject={c.srcObject} autoplay width="400" height="400">
-				<track kind="captions" src="" />
-			</video>
-		</section>
+		{#if !!c?.srcObject}
+			<section>
+				<h3>{c.id}</h3>
+				<video use:srcObject={c.srcObject} autoplay width="400" height="400">
+					<track kind="captions" src="" />
+				</video>
+			</section>
+		{/if}
 	{/each}
 </section>

@@ -6,6 +6,7 @@ export const EVENT_ROOM_SERVER = {
 
 export const EVENT_ROOM_CLIENT = {
 	registerToJoinRoom: 'room:transporter:register',
+	leaveRoom: 'room:transporter:leave',
 	call: 'room:transporter:call',
 	callScreen: 'room:transporter:callScreen',
 	settings: 'room:settings'
