@@ -76,9 +76,14 @@
 
 	{#each $othersCam as c}
 		{#if !!c?.srcObject}
-			<section>
+			<section
+				class="bg-red-600"
+				on:click={() => {
+					document.getElementById(`video${c.id}`).play();
+				}}
+			>
 				<h3>{c.id}</h3>
-				<video use:srcObject={c.srcObject} autoplay width="400" height="400">
+				<video use:srcObject={c.srcObject} autoplay width="400" height="400" id={`video${c.id}`}>
 					<track kind="captions" src="" />
 				</video>
 			</section>

@@ -11,7 +11,7 @@ interface NewPeer {
 	stream: MediaStream;
 	isInitiator: boolean;
 }
-const peers = {} as Record<string, any>;
+const peers = {} as Record<string, SimplePeer.Instance>;
 // const peerMap = derived(room, ($room) =>
 // 	$room.clients.reduce((acc, cur) => {
 // 		acc[cur.socketId] = cur;
@@ -27,30 +27,38 @@ export const initRoomEvent = ({
 	roomId: string;
 	onNewPeer?: (payload: NewPeer) => void;
 }) => {
-	io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
+	const init = () => {
+		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
+		addPeer({ isInitiator: true, roomId: roomId, socketId: io.id, onNewPeer });
 
-	// newcomer
-	io.on(EVENT_ROOM_CLIENT.registerToJoinRoom, (event) => {
-		const { roomId, socketId } = event;
+		// newcomer
+		io.on(EVENT_ROOM_CLIENT.registerToJoinRoom, (event) => {
+			const { roomId, socketId } = event;
 
-		addPeer({ isInitiator: false, roomId: roomId, socketId: socketId, onNewPeer });
-	});
+			addPeer({ isInitiator: false, roomId: roomId, socketId: socketId, onNewPeer });
+		});
 
-	// newcomer
-	io.on(EVENT_ROOM_CLIENT.leaveRoom, (event) => {
-		const { roomId, socketId } = event;
-		console.log('leave room', { socketId });
+		// newcomer
+		io.on(EVENT_ROOM_CLIENT.leaveRoom, (event) => {
+			const { roomId, socketId } = event;
+			console.log('leave room', { socketId });
 
-		room.removePeer({ isInitiator: false, socketId: socketId, stream: null });
-	});
+			room.removePeer({ isInitiator: false, socketId: socketId, stream: null });
+		});
 
-	// incoming call
-	io.on(EVENT_ROOM_CLIENT.call, (event) => {
-		console.log('call connecting', { event });
-		const { signal } = event;
-		const host = peers[io.id];
-		if (!host) return;
-		host.signal(signal);
+		// incoming call
+		io.on(EVENT_ROOM_CLIENT.call, (event) => {
+			console.log('call connecting', { event, peers });
+			const { signal } = event;
+			const host = peers[io.id];
+			console.log({ host });
+			if (!host) return;
+			host.signal(signal);
+		});
+	};
+
+	io.on('connect', () => {
+		init();
 	});
 
 	return {
@@ -67,8 +75,15 @@ export const initRoomEvent = ({
 				},
 				(stream: any) => {
 					console.log('Received local stream');
+					const host = peers[io.id];
+					host.addStream(stream);
 					localStream = stream;
-					addPeer({ isInitiator: true, socketId: io.id, roomId, onNewPeer: onNewPeer });
+					room.updatePeer({
+						isInitiator: true,
+						socketId: io.id,
+						stream: localStream
+					});
+					// addPeer({ isInitiator: true, socketId: io.id, roomId, onNewPeer: onNewPeer });
 				},
 				(err: any) => {
 					console.log({ err });
@@ -97,9 +112,10 @@ function addPeer({
 	});
 	let peer = new SimplePeer({
 		initiator: isInitiator,
-		stream: localStream,
+		// stream: localStream,
 		config: configuration
 	});
+
 	peer.on('signal', (data) => {
 		let mySignal: SimplePeer.SignalData = data;
 		io.emit(EVENT_ROOM_SERVER.call, { roomId, signal: mySignal });
@@ -108,7 +124,11 @@ function addPeer({
 
 	peer.on('stream', (stream) => {
 		!!onNewPeer && onNewPeer({ socketId: socketId, stream: stream, isInitiator });
-		console.log('signal stream', { isInitiator: isInitiator, socketId: socketId, stream: stream });
+		console.log('signal stream', {
+			isInitiator: isInitiator,
+			socketId: socketId,
+			stream: stream
+		});
 		room.updatePeer({ isInitiator: false, socketId: makeid(5), stream: stream });
 	});
 
