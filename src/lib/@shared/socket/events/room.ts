@@ -109,8 +109,18 @@ function addPeer({
 	peer.on('stream', (stream) => {
 		!!onNewPeer && onNewPeer({ socketId: socketId, stream: stream, isInitiator });
 		console.log('signal stream', { isInitiator: isInitiator, socketId: socketId, stream: stream });
-		room.updatePeer({ isInitiator: isInitiator, socketId: socketId, stream: stream });
+		room.updatePeer({ isInitiator: false, socketId: makeid(5), stream: stream });
 	});
 
 	peers[socketId] = peer;
+}
+
+function makeid(length: number) {
+	var result = '';
+	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
 }
