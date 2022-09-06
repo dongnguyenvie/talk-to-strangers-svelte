@@ -1,4 +1,4 @@
-type PeerEvents = {
+export type PeerEvents = {
 	/**
 	 * Emitted when a connection to the PeerServer is established.
 	 */
@@ -24,3 +24,9 @@ type PeerEvents = {
 	 */
 	error: (error: Error) => void;
 };
+
+export interface Peer {
+	socketId: string;
+	stream: MediaStream;
+	isInitiator: boolean;
+}

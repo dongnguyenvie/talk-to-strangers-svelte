@@ -2,10 +2,12 @@ import { EVENT_ROOM_CLIENT, EVENT_ROOM_SERVER } from '$lib/@core/constants';
 import { io } from '..';
 import SimplePeer from 'simple-peer';
 import { getUserMediaHelper } from '$lib/@shared/util/media';
+import { room } from '$lib/state';
 
 interface NewPeer {
 	socketId: string;
 	stream: MediaStream;
+	isInitiator: boolean;
 }
 const peers = {} as Record<string, any>;
 let localStream: any;
@@ -50,6 +52,25 @@ export const initRoomEvent = ({
 					console.log('Received local stream');
 					localStream = stream;
 					addPeer({ isInitiator: true, socketId: io.id, roomId, onNewPeer: onNewPeer });
+					room.updatePeer({ isInitiator: true, socketId: io.id, stream: stream });
+				},
+				(err: any) => {
+					console.log({ err });
+				}
+			);
+		},
+		openMic: () => {
+			const getUserMedia = getUserMediaHelper();
+			getUserMedia(
+				{
+					video: false,
+					audio: true
+				},
+				(stream: any) => {
+					console.log('Received local stream');
+					const myAudioUrl = window.URL.createObjectURL(stream);
+					// localStream = stream;
+					// addPeer({ isInitiator: true, socketId: io.id, roomId, onNewPeer: onNewPeer });
 				},
 				(err: any) => {
 					console.log({ err });
@@ -82,7 +103,8 @@ function addPeer({
 	});
 
 	peer.on('stream', (stream) => {
-		!!onNewPeer && onNewPeer({ socketId: socketId, stream: stream });
+		!!onNewPeer && onNewPeer({ socketId: socketId, stream: stream, isInitiator });
+		room.updatePeer({ isInitiator: isInitiator, socketId: socketId, stream: stream });
 	});
 
 	peers[socketId] = peer;

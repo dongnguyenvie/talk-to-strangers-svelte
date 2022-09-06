@@ -1,3 +1,4 @@
+import type { Peer } from '$lib/types/peer';
 import { SocketStatus } from '$lib/types/socket';
 import { writable, get } from 'svelte/store';
 import { auth } from './auth.state';
@@ -7,12 +8,15 @@ export const elements = {
 	input: null,
 	messages: null
 };
+let clientsMap = {} as Record<string, Peer>;
 
 const { subscribe, set, update } = writable({
 	username: 'Guest-' + Math.floor(100000 + Math.random() * 900000),
+	socketId: '',
 	connecting: true,
 	connected: false,
-	clients: [],
+	clients: [] as Peer[],
+	clientsMap: {} as Record<string, Peer>,
 	messages: [],
 	status: '',
 	clicks: 0
@@ -21,7 +25,14 @@ const { subscribe, set, update } = writable({
 export const room = {
 	subscribe,
 	set,
-	update
+	update,
+	updatePeer: (peer: Peer) => {
+		update((data) => {
+			clientsMap[peer.socketId] = peer;
+			data.clients = [...Object.values(clientsMap)];
+			return { ...data };
+		});
+	}
 
 	// setConnected(connected: boolean) {
 	// 	if (connected) {

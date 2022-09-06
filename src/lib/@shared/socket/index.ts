@@ -1,5 +1,5 @@
 import ioClient from 'socket.io-client';
-const ENDPOINT = 'http://localhost:1080';
+const ENDPOINT = import.meta.env.VITE_SOCKET_ENDPOINT;
 
 const socket = ioClient(ENDPOINT, {
 	reconnection: true
