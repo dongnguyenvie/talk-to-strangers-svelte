@@ -12,9 +12,9 @@ let clientsMap = {} as Record<string, Client>;
 
 const { subscribe, set, update } = writable({
 	me: {
-		wc: undefined as unknown as MediaStream
+		mediaStream: undefined as unknown as MediaStream,
+		socketId: ''
 	},
-	socketId: '',
 	clients: [] as Client[],
 	clientsMap: {} as Record<string, Client>,
 	messages: []
@@ -31,18 +31,15 @@ export const room = {
 			return data;
 		});
 	},
-	updateClientStream: (client: Pick<Client, 'socketId' | 'stream'>) => {
+	updateClientStream: (
+		client: Pick<Client, 'socketId'> & { isVideo: boolean; isAudio: boolean; stream: MediaStream }
+	) => {
 		update((data) => {
-			data.clientsMap[client.socketId].stream = client.stream;
-			data.clientsMap = { ...data.clientsMap };
-			return data;
-		});
-	},
-	randomClient: (client: Pick<Client, 'socketId' | 'stream'>) => {
-		update((data) => {
-			data.clientsMap[client.socketId] = {
-				stream: client.stream
-			} as any;
+			if (client.isVideo) {
+				data.clientsMap[client.socketId].mediaStream = client.stream;
+			} else if (client.isAudio) {
+				data.clientsMap[client.socketId].audioStream = client.stream;
+			}
 			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
@@ -56,7 +53,17 @@ export const room = {
 	},
 	setMyWc: (stream: MediaStream) => {
 		update((data) => {
-			data.me.wc = stream;
+			data.me.mediaStream = stream;
+			return data;
+		});
+	},
+	updateMe: (me: { socketId?: string; mediaStream?: MediaStream } = {}) => {
+		update((data) => {
+			console.log(11, data);
+			data.me = {
+				...data.me,
+				...me
+			};
 			return data;
 		});
 	}

@@ -29,7 +29,8 @@ export type PeerEvents = {
 
 export interface Client {
 	socketId: string;
-	stream?: MediaStream;
+	mediaStream?: MediaStream;
+	audioStream?: MediaStream;
 	initiator: boolean;
 	peer: SimplePeer.Instance;
 }

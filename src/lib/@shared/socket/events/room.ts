@@ -1,12 +1,9 @@
 import { EVENT_ROOM_CLIENT, EVENT_ROOM_SERVER } from '$lib/@core/constants';
 import { io } from '..';
 import SimplePeer from 'simple-peer';
-import { getUserMediaHelper } from '$lib/@shared/util/media';
+import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { room } from '$lib/state';
-import { derived, get } from 'svelte/store';
-import type { Client } from '$lib/types';
 import { browser } from '$app/env';
-import { log } from '$lib/@shared/util/logs';
 
 interface NewPeer {
 	socketId: string;
@@ -28,6 +25,7 @@ export const initRoomEvent = ({
 	const init = () => {
 		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
 		let callerID = io.id;
+		room.updateMe({ socketId: callerID });
 
 		// create peer
 		// createPeer({ callerID, roomId: roomId });
@@ -86,7 +84,7 @@ export const initRoomEvent = ({
 				},
 				(stream: any) => {
 					console.log('Received local stream');
-					room.setMyWc(stream);
+					room.updateMe({ mediaStream: stream });
 					Object.values(peerInitiators).forEach((peer) => {
 						peer.addStream(stream);
 					});
@@ -96,7 +94,24 @@ export const initRoomEvent = ({
 				}
 			);
 		},
-		openMic: () => {},
+		openMic: () => {
+			const getUserMedia = getUserMediaHelper();
+			getUserMedia(
+				{
+					video: false,
+					audio: true
+				},
+				(stream: any) => {
+					console.log('open mic::', 'Received local stream');
+					Object.values(peerInitiators).forEach((peer) => {
+						peer.addStream(stream);
+					});
+				},
+				(err: any) => {
+					console.log({ err });
+				}
+			);
+		},
 		sendText: (text: string) => {
 			Object.values(peers).forEach((item) => item.send(text));
 			const host = peers[io.id];
@@ -128,6 +143,7 @@ function createPeer({
 	};
 
 	peer.on('signal', (data) => {
+		console.log('xxx', data);
 		let mySignal: SimplePeer.SignalData = data;
 		io.emit(EVENT_ROOM_SERVER.call, { roomId, signal: mySignal });
 	});
@@ -137,7 +153,7 @@ function createPeer({
 	room.updateClient({
 		initiator: true,
 		socketId: io.id,
-		stream: stream,
+		mediaStream: stream,
 		peer
 	});
 }
@@ -169,7 +185,8 @@ function addPeer({
 
 	peer.on('stream', (stream) => {
 		console.error('got stream from wc', stream);
-		room.updateClientStream({ socketId: callerID, stream: stream });
+		const streamProperties = checkStream(stream);
+		room.updateClientStream({ socketId: callerID, stream: stream, ...streamProperties });
 	});
 
 	peers[callerID] = peer;
@@ -177,7 +194,7 @@ function addPeer({
 	room.updateClient({
 		initiator: false,
 		socketId: callerID,
-		stream: stream,
+		mediaStream: stream,
 		peer: peer
 	});
 }

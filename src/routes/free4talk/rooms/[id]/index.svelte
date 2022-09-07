@@ -22,7 +22,9 @@
 	const handleOpenCam = () => {
 		roomEvent?.openCam();
 	};
-	const handleOpenMic = () => {};
+	const handleOpenMic = () => {
+		roomEvent?.openMic();
+	};
 
 	const socketId = derived(socketState, ($socket) => $socketState.id);
 
@@ -39,10 +41,29 @@
 
 		return infos.map((info) => ({
 			id: info.socketId,
-			srcObject: info.stream as MediaStream,
+			srcObject: info.mediaStream as MediaStream,
 			autoplay: true,
 			className: 'live-webcam'
 		}));
+	});
+
+	const usersMedia = derived([me, clients], ($values) => {
+		const [me, clients] = $values;
+		const medias = clients.map((client) => {
+			const streams = client.peer.streams[0];
+			console.log({ streams, xx: client.peer });
+			return {
+				mediaStream: client.mediaStream,
+				audioStream: client.audioStream,
+				avatar: '',
+				socketId: client.socketId,
+				id: ''
+			};
+		});
+		return [
+			...medias,
+			{ mediaStream: me.mediaStream, audioStream: '', avatar: '', socketId: me.socketId, id: '' }
+		];
 	});
 
 	const handleChat = () => {
@@ -71,21 +92,60 @@
 		{/each}
 	</div>
 	<hr />
-	{#if !!$room?.me.wc}
-		<section>
-			<h3>my cam</h3>
-			<video use:srcObject={$room?.me.wc} autoplay width="400" height="400">
-				<track kind="captions" src="" />
-			</video>
-		</section>
-	{/if}
 
-	{#each $othersCam as c}
+	<div class="flex flex-nowrap">
+		{#each $usersMedia as media}
+			<section
+				class="bg-red-600 w-[200px] ml-1"
+				on:click={() => {
+					document.getElementById(`video${media.socketId}`)?.play();
+				}}
+			>
+				<h3>{media.socketId}</h3>
+				<div class="relative w-[200px] h-[200px]">
+					<video
+						use:srcObject={media.mediaStream}
+						autoplay
+						id={`video${media.socketId}`}
+						class="absolute w-full h-full object-fill "
+					>
+						<track kind="captions" src="" />
+					</video>
+					<div class="absolute bottom-0 bg-green-700">
+						{#if media.mediaStream}
+							<p>Video: on</p>
+						{/if}
+						{#if media.audioStream}
+							<p>audio: on</p>
+						{/if}
+					</div>
+				</div>
+			</section>
+		{/each}
+	</div>
+	<div>
+		all audio
+
+		{#each $usersMedia as media}
+			{#if media.audioStream}
+				<video
+					use:srcObject={media.audioStream}
+					autoplay
+					id={`audio${media.socketId}`}
+					class="absolute w-full h-full object-fill "
+				>
+					<track kind="captions" src="" />
+				</video>
+			{/if}
+		{/each}
+	</div>
+
+	<!-- {#each $othersCam as c}
 		{#if !!c?.srcObject}
 			<section
 				class="bg-red-600"
 				on:click={() => {
-					document.getElementById(`video${c.id}`).play();
+					document.getElementById(`video${c.id}`)?.play();
 				}}
 			>
 				<h3>{c.id}</h3>
@@ -94,5 +154,5 @@
 				</video>
 			</section>
 		{/if}
-	{/each}
+	{/each} -->
 </section>
