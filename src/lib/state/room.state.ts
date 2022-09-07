@@ -1,4 +1,4 @@
-import type { Peer } from '$lib/types';
+import type { Client } from '$lib/types';
 import { SocketStatus } from '$lib/types/socket';
 import { writable, get } from 'svelte/store';
 import { auth } from './auth.state';
@@ -8,55 +8,58 @@ export const elements = {
 	input: null,
 	messages: null
 };
-let clientsMap = {} as Record<string, Peer>;
+let clientsMap = {} as Record<string, Client>;
 
 const { subscribe, set, update } = writable({
-	username: 'Guest-' + Math.floor(100000 + Math.random() * 900000),
+	me: {
+		wc: undefined as unknown as MediaStream
+	},
 	socketId: '',
-	connecting: true,
-	connected: false,
-	clients: [] as Peer[],
-	clientsMap: {} as Record<string, Peer>,
-	messages: [],
-	status: '',
-	clicks: 0
+	clients: [] as Client[],
+	clientsMap: {} as Record<string, Client>,
+	messages: []
 });
 
 export const room = {
 	subscribe,
 	set,
 	update,
-	updatePeer: (peer: Peer) => {
+	updateClient: (client: Client) => {
 		update((data) => {
-			clientsMap[peer.socketId] = peer;
-			data.clients = [...Object.values(clientsMap)];
-			return { ...data };
+			data.clientsMap[client.socketId] = client;
+			data.clientsMap = { ...data.clientsMap };
+			return data;
 		});
 	},
-	removePeer: (peer: Peer) => {
+	updateClientStream: (client: Pick<Client, 'socketId' | 'stream'>) => {
 		update((data) => {
-			delete clientsMap[peer.socketId];
-			data.clients = [...Object.values(clientsMap)];
-			return { ...data };
+			data.clientsMap[client.socketId].stream = client.stream;
+			data.clientsMap = { ...data.clientsMap };
+			return data;
+		});
+	},
+	randomClient: (client: Pick<Client, 'socketId' | 'stream'>) => {
+		update((data) => {
+			data.clientsMap[client.socketId] = {
+				stream: client.stream
+			} as any;
+			data.clientsMap = { ...data.clientsMap };
+			return data;
+		});
+	},
+	removePeer: (client: Pick<Client, 'socketId'>) => {
+		update((data) => {
+			delete data.clientsMap[client.socketId];
+			data.clientsMap = { ...data.clientsMap };
+			return data;
+		});
+	},
+	setMyWc: (stream: MediaStream) => {
+		update((data) => {
+			data.me.wc = stream;
+			return data;
 		});
 	}
-
-	// setConnected(connected: boolean) {
-	// 	if (connected) {
-	// 		update((data) => ({
-	// 			...data,
-	// 			connected,
-	// 			connecting: false,
-	// 			status: SocketStatus.CONNECT
-	// 		}));
-	// 	} else {
-	// 		update((data) => ({
-	// 			...data,
-	// 			connected,
-	// 			status: SocketStatus.DISCONNECT
-	// 		}));
-	// 	}
-	// }
 };
 
 subscribe((data) => {

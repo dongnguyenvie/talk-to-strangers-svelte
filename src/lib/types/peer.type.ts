@@ -1,3 +1,5 @@
+import type SimplePeer from 'simple-peer';
+
 export type PeerEvents = {
 	/**
 	 * Emitted when a connection to the PeerServer is established.
@@ -25,8 +27,9 @@ export type PeerEvents = {
 	error: (error: Error) => void;
 };
 
-export interface Peer {
+export interface Client {
 	socketId: string;
-	stream: MediaStream;
-	isInitiator: boolean;
+	stream?: MediaStream;
+	initiator: boolean;
+	peer: SimplePeer.Instance;
 }

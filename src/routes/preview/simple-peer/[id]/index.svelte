@@ -94,9 +94,9 @@
 			// addPeer(socketId, false);
 		});
 
-		function addPeer(socketId: string, isInitiator: boolean) {
+		function addPeer(socketId: string, initiator: boolean) {
 			peers[socketId] = new SimplePeer({
-				initiator: isInitiator,
+				initiator: initiator,
 				stream: localStream,
 				config: configuration
 			});
