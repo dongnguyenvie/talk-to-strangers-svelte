@@ -52,6 +52,7 @@
 		"graphql": "^16.6.0",
 		"jwt-decode": "^3.1.2",
 		"peerjs": "^1.4.7",
+		"process": "^0.11.10",
 		"simple-peer": "^9.11.1",
 		"socket.io-client": "^4.5.1",
 		"svelte-apollo": "^0.5.0",

@@ -17,3 +17,17 @@ export const getUserMediaHelper = () => {
 
 	return getUserMedia;
 };
+
+export function checkStream(stream: MediaStream) {
+	let hasMedia = { isVideo: false, isAudio: false };
+
+	if (stream.getAudioTracks().length)
+		// checking audio presence
+		hasMedia.isAudio = true;
+
+	if (stream.getVideoTracks().length)
+		// checking video presence
+		hasMedia.isVideo = true;
+
+	return hasMedia;
+}

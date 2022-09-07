@@ -141,7 +141,7 @@
 	});
 
 	const handleClickToWebrtc = () => {
-		socket.emit('join-room', { roomId, peerId: peer.id });
+		socket.emit('join-room', { roomId, peerId: peer.id },);
 		console.log({ peer });
 	};
 
