@@ -1,4 +1,4 @@
-export function srcObject(node: HTMLVideoElement, stream: MediaStream) {
+export function srcObject(node: HTMLVideoElement | HTMLAudioElement, stream: MediaStream) {
 	node.srcObject = stream;
 	return {
 		update(newStream: MediaStream) {

@@ -14,6 +14,7 @@ const peers = {} as Record<string, SimplePeer.Instance>;
 const peerInitiators = {} as Record<string, SimplePeer.Instance>;
 
 let configuration = {};
+let myID: string;
 export const initRoomEvent = ({
 	roomId,
 	onNewPeer
@@ -24,8 +25,8 @@ export const initRoomEvent = ({
 	if (!browser) return;
 	const init = () => {
 		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
-		let callerID = io.id;
-		room.updateMe({ socketId: callerID });
+		myID = io.id;
+		room.updateMe({ socketId: myID });
 
 		// create peer
 		// createPeer({ callerID, roomId: roomId });
@@ -84,8 +85,22 @@ export const initRoomEvent = ({
 				},
 				(stream: any) => {
 					console.log('Received local stream');
-					room.updateMe({ mediaStream: stream });
-					Object.values(peerInitiators).forEach((peer) => {
+					room.updateClientStream({
+						stream: stream,
+						isVideo: true,
+						isAudio: false,
+						socketId: myID
+					});
+					Object.entries(peerInitiators).forEach((peerObj) => {
+						const [socketId, peer] = peerObj;
+						if (peer.destroyed) return;
+						console.log('add audio stream');
+						peer.addStream(stream);
+					});
+					Object.entries(peers).forEach((peerObj) => {
+						const [socketId, peer] = peerObj;
+						if (peer.destroyed) return;
+						console.log('add audio stream');
 						peer.addStream(stream);
 					});
 				},
@@ -101,9 +116,19 @@ export const initRoomEvent = ({
 					video: false,
 					audio: true
 				},
-				(stream: any) => {
-					console.log('open mic::', 'Received local stream');
-					Object.values(peerInitiators).forEach((peer) => {
+				(stream: MediaStream) => {
+					console.log({ peerInitiators });
+					console.log('peer', peerInitiators);
+					Object.entries(peerInitiators).forEach((peerObj) => {
+						const [socketId, peer] = peerObj;
+						if (peer.destroyed) return;
+						console.log('add audio stream');
+						peer.addStream(stream);
+					});
+					Object.entries(peers).forEach((peerObj) => {
+						const [socketId, peer] = peerObj;
+						if (peer.destroyed) return;
+						console.log('add audio stream');
 						peer.addStream(stream);
 					});
 				},
@@ -143,16 +168,21 @@ function createPeer({
 	};
 
 	peer.on('signal', (data) => {
-		console.log('xxx', data);
 		let mySignal: SimplePeer.SignalData = data;
 		io.emit(EVENT_ROOM_SERVER.call, { roomId, signal: mySignal });
+	});
+
+	peer.on('stream', (stream) => {
+		console.error('got stream from wc', stream, { callerID });
+		const streamProperties = checkStream(stream);
+		room.updateClientStream({ socketId: callerID, stream: stream, ...streamProperties });
 	});
 
 	peerInitiators[callerID] = peer;
 
 	room.updateClient({
 		initiator: true,
-		socketId: io.id,
+		socketId: callerID,
 		mediaStream: stream,
 		peer
 	});
@@ -175,7 +205,7 @@ function addPeer({
 	});
 
 	peer._debug = (...args) => {
-		console.log('client', ...args);
+		console.warn('client', ...args);
 	};
 
 	peer.on('signal', (data) => {
