@@ -15,6 +15,7 @@ const { subscribe, set, update } = writable({
 		mediaStream: undefined as unknown as MediaStream,
 		socketId: ''
 	},
+	socketId: '',
 	clients: [] as Client[],
 	clientsMap: {} as Record<string, Client>,
 	messages: []
@@ -59,11 +60,16 @@ export const room = {
 	},
 	updateMe: (me: { socketId?: string; mediaStream?: MediaStream } = {}) => {
 		update((data) => {
-			console.log(11, data);
-			data.me = {
-				...data.me,
-				...me
+			data.clientsMap[me.socketId!] = {
+				socketId: me.socketId!,
+				mediaStream: me.mediaStream!,
+				initiator: true,
+				peer: undefined as any
 			};
+			if (!data.socketId) {
+				data.socketId = me.socketId!;
+			}
+			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
 	}

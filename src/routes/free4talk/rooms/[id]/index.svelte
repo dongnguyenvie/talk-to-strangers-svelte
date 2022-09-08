@@ -26,32 +26,14 @@
 		roomEvent?.openMic();
 	};
 
-	const socketId = derived(socketState, ($socket) => $socketState.id);
+	const mySocketId = derived(socketState, ($socket) => $socket.id);
 
 	const clients = derived(room, ($room) => Object.values($room.clientsMap));
 
-	export const me = derived(room, ($room) => {
-		return $room.me;
-	});
-
 	const users = derived(clients, ($clients) => $clients.map((c) => c.socketId));
 
-	export const othersCam = derived(clients, ($clients) => {
-		const infos = $clients.filter((client) => !client.initiator);
-
-		return infos.map((info) => ({
-			id: info.socketId,
-			srcObject: info.mediaStream as MediaStream,
-			autoplay: true,
-			className: 'live-webcam'
-		}));
-	});
-
-	const usersMedia = derived([me, clients], ($values) => {
-		const [me, clients] = $values;
-		const medias = clients.map((client) => {
-			const streams = client.peer.streams[0];
-			console.log({ streams, xx: client.peer });
+	const usersMedia = derived(clients, ($clients) => {
+		const medias = $clients.map((client) => {
 			return {
 				mediaStream: client.mediaStream,
 				audioStream: client.audioStream,
@@ -60,20 +42,19 @@
 				id: ''
 			};
 		});
-		return [
-			...medias,
-			{ mediaStream: me.mediaStream, audioStream: '', avatar: '', socketId: me.socketId, id: '' }
-		];
+		return [...medias];
 	});
 
 	const handleChat = () => {
-		roomEvent?.sendText(JSON.stringify({ socketId: get(socketId), msg: 'hahahahhahahahahahahah' }));
+		roomEvent?.sendText(
+			JSON.stringify({ socketId: get(mySocketId), msg: 'hahahahhahahahahahahah' })
+		);
 	};
 </script>
 
 <section>
 	<h1>room {roomId}</h1>
-	<h2>socketId {$socketId}</h2>
+	<h2>socketId {$mySocketId}</h2>
 	<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
 		open cam
 	</Button>
@@ -128,31 +109,8 @@
 
 		{#each $usersMedia as media}
 			{#if media.audioStream}
-				<video
-					use:srcObject={media.audioStream}
-					autoplay
-					id={`audio${media.socketId}`}
-					class="absolute w-full h-full object-fill "
-				>
-					<track kind="captions" src="" />
-				</video>
+				<audio controls autoplay use:srcObject={media.audioStream} />
 			{/if}
 		{/each}
 	</div>
-
-	<!-- {#each $othersCam as c}
-		{#if !!c?.srcObject}
-			<section
-				class="bg-red-600"
-				on:click={() => {
-					document.getElementById(`video${c.id}`)?.play();
-				}}
-			>
-				<h3>{c.id}</h3>
-				<video use:srcObject={c.srcObject} autoplay width="400" height="400" id={`video${c.id}`}>
-					<track kind="captions" src="" />
-				</video>
-			</section>
-		{/if}
-	{/each} -->
 </section>
