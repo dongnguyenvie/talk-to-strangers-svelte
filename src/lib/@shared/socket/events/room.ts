@@ -4,7 +4,7 @@ import SimplePeer from 'simple-peer';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { room } from '$lib/state';
 import { browser } from '$app/env';
-
+import { CallEvent } from '$lib/@core/events/sockets/call.event';
 interface NewPeer {
 	socketId: string;
 	stream: MediaStream;
@@ -13,7 +13,28 @@ interface NewPeer {
 const peers = {} as Record<string, SimplePeer.Instance>;
 const peerInitiators = {} as Record<string, SimplePeer.Instance>;
 
-let configuration = {};
+let configuration = {
+	iceServers: [
+		{
+			urls: 'stun:openrelay.metered.ca:80'
+		},
+		{
+			urls: 'turn:openrelay.metered.ca:80',
+			username: 'openrelayproject',
+			credential: 'openrelayproject'
+		},
+		{
+			urls: 'turn:openrelay.metered.ca:443',
+			username: 'openrelayproject',
+			credential: 'openrelayproject'
+		},
+		{
+			urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+			username: 'openrelayproject',
+			credential: 'openrelayproject'
+		}
+	]
+};
 let myID: string;
 export const initRoomEvent = ({
 	roomId,
@@ -27,9 +48,6 @@ export const initRoomEvent = ({
 		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
 		myID = io.id;
 		room.updateMe({ socketId: myID });
-
-		// create peer
-		// createPeer({ callerID, roomId: roomId });
 
 		// newcomer
 		io.on(EVENT_ROOM_CLIENT.registerToJoinRoom, (event) => {
@@ -58,12 +76,16 @@ export const initRoomEvent = ({
 		});
 
 		// incoming call
-		io.on(EVENT_ROOM_CLIENT.call, (event) => {
-			const { signal, socketId } = event;
-			const peer = peers[socketId] || peerInitiators[socketId];
+		io.on(EVENT_ROOM_CLIENT.callingComing, (event: CallEvent) => {
+			const { signal, socketId, callerId, initiator, roomId } = event;
+			const _callerId = socketId;
+			const peer = peerInitiators[_callerId] || peers[_callerId];
+
 			console.log('call connecting', { event, peers, peer, peerInitiators });
+			console.log(`debug s:${event.socketId}||callerId: ${event.callerId}`, event.signal);
 			if (!peer || peer.destroyed) return;
 			peer.signal(signal);
+			console.log('accpted called', peer);
 		});
 	};
 
@@ -74,7 +96,7 @@ export const initRoomEvent = ({
 	return {
 		destroy: () => {
 			io.off(EVENT_ROOM_CLIENT.registerToJoinRoom);
-			io.off(EVENT_ROOM_CLIENT.call);
+			io.off(EVENT_ROOM_CLIENT.callingComing);
 		},
 		openCam: () => {
 			const getUserMedia = getUserMediaHelper();
@@ -92,16 +114,20 @@ export const initRoomEvent = ({
 						socketId: myID
 					});
 					Object.entries(peerInitiators).forEach((peerObj) => {
-						const [socketId, peer] = peerObj;
-						if (peer.destroyed) return;
-						console.log('add audio stream');
-						peer.addStream(stream);
+						try {
+							const [socketId, peer] = peerObj;
+							if (peer.destroyed || !peer.connected) return;
+							console.log('add video stream');
+							peer.addStream(stream);
+						} catch (error) {}
 					});
 					Object.entries(peers).forEach((peerObj) => {
-						const [socketId, peer] = peerObj;
-						if (peer.destroyed) return;
-						console.log('add audio stream');
-						peer.addStream(stream);
+						try {
+							const [socketId, peer] = peerObj;
+							if (peer.destroyed || !peer.connected) return;
+							console.log('add video stream');
+							peer.addStream(stream);
+						} catch (error) {}
 					});
 				},
 				(err: any) => {
@@ -138,11 +164,18 @@ export const initRoomEvent = ({
 			);
 		},
 		sendText: (text: string) => {
-			Object.values(peers).forEach((item) => item.send(text));
-			const host = peers[io.id];
-			console.log({ peers, host });
-			if (!host) return;
-			host.send(text);
+			Object.entries(peerInitiators).forEach((peerObj) => {
+				const [socketId, peer] = peerObj;
+				if (peer.destroyed) return;
+				console.log('add audio stream');
+				peer.send(text);
+			});
+			Object.entries(peers).forEach((peerObj) => {
+				const [socketId, peer] = peerObj;
+				if (peer.destroyed) return;
+				console.log('add audio stream');
+				peer.send(text);
+			});
 		}
 	};
 };
@@ -156,26 +189,33 @@ function createPeer({
 	roomId: string;
 	stream?: MediaStream;
 }) {
+	let initiator = true;
 	let peer = new SimplePeer({
-		initiator: true,
+		initiator: initiator,
 		stream: stream,
-		config: configuration
-		// trickle: false
+		config: configuration,
+		trickle: false
 	});
 
 	peer._debug = (...args) => {
 		console.warn('>owner', ...args);
 	};
 
-	peer.on('signal', (data) => {
-		let mySignal: SimplePeer.SignalData = data;
-		io.emit(EVENT_ROOM_SERVER.call, { roomId, signal: mySignal });
+	peer.on('signal', (signal: SimplePeer.SignalData) => {
+		io.emit(
+			EVENT_ROOM_SERVER.call,
+			new CallEvent({ roomId, initiator, callerId: callerID, signal: signal }).expose
+		);
 	});
 
 	peer.on('stream', (stream) => {
-		console.error('got stream from wc', stream, { callerID });
+		console.error('got stream from wc', { initiator }, stream);
 		const streamProperties = checkStream(stream);
 		room.updateClientStream({ socketId: callerID, stream: stream, ...streamProperties });
+	});
+
+	peer.on('data', (data) => {
+		console.error('got stream data wc', { initiator }, data);
 	});
 
 	peerInitiators[callerID] = peer;
@@ -201,7 +241,8 @@ function addPeer({
 	let peer = new SimplePeer({
 		initiator,
 		stream: stream,
-		config: configuration
+		config: configuration,
+		trickle: false
 	});
 
 	peer._debug = (...args) => {
@@ -210,13 +251,21 @@ function addPeer({
 
 	peer.on('signal', (data) => {
 		let mySignal: SimplePeer.SignalData = data;
-		io.emit(EVENT_ROOM_SERVER.call, { roomId, signal: mySignal });
+
+		io.emit(
+			EVENT_ROOM_SERVER.call,
+			new CallEvent({ roomId, initiator, callerId: callerID, signal: mySignal }).expose
+		);
 	});
 
 	peer.on('stream', (stream) => {
-		console.error('got stream from wc', stream);
+		console.error('got stream from wc', { initiator }, stream);
 		const streamProperties = checkStream(stream);
 		room.updateClientStream({ socketId: callerID, stream: stream, ...streamProperties });
+	});
+
+	peer.on('data', (data) => {
+		console.error('got stream data wc', { initiator }, data);
 	});
 
 	peers[callerID] = peer;
