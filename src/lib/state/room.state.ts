@@ -1,14 +1,5 @@
 import type { Client } from '$lib/types';
-import { SocketStatus } from '$lib/types/socket';
-import { writable, get } from 'svelte/store';
-import { auth } from './auth.state';
-
-// Rerferences to HTML elements
-export const elements = {
-	input: null,
-	messages: null
-};
-let clientsMap = {} as Record<string, Client>;
+import { writable, get, derived } from 'svelte/store';
 
 const { subscribe, set, update } = writable({
 	me: {
@@ -16,15 +7,25 @@ const { subscribe, set, update } = writable({
 		socketId: ''
 	},
 	socketId: '',
-	clients: [] as Client[],
+	roomId: '',
+	accessable: false,
 	clientsMap: {} as Record<string, Client>,
 	messages: []
+});
+
+const mySocketId = derived({ subscribe }, ($room) => $room.socketId);
+const clients = derived({ subscribe }, ($room) => Object.values($room.clientsMap));
+const clientsAudio = derived([mySocketId, clients], ($values) => {
+	const [mySocketId, clients] = $values;
+	return clients.filter((client) => client.socketId !== mySocketId);
 });
 
 export const room = {
 	subscribe,
 	set,
 	update,
+	clients,
+	clientsAudio,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;
@@ -58,18 +59,32 @@ export const room = {
 			return data;
 		});
 	},
-	updateMe: (me: { socketId?: string; mediaStream?: MediaStream } = {}) => {
+	initRoom: ({
+		socketId,
+		roomId,
+		mediaStream
+	}: {
+		socketId?: string;
+		roomId?: string;
+		mediaStream?: MediaStream;
+	}) => {
 		update((data) => {
-			data.clientsMap[me.socketId!] = {
-				socketId: me.socketId!,
-				mediaStream: me.mediaStream!,
+			data.clientsMap[socketId!] = {
+				socketId: socketId!,
+				mediaStream: mediaStream!,
 				initiator: true,
 				peer: undefined as any
 			};
-			if (!data.socketId) {
-				data.socketId = me.socketId!;
-			}
 			data.clientsMap = { ...data.clientsMap };
+
+			data.socketId = socketId || data.socketId;
+			data.roomId = roomId || data.roomId;
+			return data;
+		});
+	},
+	updateAccessableStatus: (accessable: boolean) => {
+		update((data) => {
+			data.accessable = accessable;
 			return data;
 		});
 	}

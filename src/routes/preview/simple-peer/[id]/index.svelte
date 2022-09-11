@@ -78,14 +78,14 @@
 
 		// // RENDER YOU WEBCAM HERE
 
-		socket.on(EVENT_ROOM_CLIENT.registerToJoinRoom, (event) => {
+		socket.on(EVENT_ROOM_CLIENT.joinRoom, (event) => {
 			console.log('client-connect', { event });
 			const { roomId, socketId } = event;
 			addPeer(socketId, false);
 		});
 
 		// incoming call
-		socket.on(EVENT_ROOM_CLIENT.call, (event) => {
+		socket.on(EVENT_ROOM_CLIENT.callingComing, (event) => {
 			console.log('client-call', { event });
 			const { signal } = event;
 			if (peers[socket.id]) {
