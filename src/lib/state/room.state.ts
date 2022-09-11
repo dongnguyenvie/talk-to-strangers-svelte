@@ -1,5 +1,5 @@
 import type { Client } from '$lib/types';
-import { writable, get } from 'svelte/store';
+import { writable, get, derived } from 'svelte/store';
 
 const { subscribe, set, update } = writable({
 	me: {
@@ -9,15 +9,23 @@ const { subscribe, set, update } = writable({
 	socketId: '',
 	roomId: '',
 	accessable: false,
-	clients: [] as Client[],
 	clientsMap: {} as Record<string, Client>,
 	messages: []
+});
+
+const mySocketId = derived({ subscribe }, ($room) => $room.socketId);
+const clients = derived({ subscribe }, ($room) => Object.values($room.clientsMap));
+const clientsAudio = derived([mySocketId, clients], ($values) => {
+	const [mySocketId, clients] = $values;
+	return clients.filter((client) => client.socketId !== mySocketId);
 });
 
 export const room = {
 	subscribe,
 	set,
 	update,
+	clients,
+	clientsAudio,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;

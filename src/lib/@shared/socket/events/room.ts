@@ -140,7 +140,12 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					audio: true
 				},
 				(stream: MediaStream) => {
-					console.log({ peerInitiators });
+					room.updateClientStream({
+						stream: stream,
+						isVideo: false,
+						isAudio: true,
+						socketId: myID
+					});
 					console.log('peer', peerInitiators);
 					Object.entries(peerInitiators).forEach((peerObj) => {
 						const [socketId, peer] = peerObj;
