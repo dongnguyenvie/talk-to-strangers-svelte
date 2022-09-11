@@ -78,7 +78,7 @@
 
 		// // RENDER YOU WEBCAM HERE
 
-		socket.on(EVENT_ROOM_CLIENT.registerToJoinRoom, (event) => {
+		socket.on(EVENT_ROOM_CLIENT.joinRoom, (event) => {
 			console.log('client-connect', { event });
 			const { roomId, socketId } = event;
 			addPeer(socketId, false);

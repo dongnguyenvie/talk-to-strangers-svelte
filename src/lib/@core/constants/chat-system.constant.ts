@@ -5,9 +5,14 @@ export const EVENT_ROOM_SERVER = {
 };
 
 export const EVENT_ROOM_CLIENT = {
-	registerToJoinRoom: 'room:transporter:register',
+	joinRoom: 'room:transporter:register',
 	leaveRoom: 'room:transporter:leave',
 	callingComing: 'room:transporter:call',
 	callScreen: 'room:transporter:callScreen',
 	settings: 'room:settings'
+};
+
+export const EVENT_ROOM_PERSONAL_CLIENT = {
+	accessable: 'room:transporter:personal:accessable',
+	allUsers: 'room:personal:all-users'
 };

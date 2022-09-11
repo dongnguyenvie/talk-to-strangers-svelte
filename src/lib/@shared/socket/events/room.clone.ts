@@ -1,15 +1,15 @@
-import {
-	EVENT_ROOM_CLIENT,
-	EVENT_ROOM_PERSONAL_CLIENT,
-	EVENT_ROOM_SERVER
-} from '$lib/@core/constants';
+import { EVENT_ROOM_CLIENT, EVENT_ROOM_SERVER } from '$lib/@core/constants';
 import { io } from '..';
 import SimplePeer, { getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { room } from '$lib/state';
 import { browser } from '$app/env';
 import { CallEvent } from '$lib/@core/events/sockets/call.event';
-
+interface NewPeer {
+	socketId: string;
+	stream: MediaStream;
+	initiator: boolean;
+}
 const peers = {} as Record<string, SimplePeer.Instance>;
 const peerInitiators = {} as Record<string, SimplePeer.Instance>;
 
@@ -36,13 +36,18 @@ let configuration = {
 	]
 };
 let myID: string;
-export const initRoomEvent = ({ roomId }: { roomId: string }) => {
+export const initRoomEvent = ({
+	roomId,
+	onNewPeer
+}: {
+	roomId: string;
+	onNewPeer?: (payload: NewPeer) => void;
+}) => {
 	if (!browser) return;
-
 	const init = () => {
 		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
 		myID = io.id;
-		room.initRoom({ socketId: myID, roomId: roomId });
+		room.updateMe({ socketId: myID });
 
 		// newcomer
 		io.on(EVENT_ROOM_CLIENT.joinRoom, (event) => {
@@ -60,18 +65,14 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			room.removePeer({ socketId: socketId });
 		});
 
-		io.on(EVENT_ROOM_PERSONAL_CLIENT.allUsers, (event: any) => {
+		io.on('all users', (event: any) => {
 			const { users } = event;
+			console.log({ users });
 			users.forEach((callerID: string) => {
+				// create peer conection for every client
 				createPeer({ roomId: roomId, callerID: callerID });
 			});
 			console.log('all user', event);
-		});
-
-		io.on(EVENT_ROOM_PERSONAL_CLIENT.accessable, (event: { accessable: boolean }) => {
-			const { accessable } = event;
-			room.updateAccessableStatus(accessable);
-			console.log('EVENT_ROOM_PERSONAL_CLIENT.accessable', { accessable });
 		});
 
 		// incoming call
@@ -88,7 +89,9 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		});
 	};
 
-	init();
+	io.on('connect', () => {
+		init();
+	});
 
 	return {
 		destroy: () => {
@@ -273,4 +276,14 @@ function addPeer({
 		mediaStream: stream,
 		peer: peer
 	});
+}
+
+function makeid(length: number) {
+	var result = '';
+	var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+	var charactersLength = characters.length;
+	for (var i = 0; i < length; i++) {
+		result += characters.charAt(Math.floor(Math.random() * charactersLength));
+	}
+	return result;
 }
