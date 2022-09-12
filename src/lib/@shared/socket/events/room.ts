@@ -143,7 +143,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					io.emit(
 						EVENT_ROOM_SERVER.syncUserState,
 						new ClientStateEvent({
-							isAudio: false,
+							isAudio: get(myMedia).isAudio,
 							isVideo: true,
 							roomId: roomId
 						})
@@ -188,23 +188,40 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						EVENT_ROOM_SERVER.syncUserState,
 						new ClientStateEvent({
 							isAudio: true,
-							isVideo: false,
+							isVideo: get(myMedia).isVideo,
 							roomId: roomId
 						})
 					);
 					console.log('peer', peerInitiators);
-					Object.entries(peerInitiators).forEach((peerObj) => {
-						const [socketId, peer] = peerObj;
-						if (peer.destroyed) return;
-						console.log('add audio stream');
-						peer.addStream(stream);
+					let clientPeers = Object.values({ ...peerInitiators, ...peers });
+					clientPeers.forEach((peer, index) => {
+						if (peer.destroyed) {
+							clientPeers = clientPeers.splice(index, 1);
+							return;
+						}
+
+						if (peer.connected) {
+							peer.addStream(stream);
+							clientPeers = clientPeers.splice(index, 1);
+						}
 					});
-					Object.entries(peers).forEach((peerObj) => {
-						const [socketId, peer] = peerObj;
-						if (peer.destroyed) return;
-						console.log('add audio stream');
-						peer.addStream(stream);
-					});
+
+					let worker = setInterval(() => {
+						clientPeers.forEach((peer, index) => {
+							if (peer.destroyed) {
+								clientPeers = clientPeers.splice(index, 1);
+								return;
+							}
+
+							if (peer.connected) {
+								peer.addStream(stream);
+								clientPeers = clientPeers.splice(index, 1);
+							}
+						});
+						if (!clientPeers.length) {
+							clearInterval(worker);
+						}
+					}, 2000);
 				},
 				(err: any) => {
 					console.log({ err });
@@ -212,13 +229,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			);
 		},
 		sendText: (text: string) => {
-			Object.entries(peerInitiators).forEach((peerObj) => {
-				const [socketId, peer] = peerObj;
-				if (peer.destroyed) return;
-				console.log('add audio stream');
-				peer.send(text);
-			});
-			Object.entries(peers).forEach((peerObj) => {
+			Object.entries({ ...peerInitiators, ...peers }).forEach((peerObj) => {
 				const [socketId, peer] = peerObj;
 				if (peer.destroyed) return;
 				console.log('add audio stream');

@@ -84,7 +84,7 @@
 		</section>
 		<section class="h-full overflow-hidden]">
 			<div class="flex justify-center items-center bg-slate-700 w-full h-full">
-				{#if !!$clientSelected}
+				{#if !!$clientSelected?.mediaStream}
 					<div class="bg-black w-full h-full">
 						<video
 							use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
@@ -100,7 +100,7 @@
 
 		<section class="flex flex-nowrap">
 			{#each $clients as client}
-				<section class="max-w-[96px] min-w-[60px] ml-1" title={client.socketId}>
+				<section class="max-w-[96px] min-w-[60px] ml-1 overflow-hidden" title={client.socketId}>
 					<h3>{client.socketId}</h3>
 					<div class={`relative  cursor-pointer`} on:click={handleViewMedia(client.socketId)}>
 						<img
@@ -121,10 +121,10 @@
 			{/each}
 		</section>
 
-		<div aria-hidden="true" class="hidden">
+		<div aria-hidden="true" >
 			{#each $clientsAudio as media}
 				{#if media.audioStream}
-					<audio controls autoplay use:srcObject={nonNullAssert(media.audioStream)} />
+					<audio controls autoplay loop use:srcObject={nonNullAssert(media.audioStream)} />
 				{/if}
 			{/each}
 		</div>
