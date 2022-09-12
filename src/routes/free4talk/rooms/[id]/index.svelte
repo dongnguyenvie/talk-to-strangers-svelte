@@ -121,10 +121,10 @@
 			{/each}
 		</section>
 
-		<div aria-hidden="true" class="hidden">
+		<div aria-hidden="true" >
 			{#each $clientsAudio as media}
 				{#if media.audioStream}
-					<audio controls autoplay use:srcObject={nonNullAssert(media.audioStream)} />
+					<audio controls autoplay loop use:srcObject={nonNullAssert(media.audioStream)} />
 				{/if}
 			{/each}
 		</div>
