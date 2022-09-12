@@ -1,15 +1,22 @@
 import type { Client } from '$lib/types';
-import { writable, get, derived } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
+import { createClient } from '$lib/@shared/libs/simple-peerjs';
+import type { SocketID } from '$lib/types/socket';
 
-const { subscribe, set, update } = writable({
-	me: {
-		mediaStream: undefined as unknown as MediaStream,
-		socketId: ''
-	},
+interface RoomState {
+	socketId: string;
+	roomId: string;
+	selected?: SocketID;
+	accessable: boolean;
+	clientsMap: Record<string, Client>;
+	messages: never[];
+}
+const { subscribe, set, update } = writable<RoomState>({
 	socketId: '',
 	roomId: '',
+	selected: '',
 	accessable: false,
-	clientsMap: {} as Record<string, Client>,
+	clientsMap: {} as Record<SocketID, Client>,
 	messages: []
 });
 
@@ -19,6 +26,15 @@ const clientsAudio = derived([mySocketId, clients], ($values) => {
 	const [mySocketId, clients] = $values;
 	return clients.filter((client) => client.socketId !== mySocketId);
 });
+const myMedia = derived([mySocketId, clients], ($values) => {
+	const [mySocketId, clients] = $values;
+	return clients.find((client) => client.socketId == mySocketId);
+});
+const clientIdSelected = derived({ subscribe }, ($room) => $room.selected);
+const clientSelected = derived(
+	{ subscribe },
+	($room) => $room.clientsMap[$room.selected as SocketID]
+);
 
 export const room = {
 	subscribe,
@@ -26,6 +42,9 @@ export const room = {
 	update,
 	clients,
 	clientsAudio,
+	myMedia,
+	clientSelected,
+	clientIdSelected,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;
@@ -53,12 +72,6 @@ export const room = {
 			return data;
 		});
 	},
-	setMyWc: (stream: MediaStream) => {
-		update((data) => {
-			data.me.mediaStream = stream;
-			return data;
-		});
-	},
 	initRoom: ({
 		socketId,
 		roomId,
@@ -69,12 +82,11 @@ export const room = {
 		mediaStream?: MediaStream;
 	}) => {
 		update((data) => {
-			data.clientsMap[socketId!] = {
-				socketId: socketId!,
-				mediaStream: mediaStream!,
-				initiator: true,
-				peer: undefined as any
-			};
+			data.clientsMap[socketId!] = createClient({
+				socketId,
+				mediaStream,
+				initiator: true
+			});
 			data.clientsMap = { ...data.clientsMap };
 
 			data.socketId = socketId || data.socketId;
@@ -85,6 +97,24 @@ export const room = {
 	updateAccessableStatus: (accessable: boolean) => {
 		update((data) => {
 			data.accessable = accessable;
+			return data;
+		});
+	},
+	updateClientState: ({
+		isAudio,
+		isVideo,
+		socketId
+	}: Pick<Client, 'isAudio' | 'isVideo' | 'socketId'>) => {
+		update((data) => {
+			const client = data.clientsMap[socketId];
+			client.isAudio = isAudio;
+			client.isVideo = isVideo;
+			return data;
+		});
+	},
+	onSetSelected: (selectdId: SocketID) => {
+		update((data) => {
+			data.selected = selectdId;
 			return data;
 		});
 	}

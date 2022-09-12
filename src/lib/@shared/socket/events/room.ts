@@ -4,11 +4,16 @@ import {
 	EVENT_ROOM_SERVER
 } from '$lib/@core/constants';
 import { io } from '..';
-import SimplePeer, { getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
+import SimplePeer, { createClient, getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { room } from '$lib/state';
 import { browser } from '$app/env';
-import { CallEvent } from '$lib/@core/events/sockets/call.event';
+import { P2PEvent, ClientStateEvent, CallEvent } from '$lib/@core/events/sockets';
+import type { SocketID } from '$lib/types/socket';
+import { MediaRequest } from '$lib/@core/enums';
+import { get } from 'svelte/store';
+
+const { myMedia } = room;
 
 const peers = {} as Record<string, SimplePeer.Instance>;
 const peerInitiators = {} as Record<string, SimplePeer.Instance>;
@@ -39,7 +44,8 @@ let myID: string;
 export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 	if (!browser) return;
 
-	const init = () => {
+	const main = () => {
+		if (!!myID) return;
 		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
 		myID = io.id;
 		room.initRoom({ socketId: myID, roomId: roomId });
@@ -86,9 +92,33 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			peer.signal(signal);
 			console.log('accpted called', getRemoteStreams(peer).length);
 		});
+
+		io.on(EVENT_ROOM_CLIENT.peerToPeer, (event: P2PEvent) => {
+			switch (event.action) {
+				case MediaRequest.viewCamera:
+					const peer = getPeer(event.from);
+					const me = get(myMedia)!;
+					if (!me?.mediaStream) return;
+					peer.addStream(me.mediaStream);
+					break;
+
+				default:
+					break;
+			}
+			console.log('p2p event', event);
+		});
+
+		io.on(EVENT_ROOM_CLIENT.syncUserState, (event: ClientStateEvent) => {
+			const { from, isAudio, isVideo } = event;
+			room.updateClientState({
+				socketId: from,
+				isAudio: isAudio,
+				isVideo: isVideo
+			});
+		});
 	};
 
-	init();
+	main();
 
 	return {
 		destroy: () => {
@@ -103,29 +133,37 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					audio: false
 				},
 				(stream: any) => {
-					console.log('Received local stream');
+					console.log('open my camera');
 					room.updateClientStream({
 						stream: stream,
 						isVideo: true,
 						isAudio: false,
 						socketId: myID
 					});
-					Object.entries(peerInitiators).forEach((peerObj) => {
-						try {
-							const [socketId, peer] = peerObj;
-							if (peer.destroyed || !peer.connected) return;
-							console.log('add video stream');
-							peer.addStream(stream);
-						} catch (error) {}
-					});
-					Object.entries(peers).forEach((peerObj) => {
-						try {
-							const [socketId, peer] = peerObj;
-							if (peer.destroyed || !peer.connected) return;
-							console.log('add video stream');
-							peer.addStream(stream);
-						} catch (error) {}
-					});
+					io.emit(
+						EVENT_ROOM_SERVER.syncUserState,
+						new ClientStateEvent({
+							isAudio: false,
+							isVideo: true,
+							roomId: roomId
+						})
+					);
+					// Object.entries(peerInitiators).forEach((peerObj) => {
+					// 	try {
+					// 		const [socketId, peer] = peerObj;
+					// 		if (peer.destroyed || !peer.connected) return;
+					// 		console.log('add video stream');
+					// 		peer.addStream(stream);
+					// 	} catch (error) {}
+					// });
+					// Object.entries(peers).forEach((peerObj) => {
+					// 	try {
+					// 		const [socketId, peer] = peerObj;
+					// 		if (peer.destroyed || !peer.connected) return;
+					// 		console.log('add video stream');
+					// 		peer.addStream(stream);
+					// 	} catch (error) {}
+					// });
 				},
 				(err: any) => {
 					console.log({ err });
@@ -178,6 +216,16 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 				console.log('add audio stream');
 				peer.send(text);
 			});
+		},
+		requestViewCamera: (to: SocketID) => {
+			const p2pEvent = new P2PEvent({
+				to: to,
+				from: myID,
+				message: 'xxx',
+				action: MediaRequest.viewCamera
+			});
+			console.log('p2pEvent', p2pEvent);
+			io.emit(EVENT_ROOM_SERVER.peerToPeer, p2pEvent);
 		}
 	};
 };
@@ -222,12 +270,14 @@ function createPeer({
 
 	peerInitiators[callerID] = peer;
 
-	room.updateClient({
+	const client = createClient({
 		initiator: true,
 		socketId: callerID,
 		mediaStream: stream,
 		peer
 	});
+
+	room.updateClient(client);
 }
 
 function addPeer({
@@ -272,10 +322,16 @@ function addPeer({
 
 	peers[callerID] = peer;
 
-	room.updateClient({
-		initiator: false,
+	const client = createClient({
+		initiator: true,
 		socketId: callerID,
 		mediaStream: stream,
-		peer: peer
+		peer
 	});
+
+	room.updateClient(client);
+}
+
+function getPeer(socketId: SocketID) {
+	return peers[socketId] || peerInitiators[socketId];
 }

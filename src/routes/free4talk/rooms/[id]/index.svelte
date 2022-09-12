@@ -8,9 +8,10 @@
 	import { derived, get } from 'svelte/store';
 	import * as process from 'process';
 	import { nonNullAssert } from '$lib/@shared/util/operator';
+	import type { SocketID } from '$lib/types/socket';
 	window.process = process;
 
-	const { clients, clientsAudio } = room;
+	const { clients, clientsAudio, clientSelected, onSetSelected } = room;
 
 	const roomId = $page.params.id as string;
 	let roomEvent: ReturnType<typeof initRoomEvent>;
@@ -25,19 +26,6 @@
 	const mySocketId = derived(socketState, ($socket) => $socket.id);
 
 	const usersId = derived(clients, ($clients) => $clients.map((c) => c.socketId));
-
-	// const usersMedia = derived(clients, ($clients) => {
-	// 	const medias = $clients.map((client) => {
-	// 		return {
-	// 			mediaStream: client.mediaStream,
-	// 			audioStream: client.audioStream,
-	// 			avatar: '',
-	// 			socketId: client.socketId,
-	// 			id: ''
-	// 		};
-	// 	});
-	// 	return [...medias];
-	// });
 
 	const handleChat = () => {
 		roomEvent?.sendText(
@@ -57,6 +45,11 @@
 	};
 	const handleOpenMedia = (newMedia: MediaStream) => {
 		media = newMedia;
+	};
+
+	const handleViewMedia = (socketId: SocketID) => () => {
+		roomEvent?.requestViewCamera(socketId);
+		onSetSelected(socketId);
 	};
 </script>
 
@@ -85,10 +78,15 @@
 		<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
 			chat hahaha
 		</Button>
+		<!-- <Button>requestViewCamera</Button> -->
 		<hr />
 		<div class="relative bg-slate-700 h-96 w-96">
-			{#if media}
-				<video use:srcObject={media} autoplay class="absolute w-full h-full object-fill ">
+			{#if !!$clientSelected}
+				<video
+					use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
+					autoplay
+					class="absolute w-full h-full object-fill "
+				>
 					<track kind="captions" src="" />
 				</video>
 			{/if}
@@ -101,8 +99,8 @@
 				<section class="bg-red-600 w-[200px] ml-1">
 					<h3>{client.socketId}</h3>
 					<div
-						class={`relative w-[200px] h-[200px]  ${!!client.mediaStream ? 'cursor-pointer' : ''}`}
-						on:click={() => handleOpenMedia(nonNullAssert(client.mediaStream))}
+						class={`relative w-[200px] h-[200px] cursor-pointer`}
+						on:click={handleViewMedia(client.socketId)}
 					>
 						<!-- <video
 							use:srcObject={nonNullAssert(media.mediaStream)}
@@ -113,10 +111,10 @@
 							<track kind="captions" src="" />
 						</video> -->
 						<div class={`absolute bottom-0 bg-green-700`}>
-							{#if client.mediaStream}
+							{#if client.isVideo}
 								<p>Video: on</p>
 							{/if}
-							{#if client.audioStream}
+							{#if client.isAudio}
 								<p>audio: on</p>
 							{/if}
 						</div>
