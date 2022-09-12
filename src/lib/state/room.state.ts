@@ -109,6 +109,7 @@ export const room = {
 			const client = data.clientsMap[socketId];
 			client.isAudio = isAudio;
 			client.isVideo = isVideo;
+			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
 	},
