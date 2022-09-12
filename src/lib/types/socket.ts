@@ -3,3 +3,5 @@ export enum SocketStatus {
 	DISCONNECT = 'disconnect',
 	RECONNECT = 'reconnect'
 }
+
+export type SocketID = string;

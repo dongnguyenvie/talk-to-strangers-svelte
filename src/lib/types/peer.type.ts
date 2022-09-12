@@ -1,4 +1,5 @@
 import type SimplePeer from 'simple-peer';
+import type { SocketID } from './socket';
 
 export type PeerEvents = {
 	/**
@@ -28,9 +29,12 @@ export type PeerEvents = {
 };
 
 export interface Client {
-	socketId: string;
+	socketId: SocketID;
 	mediaStream?: MediaStream;
 	audioStream?: MediaStream;
+	isAudio: boolean;
+	isVideo: boolean;
 	initiator: boolean;
 	peer: SimplePeer.Instance;
+	avatar: string;
 }
