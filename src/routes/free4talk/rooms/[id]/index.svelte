@@ -64,52 +64,50 @@
 {/if}
 
 {#if $accessable}
-	<section>
-		<h2>My socketId {$mySocketId}</h2>
-		<div class="scroll-m-9">
-			all users: {$usersId.join(', ')}
-		</div>
-		<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
-			open cam
-		</Button>
-		<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
-			open mic
-		</Button>
-		<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
-			chat hahaha
-		</Button>
-		<!-- <Button>requestViewCamera</Button> -->
-		<hr />
-		<div class="relative bg-slate-700 h-96 w-96">
-			{#if !!$clientSelected}
-				<video
-					use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
-					autoplay
-					class="absolute w-full h-full object-fill "
-				>
-					<track kind="captions" src="" />
-				</video>
-			{/if}
-		</div>
-
-		<hr />
-
-		<div class="flex flex-nowrap">
-			{#each $clients as client}
-				<section class="bg-red-600 w-[200px] ml-1">
-					<h3>{client.socketId}</h3>
-					<div
-						class={`relative w-[200px] h-[200px] cursor-pointer`}
-						on:click={handleViewMedia(client.socketId)}
-					>
-						<!-- <video
-							use:srcObject={nonNullAssert(media.mediaStream)}
+	<section class="flex flex-col justify-between relative h-full max-h-screen ">
+		<section class="flex justify-center py-2">
+			<div>
+				<h2>My socketId {$mySocketId}</h2>
+				<div class="scroll-m-9">
+					all users: {$usersId.join(', ')}
+				</div>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
+					open cam
+				</Button>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
+					open mic
+				</Button>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
+					chat hahaha
+				</Button>
+			</div>
+		</section>
+		<section class="h-full overflow-hidden]">
+			<div class="flex justify-center items-center bg-slate-700 w-full h-full">
+				{#if !!$clientSelected}
+					<div class="bg-black w-full h-full">
+						<video
+							use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
 							autoplay
-							id={`video${media.socketId}`}
-							class="absolute w-full h-full object-fill "
+							class="w-full h-full scale-x-[-1] object-contain"
 						>
 							<track kind="captions" src="" />
-						</video> -->
+						</video>
+					</div>
+				{/if}
+			</div>
+		</section>
+
+		<section class="flex flex-nowrap">
+			{#each $clients as client}
+				<section class="max-w-[96px] min-w-[60px] ml-1" title={client.socketId}>
+					<h3>{client.socketId}</h3>
+					<div class={`relative  cursor-pointer`} on:click={handleViewMedia(client.socketId)}>
+						<img
+							class="block object-cover w-full h-full"
+							src={client.avatar}
+							alt={client.socketId}
+						/>
 						<div class={`absolute bottom-0 bg-green-700`}>
 							{#if client.isVideo}
 								<p>Video: on</p>
@@ -121,7 +119,7 @@
 					</div>
 				</section>
 			{/each}
-		</div>
+		</section>
 
 		<div aria-hidden="true" class="hidden">
 			{#each $clientsAudio as media}

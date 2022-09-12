@@ -16,6 +16,7 @@ export const createClient = (partialData: Partial<Client>): Client => {
 		mediaStream: undefined,
 		peer: undefined as any,
 		socketId: '',
+		avatar: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
 		...partialData
 	};
 };

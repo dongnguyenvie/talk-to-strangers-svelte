@@ -36,4 +36,5 @@ export interface Client {
 	isVideo: boolean;
 	initiator: boolean;
 	peer: SimplePeer.Instance;
+	avatar: string;
 }
