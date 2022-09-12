@@ -13,6 +13,13 @@ export const getUserMediaHelper = () => {
 		if (navigatorRef.mozGetUserMedia) {
 			return navigatorRef.mozGetUserMedia.bind(navigator);
 		}
+		return (
+			navigatorRef.getUserMedia ||
+			navigatorRef.webkitGetUserMedia ||
+			navigatorRef.mozGetUserMedia ||
+			navigatorRef.mozGetUserMedia ||
+			navigatorRef.msGetUserMedia
+		).bind(navigator);
 	})() as Navigator['getUserMedia'];
 
 	return getUserMedia;
