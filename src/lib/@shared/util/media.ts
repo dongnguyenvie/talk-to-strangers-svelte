@@ -3,26 +3,31 @@ import type { Navigator } from '$lib/types';
 export const getUserMediaHelper = () => {
 	const navigatorRef = navigator as any;
 
-	const getUserMedia = (function () {
-		if (navigatorRef.getUserMedia) {
-			return navigatorRef.getUserMedia.bind(navigator);
-		}
-		if (navigatorRef.webkitGetUserMedia) {
-			return navigatorRef.webkitGetUserMedia.bind(navigator);
-		}
-		if (navigatorRef.mozGetUserMedia) {
-			return navigatorRef.mozGetUserMedia.bind(navigator);
-		}
-		return (
-			navigatorRef.getUserMedia ||
-			navigatorRef.webkitGetUserMedia ||
-			navigatorRef.mozGetUserMedia ||
-			navigatorRef.mozGetUserMedia ||
-			navigatorRef.msGetUserMedia
-		).bind(navigator);
-	})() as Navigator['getUserMedia'];
+	const getUserMedia =
+		navigatorRef.getUserMedia ||
+		navigatorRef.webkitGetUserMedia ||
+		navigatorRef.mozGetUserMedia ||
+		navigatorRef.mozGetUserMedia ||
+		navigatorRef.msGetUserMedia;
 
-	return getUserMedia;
+	return ((
+		constraints: any,
+		onSuccess: (payload: MediaStream) => void,
+		onError: (payload: any) => void
+	) => {
+		if (navigator?.mediaDevices?.getUserMedia) {
+			navigator.mediaDevices
+				.getUserMedia(constraints)
+				.then((stream) => {
+					onSuccess(stream);
+				})
+				.catch((err) => {
+					onError(err);
+				});
+		} else {
+			return getUserMedia(constraints, onSuccess, onError);
+		}
+	}) as unknown as Navigator['getUserMedia'];
 };
 
 export function checkStream(stream: MediaStream) {
