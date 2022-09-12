@@ -55,7 +55,14 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const { roomId, socketId } = event;
 			console.log('join room', { socketId });
 
-			addPeer({ roomId: roomId, callerID: socketId });
+			const peer = addPeer({ roomId: roomId, callerID: socketId });
+
+			const myAudioStream = get(myMedia).audioStream;
+			if (!myAudioStream) return;
+
+			setTimeout(() => {
+				broadcastStreamToPeers([peer], myAudioStream);
+			}, 200);
 		});
 
 		// newcomer
@@ -194,34 +201,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					);
 					console.log('peer', peerInitiators);
 					let clientPeers = Object.values({ ...peerInitiators, ...peers });
-					clientPeers.forEach((peer, index) => {
-						if (peer.destroyed) {
-							clientPeers = clientPeers.splice(index, 1);
-							return;
-						}
-
-						if (peer.connected) {
-							peer.addStream(stream);
-							clientPeers = clientPeers.splice(index, 1);
-						}
-					});
-
-					let worker = setInterval(() => {
-						clientPeers.forEach((peer, index) => {
-							if (peer.destroyed) {
-								clientPeers = clientPeers.splice(index, 1);
-								return;
-							}
-
-							if (peer.connected) {
-								peer.addStream(stream);
-								clientPeers = clientPeers.splice(index, 1);
-							}
-						});
-						if (!clientPeers.length) {
-							clearInterval(worker);
-						}
-					}, 2000);
+					broadcastStreamToPeers(clientPeers, stream);
 				},
 				(err: any) => {
 					console.log({ err });
@@ -297,6 +277,7 @@ function createPeer({
 	});
 
 	room.updateClient(client);
+	return peer;
 }
 
 function addPeer({
@@ -349,8 +330,31 @@ function addPeer({
 	});
 
 	room.updateClient(client);
+
+	return peer;
 }
 
 function getPeer(socketId: SocketID) {
 	return peers[socketId] || peerInitiators[socketId];
+}
+
+function broadcastStreamToPeers(peers: SimplePeer.Instance[], stream: MediaStream) {
+	let clonePeers = [...peers];
+	let queue: SimplePeer.Instance[] = [];
+	console.log('broadcastStreamToPeers', { clonePeers });
+
+	for (let i = 0; i < clonePeers.length; i++) {
+		const peer = clonePeers[i];
+		if (peer.destroyed) continue;
+		if (!peer.connected) {
+			queue.push(peer);
+			continue;
+		}
+		peer.addStream(stream);
+	}
+
+	if (!queue.length) return;
+	setTimeout(() => {
+		broadcastStreamToPeers(queue, stream);
+	}, 1000);
 }
