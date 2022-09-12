@@ -184,6 +184,14 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						isAudio: true,
 						socketId: myID
 					});
+					io.emit(
+						EVENT_ROOM_SERVER.syncUserState,
+						new ClientStateEvent({
+							isAudio: true,
+							isVideo: false,
+							roomId: roomId
+						})
+					);
 					console.log('peer', peerInitiators);
 					Object.entries(peerInitiators).forEach((peerObj) => {
 						const [socketId, peer] = peerObj;
