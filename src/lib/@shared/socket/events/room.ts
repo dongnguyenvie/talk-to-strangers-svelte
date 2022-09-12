@@ -143,7 +143,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					io.emit(
 						EVENT_ROOM_SERVER.syncUserState,
 						new ClientStateEvent({
-							isAudio: false,
+							isAudio: get(myMedia).isAudio,
 							isVideo: true,
 							roomId: roomId
 						})
@@ -188,7 +188,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						EVENT_ROOM_SERVER.syncUserState,
 						new ClientStateEvent({
 							isAudio: true,
-							isVideo: false,
+							isVideo: get(myMedia).isVideo,
 							roomId: roomId
 						})
 					);

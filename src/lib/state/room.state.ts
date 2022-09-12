@@ -26,9 +26,8 @@ const clientsAudio = derived([mySocketId, clients], ($values) => {
 	const [mySocketId, clients] = $values;
 	return clients.filter((client) => client.socketId !== mySocketId);
 });
-const myMedia = derived([mySocketId, clients], ($values) => {
-	const [mySocketId, clients] = $values;
-	return clients.find((client) => client.socketId == mySocketId);
+const myMedia = derived({ subscribe }, ($room) => {
+	return $room.clientsMap[$room.socketId as SocketID];
 });
 const clientIdSelected = derived({ subscribe }, ($room) => $room.selected);
 const clientSelected = derived(
