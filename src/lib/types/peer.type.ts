@@ -1,4 +1,5 @@
 import type SimplePeer from 'simple-peer';
+import type { UserConfig } from 'vite';
 import type { SocketID } from './socket';
 
 export type PeerEvents = {
@@ -28,7 +29,7 @@ export type PeerEvents = {
 	error: (error: Error) => void;
 };
 
-export interface Client {
+export interface Client extends UserConfig {
 	socketId: SocketID;
 	mediaStream?: MediaStream;
 	audioStream?: MediaStream;

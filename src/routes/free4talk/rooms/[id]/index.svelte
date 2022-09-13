@@ -11,7 +11,8 @@
 	import type { SocketID } from '$lib/types/socket';
 	window.process = process;
 
-	const { clients, clientsAudio, clientSelected, onSetSelected } = room;
+	const { clients, clientsAudio, clientSelected, onSetSelected, clientIdSelected, mySocketId } =
+		room;
 
 	const roomId = $page.params.id as string;
 	let roomEvent: ReturnType<typeof initRoomEvent>;
@@ -22,8 +23,6 @@
 	});
 
 	const accessable = derived(room, ($room) => $room.accessable);
-
-	const mySocketId = derived(socketState, ($socket) => $socket.id);
 
 	const usersId = derived(clients, ($clients) => $clients.map((c) => c.socketId));
 
@@ -82,8 +81,9 @@
 				</Button>
 			</div>
 		</section>
-		<section class="h-full overflow-hidden]">
-			<div class="flex justify-center items-center bg-slate-700 w-full h-full">
+
+		<section class="h-full overflow-hidden">
+			<div class={`flex justify-center items-center bg-slate-700 w-full h-full `}>
 				{#if !!$clientSelected?.mediaStream}
 					<div class="bg-black w-full h-full">
 						<video
@@ -100,7 +100,12 @@
 
 		<section class="flex flex-nowrap">
 			{#each $clients as client}
-				<section class="max-w-[96px] min-w-[60px] ml-1 overflow-hidden" title={client.socketId}>
+				<section
+					class={`max-w-[96px] min-w-[60px] ml-1 overflow-hidden ${
+						client.socketId === $clientIdSelected ? 'border-red-800 border-4' : ''
+					}`}
+					title={client.socketId}
+				>
 					<h3>{client.socketId}</h3>
 					<div class={`relative  cursor-pointer`} on:click={handleViewMedia(client.socketId)}>
 						<img
@@ -115,13 +120,16 @@
 							{#if client.isAudio}
 								<p>audio: on</p>
 							{/if}
+							{#if client.socketId === $mySocketId}
+								<p>me</p>
+							{/if}
 						</div>
 					</div>
 				</section>
 			{/each}
 		</section>
 
-		<div aria-hidden="true" >
+		<div aria-hidden="true">
 			{#each $clientsAudio as media}
 				{#if media.audioStream}
 					<audio controls autoplay loop use:srcObject={nonNullAssert(media.audioStream)} />
