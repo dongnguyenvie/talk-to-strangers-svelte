@@ -44,10 +44,10 @@ export const room = {
 	myMedia,
 	clientSelected,
 	clientIdSelected,
+	mySocketId,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;
-			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
 	},
@@ -60,14 +60,12 @@ export const room = {
 			} else if (client.isAudio) {
 				data.clientsMap[client.socketId].audioStream = client.stream;
 			}
-			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
 	},
 	removePeer: (client: Pick<Client, 'socketId'>) => {
 		update((data) => {
 			delete data.clientsMap[client.socketId];
-			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
 	},
@@ -86,7 +84,6 @@ export const room = {
 				mediaStream,
 				initiator: true
 			});
-			data.clientsMap = { ...data.clientsMap };
 
 			data.socketId = socketId || data.socketId;
 			data.roomId = roomId || data.roomId;
@@ -108,7 +105,6 @@ export const room = {
 			const client = data.clientsMap[socketId];
 			client.isAudio = isAudio;
 			client.isVideo = isVideo;
-			data.clientsMap = { ...data.clientsMap };
 			return data;
 		});
 	},

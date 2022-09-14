@@ -12,6 +12,9 @@ import { P2PEvent, ClientStateEvent, CallEvent } from '$lib/@core/events/sockets
 import type { SocketID } from '$lib/types/socket';
 import { MediaRequest } from '$lib/@core/enums';
 import { get } from 'svelte/store';
+import { JoinRoomEvent } from './join-room.event';
+import type { Client } from '$lib/types';
+import type { UserConfig } from '$lib/@core/interfaces/room.interface';
 
 const { myMedia } = room;
 
@@ -46,12 +49,15 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 
 	const main = () => {
 		if (!!myID) return;
-		io.emit(EVENT_ROOM_SERVER.joinRoom, { roomId });
+		io.emit(
+			EVENT_ROOM_SERVER.joinRoom,
+			new JoinRoomEvent({ roomId: roomId, isAudio: false, isVideo: false })
+		);
 		myID = io.id;
 		room.initRoom({ socketId: myID, roomId: roomId });
 
 		// newcomer
-		io.on(EVENT_ROOM_CLIENT.joinRoom, (event) => {
+		io.on(EVENT_ROOM_CLIENT.joinRoom, (event: JoinRoomEvent) => {
 			const { roomId, socketId } = event;
 			console.log('join room', { socketId });
 
@@ -73,13 +79,22 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			room.removePeer({ socketId: socketId });
 		});
 
-		io.on(EVENT_ROOM_PERSONAL_CLIENT.allUsers, (event: any) => {
-			const { users } = event;
-			users.forEach((callerID: string) => {
-				createPeer({ roomId: roomId, callerID: callerID });
-			});
-			console.log('all user', event);
-		});
+		io.on(
+			EVENT_ROOM_PERSONAL_CLIENT.allUsers,
+			(event: { users: Pick<Client, 'isAudio' | 'isVideo' | 'socketId' | 'avatar'>[] }) => {
+				const { users } = event;
+				users.forEach((client) => {
+					createPeer({
+						roomId: roomId,
+						callerID: client.socketId,
+						isVideo: client.isVideo,
+						isAudio: client.isAudio,
+						avatar: client.avatar
+					});
+				});
+				console.log('all user', event);
+			}
+		);
 
 		io.on(EVENT_ROOM_PERSONAL_CLIENT.accessable, (event: { accessable: boolean }) => {
 			const { accessable } = event;
@@ -232,12 +247,14 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 function createPeer({
 	callerID,
 	roomId,
-	stream
+	stream,
+	isAudio,
+	isVideo
 }: {
 	callerID: string;
 	roomId: string;
 	stream?: MediaStream;
-}) {
+} & UserConfig) {
 	let initiator = true;
 	let peer = new SimplePeer({
 		initiator: initiator,
@@ -273,7 +290,9 @@ function createPeer({
 		initiator: true,
 		socketId: callerID,
 		mediaStream: stream,
-		peer
+		peer,
+		isAudio: isAudio || false,
+		isVideo: isVideo || false
 	});
 
 	room.updateClient(client);
