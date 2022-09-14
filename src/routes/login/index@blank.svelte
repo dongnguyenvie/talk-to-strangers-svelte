@@ -43,6 +43,7 @@
 				});
 				if (!!errors) {
 					console.log({ errors });
+					alert('user or password are wrong');
 					return;
 				}
 				const token = data?.signin.token!;

@@ -9,7 +9,10 @@
 	import * as process from 'process';
 	import { nonNullAssert } from '$lib/@shared/util/operator';
 	import type { SocketID } from '$lib/types/socket';
-	window.process = process;
+	import { browser } from '$app/env';
+	if (browser) {
+		window.process = process;
+	}
 
 	const { clients, clientsAudio, clientSelected, onSetSelected, clientIdSelected, mySocketId } =
 		room;
@@ -129,7 +132,7 @@
 			{/each}
 		</section>
 
-		<div aria-hidden="true">
+		<div aria-hidden="true" class="hidden">
 			{#each $clientsAudio as media}
 				{#if media.audioStream}
 					<audio controls autoplay loop use:srcObject={nonNullAssert(media.audioStream)} />
