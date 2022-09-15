@@ -52,12 +52,13 @@ export const room = {
 		});
 	},
 	updateClientStream: (
-		client: Pick<Client, 'socketId'> & { isVideo: boolean; isAudio: boolean; stream: MediaStream }
+		client: Pick<Client, 'socketId'> & { isVideo?: boolean; isAudio?: boolean; stream: MediaStream }
 	) => {
 		update((data) => {
 			if (client.isVideo) {
 				data.clientsMap[client.socketId].mediaStream = client.stream;
-			} else if (client.isAudio) {
+			}
+			if (client.isAudio) {
 				data.clientsMap[client.socketId].audioStream = client.stream;
 			}
 			return data;

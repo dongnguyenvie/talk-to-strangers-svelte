@@ -15,11 +15,19 @@ import { get } from 'svelte/store';
 import { JoinRoomEvent } from './join-room.event';
 import type { Client } from '$lib/types';
 import type { UserConfig } from '$lib/@core/interfaces/room.interface';
+import _ from 'underscore';
 
 const { myMedia } = room;
 
-const peers = {} as Record<string, SimplePeer.Instance>;
-const peerInitiators = {} as Record<string, SimplePeer.Instance>;
+interface PeerState {
+	inst: SimplePeer.Instance;
+	isSentAudio: boolean;
+	isSentVideo: boolean;
+	initiator: boolean;
+}
+
+const peers = {} as Record<string, PeerState>;
+// const peerInitiators = {} as Record<string, SimplePeer.Instance>;
 
 let configuration = {
 	iceServers: [
@@ -61,13 +69,13 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const { roomId, socketId } = event;
 			console.log('join room', { socketId });
 
-			const peer = addPeer({ roomId: roomId, callerID: socketId });
+			const peerState = addPeer({ roomId: roomId, callerID: socketId });
 
 			const myAudioStream = get(myMedia).audioStream;
 			if (!myAudioStream) return;
 
 			setTimeout(() => {
-				broadcastStreamToPeers([peer], myAudioStream);
+				broadcastStreamToPeers([peerState], { stream: myAudioStream, isAudio: true });
 			}, 200);
 		});
 
@@ -106,11 +114,12 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		io.on(EVENT_ROOM_CLIENT.callingComing, (event: CallEvent) => {
 			const { signal, socketId, callerId, initiator, roomId } = event;
 			const _callerId = socketId;
-			const peer = peerInitiators[_callerId] || peers[_callerId];
+			const peerState = getPeer(_callerId);
+			const peer = peerState?.inst;
 
-			console.log('call connecting', { event, peers, peer, peerInitiators });
+			console.log('call connecting', { event, peers, peer: peerState });
 			console.log(`debug s:${event.socketId}||callerId: ${event.callerId}`, event.signal);
-			if (!peer || peer.destroyed) return;
+			if (!peer || peerState.inst.destroyed) return;
 			peer.signal(signal);
 			console.log('accpted called', getRemoteStreams(peer).length);
 		});
@@ -118,7 +127,8 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		io.on(EVENT_ROOM_CLIENT.peerToPeer, (event: P2PEvent) => {
 			switch (event.action) {
 				case MediaRequest.viewCamera:
-					const peer = getPeer(event.from);
+					const peerState = getPeer(event.from);
+					const peer = peerState?.inst;
 					const me = get(myMedia)!;
 					if (!me?.mediaStream) return;
 					peer.addStream(me.mediaStream);
@@ -146,6 +156,11 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		destroy: () => {
 			io.off(EVENT_ROOM_CLIENT.joinRoom);
 			io.off(EVENT_ROOM_CLIENT.callingComing);
+			io.off(EVENT_ROOM_CLIENT.syncUserState);
+			io.off(EVENT_ROOM_CLIENT.peerToPeer);
+			io.off(EVENT_ROOM_CLIENT.leaveRoom);
+			io.off(EVENT_ROOM_PERSONAL_CLIENT.allUsers);
+			io.off(EVENT_ROOM_PERSONAL_CLIENT.accessable);
 		},
 		openCam: () => {
 			const getUserMedia = getUserMediaHelper();
@@ -159,7 +174,6 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					room.updateClientStream({
 						stream: stream,
 						isVideo: true,
-						isAudio: false,
 						socketId: myID
 					});
 					io.emit(
@@ -170,22 +184,6 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 							roomId: roomId
 						})
 					);
-					// Object.entries(peerInitiators).forEach((peerObj) => {
-					// 	try {
-					// 		const [socketId, peer] = peerObj;
-					// 		if (peer.destroyed || !peer.connected) return;
-					// 		console.log('add video stream');
-					// 		peer.addStream(stream);
-					// 	} catch (error) {}
-					// });
-					// Object.entries(peers).forEach((peerObj) => {
-					// 	try {
-					// 		const [socketId, peer] = peerObj;
-					// 		if (peer.destroyed || !peer.connected) return;
-					// 		console.log('add video stream');
-					// 		peer.addStream(stream);
-					// 	} catch (error) {}
-					// });
 				},
 				(err: any) => {
 					console.log({ err });
@@ -194,16 +192,16 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		},
 		openMic: () => {
 			const getUserMedia = getUserMediaHelper();
+			let audio = true;
 			getUserMedia(
 				{
 					video: false,
-					audio: true
+					audio: audio
 				},
 				(stream: MediaStream) => {
 					room.updateClientStream({
 						stream: stream,
-						isVideo: false,
-						isAudio: true,
+						isAudio: audio,
 						socketId: myID
 					});
 					io.emit(
@@ -214,18 +212,72 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 							roomId: roomId
 						})
 					);
-					console.log('peer', peerInitiators);
-					let clientPeers = Object.values({ ...peerInitiators, ...peers });
-					broadcastStreamToPeers(clientPeers, stream);
+
+					let clientPeersState = getPeers();
+					broadcastStreamToPeers(clientPeersState, { stream, isAudio: audio });
 				},
 				(err: any) => {
 					console.log({ err });
 				}
 			);
 		},
+		offMic: () => {
+			const me = get(myMedia)!;
+			const audioStream = me.audioStream;
+			if (!audioStream) return;
+			getPeers({ isSentAudio: true }).forEach((peerState) => {
+				peerState.inst.removeStream(audioStream);
+			});
+
+			room.updateClientStream({
+				socketId: me.socketId,
+				isAudio: true,
+				stream: undefined as unknown as MediaStream
+			});
+
+			io.emit(
+				EVENT_ROOM_SERVER.syncUserState,
+				new ClientStateEvent({
+					isAudio: false,
+					isVideo: get(myMedia).isVideo,
+					roomId: roomId
+				})
+			);
+
+			setTimeout(() => {
+				stopBothVideoAndAudio(audioStream);
+			}, 200);
+		},
+		offCam: () => {
+			const me = get(myMedia)!;
+			const mediaStream = me.mediaStream;
+			if (!mediaStream) return;
+			getPeers({ isSentVideo: true }).forEach((peerState) => {
+				peerState.inst.removeStream(mediaStream);
+			});
+
+			room.updateClientStream({
+				socketId: me.socketId,
+				isVideo: true,
+				stream: undefined as unknown as MediaStream
+			});
+
+			io.emit(
+				EVENT_ROOM_SERVER.syncUserState,
+				new ClientStateEvent({
+					isAudio: get(myMedia).isAudio,
+					isVideo: false,
+					roomId: roomId
+				})
+			);
+
+			setTimeout(() => {
+				stopBothVideoAndAudio(mediaStream);
+			}, 200);
+		},
 		sendText: (text: string) => {
-			Object.entries({ ...peerInitiators, ...peers }).forEach((peerObj) => {
-				const [socketId, peer] = peerObj;
+			getPeers().forEach((peerObj) => {
+				const { inst: peer } = peerObj;
 				if (peer.destroyed) return;
 				console.log('add audio stream');
 				peer.send(text);
@@ -284,10 +336,10 @@ function createPeer({
 		console.error('got stream data wc', { initiator }, data);
 	});
 
-	peerInitiators[callerID] = peer;
+	const peerState = createOrUpdatePeer(callerID, { inst: peer, initiator });
 
 	const client = createClient({
-		initiator: true,
+		initiator: initiator,
 		socketId: callerID,
 		mediaStream: stream,
 		peer,
@@ -296,7 +348,7 @@ function createPeer({
 	});
 
 	room.updateClient(client);
-	return peer;
+	return peerState;
 }
 
 function addPeer({
@@ -339,10 +391,10 @@ function addPeer({
 		console.error('got stream data wc', { initiator }, data);
 	});
 
-	peers[callerID] = peer;
+	const peerState = createOrUpdatePeer(callerID, { inst: peer, initiator });
 
 	const client = createClient({
-		initiator: true,
+		initiator: initiator,
 		socketId: callerID,
 		mediaStream: stream,
 		peer
@@ -350,30 +402,75 @@ function addPeer({
 
 	room.updateClient(client);
 
-	return peer;
+	return peerState;
 }
 
 function getPeer(socketId: SocketID) {
-	return peers[socketId] || peerInitiators[socketId];
+	return peers[socketId];
 }
 
-function broadcastStreamToPeers(peers: SimplePeer.Instance[], stream: MediaStream) {
-	let clonePeers = [...peers];
-	let queue: SimplePeer.Instance[] = [];
-	console.log('broadcastStreamToPeers', { clonePeers });
+function getPeers(filter: Partial<PeerState> = {} as Partial<PeerState>) {
+	const isHasFilter = !!Object.values(filter).length;
+	const peersState = Object.values({ ...peers });
+	if (isHasFilter) return _.where(peersState, filter);
+	return peersState;
+}
 
-	for (let i = 0; i < clonePeers.length; i++) {
-		const peer = clonePeers[i];
+function createOrUpdatePeer(callerID: string, peer: Partial<PeerState>) {
+	let peerState = { ...(peers[callerID] || {}), ...(peer as unknown as PeerState) };
+	peers[callerID] = peerState;
+	return peerState;
+}
+
+function broadcastStreamToPeers(
+	peers: PeerState[],
+	{ stream, isAudio, isVideo }: { stream: MediaStream; isAudio?: boolean; isVideo?: boolean }
+) {
+	let queue: PeerState[] = [];
+
+	for (let i = 0; i < peers.length; i++) {
+		const peerState = peers[i];
+		const peer = peerState.inst;
 		if (peer.destroyed) continue;
 		if (!peer.connected) {
-			queue.push(peer);
+			queue.push(peerState);
 			continue;
 		}
 		peer.addStream(stream);
+		if (isAudio) {
+			peerState.isSentAudio = isAudio;
+		}
+		if (isVideo) {
+			peerState.isSentVideo = isVideo;
+		}
 	}
 
 	if (!queue.length) return;
 	setTimeout(() => {
-		broadcastStreamToPeers(queue, stream);
+		broadcastStreamToPeers(queue, { stream, isAudio, isVideo });
 	}, 1000);
+}
+
+function stopBothVideoAndAudio(stream: MediaStream) {
+	stream.getTracks().forEach(function (track) {
+		if (track.readyState == 'live') {
+			track.stop();
+		}
+	});
+}
+
+function stopVideoOnly(stream: MediaStream) {
+	stream.getTracks().forEach(function (track) {
+		if (track.readyState == 'live' && track.kind === 'video') {
+			track.stop();
+		}
+	});
+}
+
+function stopAudioOnly(stream: MediaStream) {
+	stream.getTracks().forEach(function (track) {
+		if (track.readyState == 'live' && track.kind === 'audio') {
+			track.stop();
+		}
+	});
 }

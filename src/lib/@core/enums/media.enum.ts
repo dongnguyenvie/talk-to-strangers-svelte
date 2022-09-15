@@ -1,3 +1,3 @@
 export enum MediaRequest {
-  viewCamera = 0,
+	viewCamera = 0
 }

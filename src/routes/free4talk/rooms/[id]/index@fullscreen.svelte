@@ -14,8 +14,15 @@
 		window.process = process;
 	}
 
-	const { clients, clientsAudio, clientSelected, onSetSelected, clientIdSelected, mySocketId } =
-		room;
+	const {
+		clients,
+		clientsAudio,
+		clientSelected,
+		onSetSelected,
+		clientIdSelected,
+		mySocketId,
+		myMedia
+	} = room;
 
 	const roomId = $page.params.id as string;
 	let roomEvent: ReturnType<typeof initRoomEvent>;
@@ -45,12 +52,20 @@
 	const handleOpenMic = () => {
 		roomEvent?.openMic();
 	};
+	const handleOffMic = () => {
+		roomEvent?.offMic();
+	};
+	const handleOffCam = () => {
+		roomEvent?.offCam();
+	};
 	const handleOpenMedia = (newMedia: MediaStream) => {
 		media = newMedia;
 	};
 
 	const handleViewMedia = (socketId: SocketID) => () => {
-		roomEvent?.requestViewCamera(socketId);
+		if (socketId !== $mySocketId) {
+			roomEvent?.requestViewCamera(socketId);
+		}
 		onSetSelected(socketId);
 	};
 </script>
@@ -73,12 +88,29 @@
 				<div class="scroll-m-9">
 					all users: {$usersId.join(', ')}
 				</div>
-				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
-					open cam
-				</Button>
-				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
-					open mic
-				</Button>
+				{#if !$myMedia.mediaStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
+						open cam
+					</Button>
+				{/if}
+
+				{#if $myMedia.mediaStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffCam}>
+						off cam
+					</Button>
+				{/if}
+
+				{#if $myMedia.audioStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffMic}>
+						off mic
+					</Button>
+				{/if}
+				{#if !$myMedia.audioStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
+						open mic
+					</Button>
+				{/if}
+
 				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
 					chat hahaha
 				</Button>
@@ -87,7 +119,7 @@
 
 		<section class="h-full overflow-hidden">
 			<div class={`flex justify-center items-center bg-slate-700 w-full h-full `}>
-				{#if !!$clientSelected?.mediaStream}
+				{#if !!$clientSelected?.isVideo}
 					<div class="bg-black w-full h-full">
 						<video
 							use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
@@ -99,6 +131,20 @@
 					</div>
 				{/if}
 			</div>
+		</section>
+
+		<section class="fixed right-0 top-1/2">
+			{#if $myMedia?.mediaStream}
+				<div class="bg-black w-[200px] h-[200px]">
+					<video
+						use:srcObject={nonNullAssert($myMedia.mediaStream)}
+						autoplay
+						class="w-full h-full scale-x-[-1] object-contain"
+					>
+						<track kind="captions" src="" />
+					</video>
+				</div>
+			{/if}
 		</section>
 
 		<section class="flex flex-nowrap">
