@@ -21,12 +21,12 @@
 		onSetSelected,
 		clientIdSelected,
 		mySocketId,
-		myMedia
+		myMedia,
+		watchersMap
 	} = room;
 
 	const roomId = $page.params.id as string;
 	let roomEvent: ReturnType<typeof initRoomEvent>;
-	let media: MediaStream;
 
 	onDestroy(() => {
 		roomEvent?.destroy();
@@ -68,6 +68,10 @@
 		}
 		onSetSelected(socketId);
 	};
+
+	const handleFocusOn = (socketId: SocketID) => () => {
+		roomEvent?.openFocusOn(socketId);
+	};
 </script>
 
 {#if !$accessable}
@@ -81,7 +85,7 @@
 {/if}
 
 {#if $accessable}
-	<section class="flex flex-col justify-between relative h-full max-h-screen ">
+	<section class="flex flex-col justify-between relative h-full max-h-screen">
 		<section class="flex justify-center py-2">
 			<div>
 				<h2>My socketId {$mySocketId}</h2>
@@ -112,7 +116,7 @@
 				{/if}
 
 				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
-					chat hahaha
+					send text stream
 				</Button>
 			</div>
 		</section>
@@ -147,16 +151,33 @@
 			{/if}
 		</section>
 
-		<section class="flex flex-nowrap">
+		<section class="flex flex-nowrap items-end">
 			{#each $clients as client}
 				<section
-					class={`max-w-[96px] min-w-[60px] ml-1 overflow-hidden ${
+					class={`relative max-w-[96px] min-w-[60px] ml-1 overflow-hidden ${
 						client.socketId === $clientIdSelected ? 'border-red-800 border-4' : ''
 					}`}
 					title={client.socketId}
 				>
-					<h3>{client.socketId}</h3>
-					<div class={`relative  cursor-pointer`} on:click={handleViewMedia(client.socketId)}>
+					<div class="flex h-[33px] gap-1 items-end pb-1">
+						{#each $watchersMap[client.socketId] || [] as watcher}
+							<span
+								class={`w-[16px] h-[16px] overflow-hidden rounded-full inline-flex ${
+									client.socketId == watcher.socketId
+										? 'border-2 w-[20px] h-[20px] rounded-sm border-red-600'
+										: ''
+								}`}
+							>
+								<img
+									class="block object-cover w-full h-full"
+									src={client.avatar}
+									alt={client.socketId}
+								/>
+							</span>
+						{/each}
+					</div>
+
+					<div class={`relative  cursor-pointer`} on:click={handleFocusOn(client.socketId)}>
 						<img
 							class="block object-cover w-full h-full"
 							src={client.avatar}

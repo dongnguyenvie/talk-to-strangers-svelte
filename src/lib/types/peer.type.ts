@@ -38,4 +38,5 @@ export interface Client extends UserConfig {
 	initiator: boolean;
 	peer: SimplePeer.Instance;
 	avatar: string;
+	focusId: string | null;
 }

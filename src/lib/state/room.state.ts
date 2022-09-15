@@ -2,6 +2,7 @@ import type { Client } from '$lib/types';
 import { writable, derived } from 'svelte/store';
 import { createClient } from '$lib/@shared/libs/simple-peerjs';
 import type { SocketID } from '$lib/types/socket';
+import _ from 'underscore';
 
 interface RoomState {
 	socketId: string;
@@ -29,11 +30,15 @@ const clientsAudio = derived([mySocketId, clients], ($values) => {
 const myMedia = derived({ subscribe }, ($room) => {
 	return $room.clientsMap[$room.socketId as SocketID];
 });
-const clientIdSelected = derived({ subscribe }, ($room) => $room.selected);
-const clientSelected = derived(
-	{ subscribe },
-	($room) => $room.clientsMap[$room.selected as SocketID]
-);
+const clientIdSelected = derived(myMedia, ($me) => $me?.focusId);
+const clientSelected = derived([{ subscribe }, clientIdSelected], ($values) => {
+	const [room, selectId] = $values;
+	return room.clientsMap[selectId as unknown as SocketID];
+});
+
+const watchersMap = derived(clients, ($clients) => {
+	return _.groupBy($clients, 'focusId');
+});
 
 export const room = {
 	subscribe,
@@ -45,6 +50,7 @@ export const room = {
 	clientSelected,
 	clientIdSelected,
 	mySocketId,
+	watchersMap,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;
@@ -97,15 +103,12 @@ export const room = {
 			return data;
 		});
 	},
-	updateClientState: ({
-		isAudio,
-		isVideo,
-		socketId
-	}: Pick<Client, 'isAudio' | 'isVideo' | 'socketId'>) => {
+	updateClientState: ({ socketId, ...state }: Pick<Client, 'socketId'> & Partial<Client>) => {
 		update((data) => {
-			const client = data.clientsMap[socketId];
-			client.isAudio = isAudio;
-			client.isVideo = isVideo;
+			data.clientsMap[socketId] = {
+				...data.clientsMap[socketId],
+				...state
+			};
 			return data;
 		});
 	},
@@ -118,5 +121,5 @@ export const room = {
 };
 
 subscribe((data) => {
-	console.log('log::', data);
+	console.warn('log::', data);
 });

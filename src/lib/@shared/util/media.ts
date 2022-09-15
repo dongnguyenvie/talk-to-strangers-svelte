@@ -11,9 +11,9 @@ export const getUserMediaHelper = () => {
 		navigatorRef.msGetUserMedia;
 
 	return ((
-		constraints: any,
+		constraints: { video?: boolean; audio?: boolean },
 		onSuccess: (payload: MediaStream) => void,
-		onError: (payload: any) => void
+		onError: (err: string) => void
 	) => {
 		if (navigator?.mediaDevices?.getUserMedia) {
 			navigator.mediaDevices
