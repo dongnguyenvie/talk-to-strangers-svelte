@@ -5,4 +5,4 @@ export * from './privilege.enum';
 export * from './status.enum';
 export * from './room.enum';
 export * from './user.enum';
-export * from './media-request.enum';
+export * from './media.enum';

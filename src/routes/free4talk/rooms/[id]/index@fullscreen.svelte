@@ -14,12 +14,19 @@
 		window.process = process;
 	}
 
-	const { clients, clientsAudio, clientSelected, onSetSelected, clientIdSelected, mySocketId } =
-		room;
+	const {
+		clients,
+		clientsAudio,
+		clientSelected,
+		onSetSelected,
+		clientIdSelected,
+		mySocketId,
+		myMedia,
+		watchersMap
+	} = room;
 
 	const roomId = $page.params.id as string;
 	let roomEvent: ReturnType<typeof initRoomEvent>;
-	let media: MediaStream;
 
 	onDestroy(() => {
 		roomEvent?.destroy();
@@ -45,13 +52,25 @@
 	const handleOpenMic = () => {
 		roomEvent?.openMic();
 	};
+	const handleOffMic = () => {
+		roomEvent?.offMic();
+	};
+	const handleOffCam = () => {
+		roomEvent?.offCam();
+	};
 	const handleOpenMedia = (newMedia: MediaStream) => {
 		media = newMedia;
 	};
 
 	const handleViewMedia = (socketId: SocketID) => () => {
-		roomEvent?.requestViewCamera(socketId);
+		if (socketId !== $mySocketId) {
+			roomEvent?.requestViewCamera(socketId);
+		}
 		onSetSelected(socketId);
+	};
+
+	const handleFocusOn = (socketId: SocketID) => () => {
+		roomEvent?.openFocusOn(socketId);
 	};
 </script>
 
@@ -66,28 +85,45 @@
 {/if}
 
 {#if $accessable}
-	<section class="flex flex-col justify-between relative h-full max-h-screen ">
+	<section class="flex flex-col justify-between relative h-full max-h-screen">
 		<section class="flex justify-center py-2">
 			<div>
 				<h2>My socketId {$mySocketId}</h2>
 				<div class="scroll-m-9">
 					all users: {$usersId.join(', ')}
 				</div>
-				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
-					open cam
-				</Button>
-				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
-					open mic
-				</Button>
+				{#if !$myMedia.mediaStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
+						open cam
+					</Button>
+				{/if}
+
+				{#if $myMedia.mediaStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffCam}>
+						off cam
+					</Button>
+				{/if}
+
+				{#if $myMedia.audioStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffMic}>
+						off mic
+					</Button>
+				{/if}
+				{#if !$myMedia.audioStream}
+					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
+						open mic
+					</Button>
+				{/if}
+
 				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
-					chat hahaha
+					send text stream
 				</Button>
 			</div>
 		</section>
 
 		<section class="h-full overflow-hidden">
 			<div class={`flex justify-center items-center bg-slate-700 w-full h-full `}>
-				{#if !!$clientSelected?.mediaStream}
+				{#if !!$clientSelected?.isVideo}
 					<div class="bg-black w-full h-full">
 						<video
 							use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
@@ -101,16 +137,47 @@
 			</div>
 		</section>
 
-		<section class="flex flex-nowrap">
+		<section class="fixed right-0 top-1/2">
+			{#if $myMedia?.mediaStream}
+				<div class="bg-black w-[200px] h-[200px]">
+					<video
+						use:srcObject={nonNullAssert($myMedia.mediaStream)}
+						autoplay
+						class="w-full h-full scale-x-[-1] object-contain"
+					>
+						<track kind="captions" src="" />
+					</video>
+				</div>
+			{/if}
+		</section>
+
+		<section class="flex flex-nowrap items-end">
 			{#each $clients as client}
 				<section
-					class={`max-w-[96px] min-w-[60px] ml-1 overflow-hidden ${
+					class={`relative max-w-[96px] min-w-[60px] ml-1 overflow-hidden ${
 						client.socketId === $clientIdSelected ? 'border-red-800 border-4' : ''
 					}`}
 					title={client.socketId}
 				>
-					<h3>{client.socketId}</h3>
-					<div class={`relative  cursor-pointer`} on:click={handleViewMedia(client.socketId)}>
+					<div class="flex h-[33px] gap-1 items-end pb-1">
+						{#each $watchersMap[client.socketId] || [] as watcher}
+							<span
+								class={`w-[16px] h-[16px] overflow-hidden rounded-full inline-flex ${
+									client.socketId == watcher.socketId
+										? 'border-2 w-[20px] h-[20px] rounded-sm border-red-600'
+										: ''
+								}`}
+							>
+								<img
+									class="block object-cover w-full h-full"
+									src={client.avatar}
+									alt={client.socketId}
+								/>
+							</span>
+						{/each}
+					</div>
+
+					<div class={`relative  cursor-pointer`} on:click={handleFocusOn(client.socketId)}>
 						<img
 							class="block object-cover w-full h-full"
 							src={client.avatar}

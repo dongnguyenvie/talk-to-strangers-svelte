@@ -27,6 +27,7 @@
 		"@sveltejs/kit": "next",
 		"@types/cookie": "^0.5.1",
 		"@types/simple-peer": "^9.11.5",
+		"@types/underscore": "^1.11.4",
 		"autoprefixer": "^10.4.8",
 		"flowbite-svelte": "^0.24.8",
 		"graphql-codegen-svelte-apollo": "^1.1.0",
@@ -51,6 +52,7 @@
 		"cookie": "^0.4.1",
 		"events": "^3.3.0",
 		"graphql": "^16.6.0",
+		"gravatar-url": "^4.0.1",
 		"jwt-decode": "^3.1.2",
 		"peerjs": "^1.4.7",
 		"process": "^0.11.10",
@@ -58,6 +60,7 @@
 		"socket.io-client": "^4.5.1",
 		"svelte-apollo": "^0.5.0",
 		"svelte-forms-lib": "^2.0.1",
+		"underscore": "^1.13.4",
 		"util": "^0.12.4",
 		"yup": "^0.32.11"
 	}

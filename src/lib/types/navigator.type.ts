@@ -1,7 +1,7 @@
 export interface Navigator {
 	getUserMedia(
 		options: { video?: boolean; audio?: boolean },
-		success: (stream: any) => void,
+		success: (stream: MediaStream) => void,
 		error?: (error: string) => void
 	): void;
 }

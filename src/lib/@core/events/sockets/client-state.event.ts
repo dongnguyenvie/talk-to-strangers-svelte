@@ -6,8 +6,9 @@ export class ClientStateEvent implements Pick<Client, 'isVideo' | 'isAudio'> {
 	isAudio!: boolean;
 	from!: SocketID;
 	roomId!: string;
+	focusId: SocketID | null = null;
 
-	constructor(partial: Partial<ClientStateEvent>) {
+	constructor(partial: Pick<ClientStateEvent, 'roomId'> & Partial<ClientStateEvent>) {
 		Object.assign(this, partial);
 	}
 }
