@@ -58,9 +58,6 @@
 	const handleOffCam = () => {
 		roomEvent?.offCam();
 	};
-	const handleOpenMedia = (newMedia: MediaStream) => {
-		media = newMedia;
-	};
 
 	const handleViewMedia = (socketId: SocketID) => () => {
 		if (socketId !== $mySocketId) {
@@ -92,24 +89,24 @@
 				<div class="scroll-m-9">
 					all users: {$usersId.join(', ')}
 				</div>
-				{#if !$myMedia.mediaStream}
+				{#if !$myMedia?.mediaStream}
 					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
 						open cam
 					</Button>
 				{/if}
 
-				{#if $myMedia.mediaStream}
+				{#if $myMedia?.mediaStream}
 					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffCam}>
 						off cam
 					</Button>
 				{/if}
 
-				{#if $myMedia.audioStream}
+				{#if $myMedia?.audioStream}
 					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffMic}>
 						off mic
 					</Button>
 				{/if}
-				{#if !$myMedia.audioStream}
+				{#if !$myMedia?.audioStream}
 					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
 						open mic
 					</Button>
