@@ -22,12 +22,12 @@
 <div class="flex flex-wrap">
 	{#await roomsResp then resp}
 		{#each resp.data?.getRooms.data || [] as room}
-			<div class="inline-flex w-1/2">
+			<div class="inline-flex w-full sm:w-1/2 md:w-1/3">
 				<RoomCard
-					name={room.description || ''}
+					name={room.description || 'random description'}
 					title={room.topic}
-					tags={[]}
-					avatar={''}
+					tags={['freedom']}
+					avatar={'https://i.pravatar.cc/300'}
 					emotions={[]}
 					id={room.id || ''}
 					isFull={false}
