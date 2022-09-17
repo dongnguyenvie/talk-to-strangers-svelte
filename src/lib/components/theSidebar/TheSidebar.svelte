@@ -1,9 +1,13 @@
 <script lang="ts">
-	export const className: string = '';
+	import { appSettings } from '$lib/state';
+	const { onToggleCollapse } = appSettings;
+
+	export let className: string = '';
 </script>
 
-<aside class={`${className} `} aria-label="Sidebar">
-	<div class="overflow-y-auto py-4 px-3 rounded dark:bg-gray-800">
+<aside class={`${className}`} aria-label="Sidebar">
+	<div class="overflow-y-auto py-4 px-3 rounded dark:bg-gray-800 relative border-r border-dashed">
+		<span class="absolute right-0 top-0 inline-flex bg-slate-900 text-white" on:click={onToggleCollapse}>Toggle</span>
 		<ul class="space-y-2">
 			<li>
 				<a

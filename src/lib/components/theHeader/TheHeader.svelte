@@ -1,9 +1,12 @@
 <script lang="ts">
 	// import { page } from '$app/stores';
 	import logo from '$lib/icons/logo.svg';
+	export let className: string = '';
 </script>
 
-<header class="sticky top-0 left-0 flex justify-between px-5 py-2 bg-main-cFAFAFA">
+<header
+	class={`sticky top-0 left-0 z-10 flex justify-between px-5 py-2 bg-main-cFAFAFA ${className}`}
+>
 	<div class="corner">
 		<a href="/">
 			<img src={logo} alt="SvelteKit" />

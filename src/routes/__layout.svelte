@@ -17,8 +17,10 @@
 	import TheSidebar from '$lib/components/theSidebar/TheSidebar.svelte';
 	// import { authGuard } from '$lib/guards';
 	import '../app.css';
-	import { auth } from '$lib/state';
+	import { appSettings, auth } from '$lib/state';
 	import Redirect from '$lib/components/redirect/Redirect.svelte';
+	const { isCollapse } = appSettings;
+
 	// import type { Load, LoadOutput } from '@sveltejs/kit';
 
 	// export async function load({ page, fetch, session, context }: LoadInput): Promise<LoadOutput> {
@@ -35,20 +37,24 @@
 	// };
 </script>
 
-{#if !$auth.id}
-	<Redirect to="/login" />
-{/if}
+<div class="min-h-screen min-w-full flex flex-col">
+	{#if !$auth.id}
+		<Redirect to="/login" />
+	{/if}
 
-{#if !!$auth.id}
-	<TheHeader />
-	<div class="bg-white my-5 w-full flex flex-col space-y-4 md:flex-row md:space-x-4 md:space-y-0">
-		<TheSidebar className="w-64" />
-		<main class="w-full px-5 py-4 bg-main-100">
-			<slot />
-		</main>
-	</div>
-	<footer />
-{/if}
+	{#if !!$auth.id}
+		<TheHeader className="min-h-76px" />
+		<div class="bg-white w-full flex min-h-full m-0 p-0 flex-grow">
+			<TheSidebar
+				className={`flex-shrink-0 transition-[width] ${$isCollapse ? 'w-[88px]' : 'w-[280px]'}`}
+			/>
+			<main class="w-[calc(100%_-_280px)] flex-grow px-5 py-4 bg-main-100">
+				<slot />
+			</main>
+		</div>
+		<footer />
+	{/if}
+</div>
 
 <style>
 </style>
