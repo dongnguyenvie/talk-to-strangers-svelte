@@ -4,15 +4,18 @@
 </script>
 
 <script lang="ts">
+	import { ROUTES } from '$lib/@core/constants';
+
+	import Redirect from '$lib/components/redirect/Redirect.svelte';
 	import RoomCard from '$lib/components/RoomCard.svelte';
 </script>
 
 <svelte:head>
 	<title>Home</title>
-	<meta name="description" content="Svelte demo app" />
+	<meta name="description" content="homepage" />
 </svelte:head>
 
-<section>
+<!-- <section>
 	<RoomCard
 		name="Hà Kiều Oanh"
 		title="Oanh Cần người  trò chuyện, mới cãi nhau với bạn trai"
@@ -32,34 +35,9 @@
 		id="xxx"
 		isFull
 	/>
-</section>
+</section> -->
+
+<Redirect to={ROUTES.rooms} />
 
 <style>
-	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		flex: 1;
-	}
-
-	h1 {
-		width: 100%;
-	}
-
-	.welcome {
-		display: block;
-		position: relative;
-		width: 100%;
-		height: 0;
-		padding: 0 0 calc(100% * 495 / 2048) 0;
-	}
-
-	.welcome img {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		top: 0;
-		display: block;
-	}
 </style>
