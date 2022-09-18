@@ -12,6 +12,7 @@
 	import { nonNullAssert } from '$lib/@shared/util/operator';
 	import type { SocketID } from '$lib/types/socket';
 	import { browser } from '$app/env';
+	import ChatInput from '$lib/components/chat/ChatInput.svelte';
 	if (browser) {
 		window.process = process;
 	}
@@ -24,7 +25,8 @@
 		clientIdSelected,
 		mySocketId,
 		myMedia,
-		watchersMap
+		watchersMap,
+		messages
 	} = room;
 
 	const roomId = $page.params.id as string;
@@ -70,6 +72,10 @@
 
 	const handleFocusOn = (socketId: SocketID) => () => {
 		roomEvent?.openFocusOn(socketId);
+	};
+
+	const handleChatMessage = (message: string) => {
+		roomEvent?.onSendMessage(message);
 	};
 </script>
 
@@ -117,7 +123,7 @@
 				</div>
 			</section>
 
-			<section class="h-full overflow-hidden">
+			<section class="h-full w-full relative overflow-hidden">
 				<div class={`flex justify-center items-center bg-slate-700 w-full h-full `}>
 					{#if !!$clientSelected?.isVideo}
 						<div class="bg-black w-full h-full">
@@ -131,11 +137,8 @@
 						</div>
 					{/if}
 				</div>
-			</section>
-
-			<section class="fixed right-0 top-1/2">
 				{#if $myMedia?.mediaStream}
-					<div class="bg-black w-[200px] h-[200px]">
+					<div class="bg-black w-[200px] h-[200px] absolute bottom-0 right-0 z-10">
 						<video
 							use:srcObject={nonNullAssert($myMedia.mediaStream)}
 							autoplay
@@ -199,17 +202,16 @@
 		<section class="w-[320px]">
 			<div class="flex flex-col justify-between border w-full h-full">
 				<div class="h-[45px] bg-slate-300" />
-				<div class="flex-grow bg-slate-400" />
+				<div class="flex-grow bg-slate-400">
+					{#each $messages as message}
+						<p class="w-full break-before-all">{message.content || ''}</p>
+					{/each}
+				</div>
 				<div class="h-[113px] bg-slate-500 flex flex-col p-[10px] pt-0">
 					<div class="h-[30px] pt-2">
 						<div class="bg-red-400 w-full h-full" />
 					</div>
-					<div class="relative flex flex-grow">
-						<textarea />
-						<span class="flex items-center justify-center flex-grow bg-main-500 text-white"
-							><Fa icon={faPaperPlane} /></span
-						>
-					</div>
+					<ChatInput onMessage={handleChatMessage} />
 				</div>
 			</div>
 		</section>
