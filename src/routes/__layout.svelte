@@ -46,7 +46,7 @@
 		<TheHeader className="min-h-76px" />
 		<div class="bg-white w-full flex min-h-full m-0 p-0 flex-grow">
 			<TheSidebar
-				className={`flex-shrink-0 transition-[width] ${$isCollapse ? 'w-[88px]' : 'w-[280px]'}`}
+				className={`flex-shrink-0 transition-[width] ${$isCollapse ? 'w-[55px]' : 'w-[280px]'}`}
 			/>
 			<main class="w-[calc(100%_-_280px)] flex-grow px-5 py-4 bg-main-100">
 				<slot />
