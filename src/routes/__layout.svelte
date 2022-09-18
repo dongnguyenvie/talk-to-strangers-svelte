@@ -13,15 +13,13 @@
 </script>
 
 <script lang="ts">
+	import '../app.css';
 	import TheHeader from '$lib/components/theHeader/TheHeader.svelte';
 	import TheSidebar from '$lib/components/theSidebar/TheSidebar.svelte';
-	// import { authGuard } from '$lib/guards';
-	import '../app.css';
 	import { appSettings, auth } from '$lib/state';
 	import Redirect from '$lib/components/redirect/Redirect.svelte';
-	import { browser } from '$app/env';
 	import AutoCollapse from '$lib/components/AutoCollapse.svelte';
-	const { isCollapse, onToggleCollapse } = appSettings;
+	const { isCollapse } = appSettings;
 
 	// import type { Load, LoadOutput } from '@sveltejs/kit';
 
@@ -48,9 +46,7 @@
 	{#if !!$auth.id}
 		<TheHeader className="min-h-76px" />
 		<div class="bg-white w-full flex min-h-full m-0 p-0 flex-grow">
-			<TheSidebar
-				className={`flex-shrink-0 transition-[width] ${$isCollapse ? 'w-[55px]' : 'w-[280px]'}`}
-			/>
+			<TheSidebar className={`flex-shrink-0`} />
 			<main class="w-[calc(100%_-_280px)] flex-grow px-5 py-4 bg-main-100">
 				<slot />
 			</main>

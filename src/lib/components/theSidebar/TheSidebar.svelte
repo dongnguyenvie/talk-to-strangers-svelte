@@ -2,13 +2,14 @@
 	import { appSettings } from '$lib/state';
 	import Fa from 'svelte-fa';
 	import { faAngleDoubleRight, faAngleDoubleLeft } from '@fortawesome/free-solid-svg-icons';
-	import { faGithub } from '@fortawesome/free-brands-svg-icons';
-
 	const { onToggleCollapse, isCollapse } = appSettings;
 	export let className: string = '';
 </script>
 
-<aside class={`${className} relative`} aria-label="Sidebar">
+<aside
+	class={`${className} relative transition-[width] ${$isCollapse ? 'w-[55px]' : 'w-[280px]'}`}
+	aria-label="Sidebar"
+>
 	<div class="sticky p-0 m-0 top-[90px]">
 		<div class="relative">
 			<span
