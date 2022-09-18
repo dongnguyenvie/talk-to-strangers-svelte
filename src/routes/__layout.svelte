@@ -19,7 +19,9 @@
 	import '../app.css';
 	import { appSettings, auth } from '$lib/state';
 	import Redirect from '$lib/components/redirect/Redirect.svelte';
-	const { isCollapse } = appSettings;
+	import { browser } from '$app/env';
+	import AutoCollapse from '$lib/components/AutoCollapse.svelte';
+	const { isCollapse, onToggleCollapse } = appSettings;
 
 	// import type { Load, LoadOutput } from '@sveltejs/kit';
 
@@ -37,6 +39,7 @@
 	// };
 </script>
 
+<AutoCollapse />
 <div class="min-h-screen min-w-full flex flex-col">
 	{#if !$auth.id}
 		<Redirect to="/login" />
@@ -46,7 +49,7 @@
 		<TheHeader className="min-h-76px" />
 		<div class="bg-white w-full flex min-h-full m-0 p-0 flex-grow">
 			<TheSidebar
-				className={`flex-shrink-0 transition-[width] ${$isCollapse ? 'w-[88px]' : 'w-[280px]'}`}
+				className={`flex-shrink-0 transition-[width] ${$isCollapse ? 'w-[55px]' : 'w-[280px]'}`}
 			/>
 			<main class="w-[calc(100%_-_280px)] flex-grow px-5 py-4 bg-main-100">
 				<slot />
