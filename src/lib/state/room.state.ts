@@ -10,7 +10,7 @@ interface RoomState {
 	selected?: SocketID;
 	accessable: boolean;
 	clientsMap: Record<string, Client>;
-	messages: never[];
+	messages: any[];
 }
 const { subscribe, set, update } = writable<RoomState>({
 	socketId: '',
@@ -29,6 +29,9 @@ const clientsAudio = derived([mySocketId, clients], ($values) => {
 });
 const myMedia = derived({ subscribe }, ($room) => {
 	return $room.clientsMap[$room.socketId as SocketID];
+});
+const messages = derived({ subscribe }, ($room) => {
+	return $room.messages;
 });
 const clientIdSelected = derived(myMedia, ($me) => $me?.focusId);
 const clientSelected = derived([{ subscribe }, clientIdSelected], ($values) => {
@@ -51,6 +54,7 @@ export const room = {
 	clientIdSelected,
 	mySocketId,
 	watchersMap,
+	messages,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;
@@ -115,6 +119,12 @@ export const room = {
 	onSetSelected: (selectdId: SocketID) => {
 		update((data) => {
 			data.selected = selectdId;
+			return data;
+		});
+	},
+	onUpdateMessage: (message: { createBy?: string; content: string; created: number }) => {
+		update((data) => {
+			data.messages.push(message);
 			return data;
 		});
 	}

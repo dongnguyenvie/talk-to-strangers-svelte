@@ -1,4 +1,5 @@
 import {
+	EVENT_MESSAGE_CLIENT,
 	EVENT_ROOM_CLIENT,
 	EVENT_ROOM_PERSONAL_CLIENT,
 	EVENT_ROOM_SERVER
@@ -16,8 +17,9 @@ import { JoinRoomEvent } from './join-room.event';
 import type { Client } from '$lib/types';
 import type { UserConfig } from '$lib/@core/interfaces/room.interface';
 import _ from 'underscore';
+import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
 
-const { myMedia, watchersMap } = room;
+const { myMedia, watchersMap, onUpdateMessage } = room;
 
 interface PeerState {
 	inst: SimplePeer.Instance;
@@ -75,6 +77,15 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			setTimeout(() => {
 				broadcastStreamToPeers([peerState], { stream: myAudioStream, isAudio: true });
 			}, 200);
+		});
+
+		io.on(EVENT_ROOM_CLIENT.message, (event: ChatEvent) => {
+			console.log('give message', event);
+			onUpdateMessage({
+				created: event.created,
+				content: event.content,
+				createBy: event.createBy
+			});
 		});
 
 		// newcomer
@@ -301,8 +312,18 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 				message: 'xxx',
 				action: MediaRequest.viewCamera
 			});
-			console.log('p2pEvent', p2pEvent);
 			io.emit(EVENT_ROOM_SERVER.peerToPeer, p2pEvent);
+		},
+		onSendMessage: (message: string) => {
+			io.emit(
+				EVENT_ROOM_SERVER.message,
+				new ChatEvent({
+					content: message,
+					to: roomId,
+					createBy: 'xxx@xx.vn',
+					messageType: MessageType.room
+				})
+			);
 		}
 	};
 };
