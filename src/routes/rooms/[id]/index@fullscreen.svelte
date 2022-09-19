@@ -53,12 +53,15 @@
 	const handleOpenCam = () => {
 		roomEvent?.openCam();
 	};
+
 	const handleOpenMic = () => {
 		roomEvent?.openMic();
 	};
+
 	const handleOffMic = () => {
 		roomEvent?.offMic();
 	};
+
 	const handleOffCam = () => {
 		roomEvent?.offCam();
 	};

@@ -43,6 +43,10 @@ const watchersMap = derived(clients, ($clients) => {
 	return _.groupBy($clients, 'focusId');
 });
 
+const watchersEntries = derived(watchersMap, ($watchersMap) => {
+	return Object.entries($watchersMap);
+});
+
 export const room = {
 	subscribe,
 	set,
@@ -54,6 +58,7 @@ export const room = {
 	clientIdSelected,
 	mySocketId,
 	watchersMap,
+	watchersEntries,
 	messages,
 	updateClient: (client: Client) => {
 		update((data) => {
