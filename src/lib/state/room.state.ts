@@ -1,4 +1,4 @@
-import type { Client } from '$lib/types';
+import { ClientShareable, type Client } from '$lib/types';
 import { writable, derived } from 'svelte/store';
 import { createClient } from '$lib/@shared/libs/simple-peerjs';
 import type { SocketID } from '$lib/types/socket';
@@ -38,6 +38,11 @@ const clientSelected = derived([{ subscribe }, clientIdSelected], ($values) => {
 	const [room, selectId] = $values;
 	return room.clientsMap[selectId as unknown as SocketID];
 });
+const mediaSelected = derived(clientSelected, ($client) => {
+	let share = $client?.share;
+	if (!share) return null;
+	return $client[share];
+});
 
 const watchersMap = derived(clients, ($clients) => {
 	return _.groupBy($clients, 'focusId');
@@ -60,6 +65,7 @@ export const room = {
 	watchersMap,
 	watchersEntries,
 	messages,
+	mediaSelected,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.socketId] = client;
@@ -72,6 +78,7 @@ export const room = {
 		update((data) => {
 			if (client.isVideo) {
 				data.clientsMap[client.socketId].mediaStream = client.stream;
+				data.clientsMap[client.socketId].share = ClientShareable.video;
 			}
 			if (client.isAudio) {
 				data.clientsMap[client.socketId].audioStream = client.stream;

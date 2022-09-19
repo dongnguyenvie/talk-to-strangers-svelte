@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Fa from 'svelte-fa';
-	import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+	import { faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 	import { srcObject } from '$lib/@shared/directives/src-object.directive';
 	import { initRoomEvent } from '$lib/@shared/socket/events';
@@ -13,6 +13,7 @@
 	import type { SocketID } from '$lib/types/socket';
 	import { browser } from '$app/env';
 	import ChatInput from '$lib/components/chat/ChatInput.svelte';
+	import UserCard from '$lib/components/UserCard.svelte';
 	if (browser) {
 		window.process = process;
 	}
@@ -26,7 +27,8 @@
 		mySocketId,
 		myMedia,
 		watchersMap,
-		messages
+		messages,
+		mediaSelected
 	} = room;
 
 	const roomId = $page.params.id as string;
@@ -66,14 +68,7 @@
 		roomEvent?.offCam();
 	};
 
-	const handleViewMedia = (socketId: SocketID) => () => {
-		if (socketId !== $mySocketId) {
-			roomEvent?.requestViewCamera(socketId);
-		}
-		onSetSelected(socketId);
-	};
-
-	const handleFocusOn = (socketId: SocketID) => () => {
+	const handleFocusOn = (socketId: SocketID) => {
 		roomEvent?.openFocusOn(socketId);
 	};
 
@@ -128,7 +123,18 @@
 
 			<section class="h-full w-full relative overflow-hidden">
 				<div class={`flex justify-center items-center bg-slate-700 w-full h-full `}>
-					{#if !!$clientSelected?.isVideo}
+					{#if !!$mediaSelected}
+						<div class="bg-black w-full h-full">
+							<video
+								use:srcObject={nonNullAssert($mediaSelected)}
+								autoplay
+								class="w-full h-full scale-x-[-1] object-contain"
+							>
+								<track kind="captions" src="" />
+							</video>
+						</div>
+					{/if}
+					<!-- {#if !!$clientSelected?.isVideo}
 						<div class="bg-black w-full h-full">
 							<video
 								use:srcObject={nonNullAssert($clientSelected?.mediaStream)}
@@ -138,7 +144,7 @@
 								<track kind="captions" src="" />
 							</video>
 						</div>
-					{/if}
+					{/if} -->
 				</div>
 				{#if $myMedia?.mediaStream}
 					<div class="bg-black w-[200px] h-[200px] absolute bottom-0 right-0 z-10">
@@ -153,52 +159,18 @@
 				{/if}
 			</section>
 
-			<section class="flex flex-nowrap items-end">
-				{#each $clients as client}
-					<section
-						class={`relative max-w-[96px] min-w-[60px] ml-1 overflow-hidden ${
-							client.socketId === $clientIdSelected ? 'border-red-800 border-4' : ''
-						}`}
-						title={client.socketId}
-					>
-						<div class="flex h-[33px] gap-1 items-end pb-1">
-							{#each $watchersMap[client.socketId] || [] as watcher}
-								<span
-									class={`w-[16px] h-[16px] overflow-hidden rounded-full inline-flex ${
-										client.socketId == watcher.socketId
-											? 'border-2 w-[20px] h-[20px] rounded-sm border-red-600'
-											: ''
-									}`}
-								>
-									<img
-										class="block object-cover w-full h-full"
-										src={client.avatar}
-										alt={client.socketId}
-									/>
-								</span>
-							{/each}
-						</div>
-
-						<div class={`relative  cursor-pointer`} on:click={handleFocusOn(client.socketId)}>
-							<img
-								class="block object-cover w-full h-full"
-								src={client.avatar}
-								alt={client.socketId}
-							/>
-							<div class={`absolute bottom-0 bg-green-700`}>
-								{#if client.isVideo}
-									<p>Video: on</p>
-								{/if}
-								{#if client.isAudio}
-									<p>audio: on</p>
-								{/if}
-								{#if client.socketId === $mySocketId}
-									<p>me</p>
-								{/if}
-							</div>
-						</div>
-					</section>
-				{/each}
+			<section class="flex flex-nowrap justify-center">
+				<div class="h-[155px] flex flex-nowrap">
+					{#each $clients as client}
+						<UserCard
+							{client}
+							idSelected={nonNullAssert($clientIdSelected)}
+							myId={$mySocketId}
+							onFocusOn={handleFocusOn}
+							watchersMap={$watchersMap}
+						/>
+					{/each}
+				</div>
 			</section>
 		</section>
 

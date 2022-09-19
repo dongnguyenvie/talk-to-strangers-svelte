@@ -14,12 +14,12 @@ import type { SocketID } from '$lib/types/socket';
 import { MediaRequest } from '$lib/@core/enums';
 import { get } from 'svelte/store';
 import { JoinRoomEvent } from './join-room.event';
-import type { Client } from '$lib/types';
+import { ClientShareable, type Client } from '$lib/types';
 import type { UserConfig } from '$lib/@core/interfaces/room.interface';
 import _ from 'underscore';
 import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
 
-const { myMedia, watchersMap, watchersEntries, onUpdateMessage } = room;
+const { myMedia, watchersMap, onUpdateMessage } = room;
 
 interface PeerState {
 	inst: SimplePeer.Instance;
@@ -97,7 +97,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		io.on(
 			EVENT_ROOM_PERSONAL_CLIENT.allUsers,
 			(event: {
-				users: Pick<Client, 'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'focusId'>[];
+				users: Pick<Client, 'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'focusId' | 'share'>[];
 			}) => {
 				const { users } = event;
 				users.forEach((client) => {
@@ -107,7 +107,8 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						isVideo: client.isVideo || false,
 						isAudio: client.isAudio || false,
 						avatar: client.avatar || '',
-						focusId: client.focusId || null
+						focusId: client.focusId || null,
+						share: client.share || null
 					});
 				});
 				console.log('all users', event);
@@ -136,7 +137,6 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 				case MediaRequest.viewCamera:
 					const peerState = getPeer(event.from);
 					const peer = peerState?.inst;
-					console.log(111, peer);
 					const me = get(myMedia)!;
 					if (!me?.mediaStream) return;
 					peer.addStream(me.mediaStream);
@@ -150,12 +150,13 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		});
 
 		io.on(EVENT_ROOM_CLIENT.syncUserState, (event: ClientStateEvent) => {
-			const { from, isAudio, isVideo, focusId } = event;
+			const { from, isAudio, isVideo, focusId, share } = event;
 			room.updateClientState({
 				socketId: from,
 				isAudio: isAudio,
 				isVideo: isVideo,
-				focusId: focusId
+				focusId: focusId,
+				share: share
 			});
 		});
 
@@ -222,7 +223,8 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						new ClientStateEvent({
 							isAudio: get(myMedia).isAudio,
 							isVideo: true,
-							roomId: roomId
+							roomId: roomId,
+							share: ClientShareable.video
 						})
 					);
 					broadcastStreamToPeers(watchers, { stream, isVideo: true });
@@ -363,13 +365,15 @@ function createPeer({
 	stream,
 	isAudio,
 	isVideo,
-	focusId
+	focusId,
+	share
 }: {
 	callerID: string;
 	roomId: string;
 	focusId: string | null;
 	stream?: MediaStream;
-} & UserConfig) {
+} & UserConfig &
+	Pick<Client, 'share'>) {
 	let initiator = true;
 	let peer = new SimplePeer({
 		initiator: initiator,
@@ -408,7 +412,8 @@ function createPeer({
 		peer,
 		isAudio: isAudio,
 		isVideo: isVideo,
-		focusId: focusId
+		focusId: focusId,
+		share: share
 	});
 
 	room.updateClient(client);
@@ -547,7 +552,6 @@ function addTracksToPeerFcn(peer: SimplePeer.Instance, stream: MediaStream, isAd
 	console.log('Track vidtracks: ', vidtracks); // Check to make sure track exists: it does
 	console.log('Track audtracks: ', audtracks);
 	if (isAdd) {
-		console.log(111, stream.active);
 		if (vidtracks.length) {
 			peer.addTrack(vidtracks[0], stream);
 		}

@@ -1,4 +1,4 @@
-import type { Client } from '$lib/types';
+import type { Client, ClientShareable } from '$lib/types';
 import type { SocketID } from '$lib/types/socket';
 
 export class ClientStateEvent implements Pick<Client, 'isVideo' | 'isAudio'> {
@@ -7,6 +7,7 @@ export class ClientStateEvent implements Pick<Client, 'isVideo' | 'isAudio'> {
 	from!: SocketID;
 	roomId!: string;
 	focusId: SocketID | null = null;
+	share!: ClientShareable;
 
 	constructor(partial: Pick<ClientStateEvent, 'roomId'> & Partial<ClientStateEvent>) {
 		Object.assign(this, partial);

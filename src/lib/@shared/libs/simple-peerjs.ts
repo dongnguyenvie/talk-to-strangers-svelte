@@ -19,6 +19,7 @@ export const createClient = (partialData: Partial<Client>): Client => {
 		socketId: '',
 		focusId: null,
 		avatar: 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+		share: null,
 		...partialData
 	};
 };

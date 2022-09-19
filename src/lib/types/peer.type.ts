@@ -1,5 +1,5 @@
+import type { UserConfig } from '$lib/@core/interfaces';
 import type SimplePeer from 'simple-peer';
-import type { UserConfig } from 'vite';
 import type { SocketID } from './socket';
 
 export type PeerEvents = {
@@ -29,6 +29,10 @@ export type PeerEvents = {
 	error: (error: Error) => void;
 };
 
+export enum ClientShareable {
+	video = 'mediaStream',
+	audio = 'audioStream'
+}
 export interface Client extends UserConfig {
 	socketId: SocketID;
 	mediaStream?: MediaStream;
@@ -39,4 +43,5 @@ export interface Client extends UserConfig {
 	peer: SimplePeer.Instance;
 	avatar: string;
 	focusId: string | null;
+	share: ClientShareable | null;
 }

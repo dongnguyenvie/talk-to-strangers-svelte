@@ -55,3 +55,11 @@
 .text-h2 {
 	@apply text-[96px] font-[700];
 }
+.avatar-active {
+	box-shadow: rgb(24 144 255) 0px 0px 1px, rgb(24 144 255) 0px 0px 2px, rgb(24 144 255) 0px 0px 3px,
+		rgb(24 144 255) 0px 0px 4px, rgb(24 144 255) 0px 0px 1px, rgb(24 144 255) 0px 0px 2px,
+		rgb(24 144 255) 0px 0px 3px, rgb(24 144 255) 0px 0px 4px, rgb(24 144 255) 0px 0px 1px,
+		rgb(24 144 255) 0px 0px 2px, rgb(24 144 255) 0px 0px 3px, rgb(24 144 255) 0px 0px 4px,
+		rgb(24 144 255) 0px 0px 1px, rgb(24 144 255) 0px 0px 2px, rgb(24 144 255) 0px 0px 3px,
+		rgb(24 144 255) 0px 0px 4px;
+}
