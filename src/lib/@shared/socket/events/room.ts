@@ -178,10 +178,12 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 				.forEach((watcher) => {
 					const watcherState = getPeer(watcher.socketId);
 					if (!watcherState.inst || !me.mediaStream) return;
-					console.log(111, watcherState.inst);
 					addTracksToPeerFcn(watcherState.inst, me.mediaStream, false);
 				});
 			prevWatchers = currentWatchers;
+
+			console.log('newWatchers:', newWatchers);
+			console.log('leavedWatchers:', leavedWatchers);
 		});
 	};
 
