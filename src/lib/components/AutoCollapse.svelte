@@ -16,18 +16,22 @@
 
 	$: isXs = innerWidth <= 768;
 
-	$: {
-		const _isCollapse = get(isCollapse);
-		if (isXs) {
-			if (!_isCollapse) {
-				onToggleCollapse();
-			}
-		} else {
-			if (_isCollapse) {
-				onToggleCollapse();
-			}
-		}
-	}
+	// onMount(() => {
+	// 	$: {
+	// 		const _isCollapse = get(isCollapse);
+	// 		if (isXs) {
+	// 			if (!_isCollapse) {
+	// 				onToggleCollapse();
+	// 			}
+	// 		} else {
+	// 			if (_isCollapse) {
+	// 				onToggleCollapse();
+	// 			}
+	// 		}
+	// 	}
+	// });
+
+	const handleResize = (a: string) => {};
 </script>
 
-<svelte:window bind:innerWidth bind:innerHeight />
+<svelte:window bind:innerWidth bind:innerHeight on:resize={handleResize} />

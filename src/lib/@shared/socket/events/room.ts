@@ -19,7 +19,7 @@ import type { UserConfig } from '$lib/@core/interfaces/room.interface';
 import _ from 'underscore';
 import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
 
-const { myMedia, watchersMap, onUpdateMessage } = room;
+const { myMedia, watchersMap, watchersEntries, onUpdateMessage } = room;
 
 interface PeerState {
 	inst: SimplePeer.Instance;
@@ -131,10 +131,12 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		});
 
 		io.on(EVENT_ROOM_CLIENT.peerToPeer, (event: P2PEvent) => {
+			console.log('EVENT_ROOM_CLIENT.peerToPeer', { event });
 			switch (event.action) {
 				case MediaRequest.viewCamera:
 					const peerState = getPeer(event.from);
 					const peer = peerState?.inst;
+					console.log(111, peer);
 					const me = get(myMedia)!;
 					if (!me?.mediaStream) return;
 					peer.addStream(me.mediaStream);
@@ -155,6 +157,31 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 				isVideo: isVideo,
 				focusId: focusId
 			});
+		});
+
+		let prevWatchers = [] as Client[];
+
+		watchersMap.subscribe((map) => {
+			const currentWatchers = map[myID] || [];
+			const newWatchers = _.difference(currentWatchers, prevWatchers);
+			const leavedWatchers = _.difference(prevWatchers, currentWatchers);
+			const me = get(myMedia);
+			if (!me.mediaStream) return;
+			const newWatchersState = newWatchers
+				.filter((watcher) => watcher.socketId !== myID)
+				.map((watcher) => getPeer(watcher.socketId));
+
+			broadcastStreamToPeers(newWatchersState, { stream: me.mediaStream, isVideo: true });
+
+			leavedWatchers
+				.filter((watcher) => watcher.socketId !== myID)
+				.forEach((watcher) => {
+					const watcherState = getPeer(watcher.socketId);
+					if (!watcherState.inst || !me.mediaStream) return;
+					console.log(111, watcherState.inst);
+					addTracksToPeerFcn(watcherState.inst, me.mediaStream, false);
+				});
+			prevWatchers = currentWatchers;
 		});
 	};
 
@@ -471,7 +498,8 @@ function broadcastStreamToPeers(
 			queue.push(peerState);
 			continue;
 		}
-		peer.addStream(stream);
+		addTracksToPeerFcn(peer, stream, true);
+		// peer.addStream(stream);
 		if (isAudio) {
 			peerState.isSentAudio = isAudio;
 		}
@@ -508,4 +536,31 @@ function stopAudioOnly(stream: MediaStream) {
 			track.stop();
 		}
 	});
+}
+
+function addTracksToPeerFcn(peer: SimplePeer.Instance, stream: MediaStream, isAdd = false) {
+	let vidtracks = stream.getVideoTracks();
+	let audtracks = stream.getAudioTracks();
+
+	console.log('Track vidtracks: ', vidtracks); // Check to make sure track exists: it does
+	console.log('Track audtracks: ', audtracks);
+	if (isAdd) {
+		console.log(111, stream.active);
+		if (vidtracks.length) {
+			peer.addTrack(vidtracks[0], stream);
+		}
+		if (audtracks.length) {
+			peer.addTrack(audtracks[0], stream);
+		}
+	} else {
+		// if (vidtracks.length) {
+		// 	peer.removeTrack(vidtracks[0], stream);
+		// }
+		// if (audtracks.length) {
+		// 	peer.removeTrack(audtracks[0], stream);
+		// }
+	}
+
+	// Check for added streams: none.
+	console.log('Streams now: ', peer.streams);
 }
