@@ -179,7 +179,9 @@
 				<div class="h-[45px] bg-slate-300" />
 				<div class="flex-grow bg-slate-400">
 					{#each $messages as message}
-						<p class="w-full break-before-all">{message.content || ''}</p>
+						<div>
+							<p class="w-full break-before-all">{message.createBy}: {message.content || ''}</p>
+						</div>
 					{/each}
 				</div>
 				<div class="h-[113px] bg-slate-500 flex flex-col p-[10px] pt-0">

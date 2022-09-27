@@ -166,6 +166,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const currentWatchers = map[myID] || [];
 			const newWatchers = _.difference(currentWatchers, prevWatchers);
 			const leavedWatchers = _.difference(prevWatchers, currentWatchers);
+			// TODO: remove stream from here
 			const me = get(myMedia);
 			if (!me.mediaStream) return;
 			const newWatchersState = newWatchers
