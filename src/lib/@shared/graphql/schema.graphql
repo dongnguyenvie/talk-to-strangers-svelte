@@ -1,7 +1,3 @@
-# ------------------------------------------------------
-# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
-# ------------------------------------------------------
-
 input CreateOneRoomInput {
   capacity: Float!
   description: String
@@ -23,9 +19,7 @@ type CreateRoleOutput {
   id: String!
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
+# A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 scalar DateTime
 
 input DeleteRoleIntput {
@@ -72,45 +66,32 @@ type GetRoomsOutput {
   pagination: Pagination!
 }
 
-"""
-The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
-"""
+# The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 scalar JSON
 
 type Mutation {
-  """
-  {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
-  """
+  # {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
   createOneRoom(input: CreateOneRoomInput!): CreateOneRoomOutput!
 
-  """
-  {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   createRole(input: CreateRoleIntput!): CreateRoleOutput!
 
-  """
-  {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   deleteRole(input: DeleteRoleIntput!): DeleteRoleOutput!
 
-  """
-  {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false}
   recoverRole(input: RecoverRoleIntput!): RecoverRoleOutput!
 
-  """
-  {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
-  """
+  # {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
   signin(input: SigninIntput!): SigninOutput!
 
-  """
-  {"publ":true,"t":"Đăng kí","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
-  """
+  # {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  signinByGoogle(input: SigninByGoogleIntput!): SigninOutput!
+
+  # {"publ":true,"t":"Đăng kí","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
   signup(input: Signup!): SignupOutput!
 
-  """
-  {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   updateRole(input: UpdateRoleIntput!): UpdateRoleOuput!
 }
 
@@ -131,24 +112,16 @@ enum Privilege {
 }
 
 type Query {
-  """
-  {"publ":true,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":true,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   getRoleById(input: GetRoleByIdInput!): GetRoleByIdOutput!
 
-  """
-  {"publ":true,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":true,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   getRoles: [GetRolesOutput!]!
 
-  """
-  {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
-  """
+  # {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
   getRolesWasDeleted: [GetRolesWasDeletedOutput!]!
 
-  """
-  {"publ":false,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
-  """
+  # {"publ":false,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
   getRooms(input: GetRoomsIntput!): GetRoomsOutput!
 }
 
@@ -181,6 +154,10 @@ type RoomEntity {
   updatedAt: DateTime
 }
 
+input SigninByGoogleIntput {
+  token: String!
+}
+
 input SigninIntput {
   email: String!
   password: String!
@@ -196,10 +173,10 @@ type SigninOutput {
 }
 
 input Signup {
-  """Email to login"""
+  # Email to login
   email: String!
 
-  """Password"""
+  # Password
   password: String!
 }
 

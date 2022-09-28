@@ -1,0 +1,9 @@
+mutation signinByGoogle($input: SigninByGoogleIntput!) {
+	signinByGoogle(input: $input) {
+		id
+		email
+		scp
+		token
+		refreshToken
+	}
+}

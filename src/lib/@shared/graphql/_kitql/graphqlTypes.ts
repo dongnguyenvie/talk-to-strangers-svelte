@@ -11,9 +11,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format. */
   DateTime: any;
-  /** The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSON: any;
 };
 
@@ -91,19 +89,13 @@ export type GetRoomsOutput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  /** {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false} */
   createOneRoom: CreateOneRoomOutput;
-  /** {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false} */
   createRole: CreateRoleOutput;
-  /** {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false} */
   deleteRole: DeleteRoleOutput;
-  /** {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false} */
   recoverRole: RecoverRoleOutput;
-  /** {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false} */
   signin: SigninOutput;
-  /** {"publ":true,"t":"Đăng kí","desc":"","sys":false,"sub":false,"gr":"auth","d":false} */
+  signinByGoogle: SigninOutput;
   signup: SignupOutput;
-  /** {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false} */
   updateRole: UpdateRoleOuput;
 };
 
@@ -130,6 +122,11 @@ export type MutationRecoverRoleArgs = {
 
 export type MutationSigninArgs = {
   input: SigninIntput;
+};
+
+
+export type MutationSigninByGoogleArgs = {
+  input: SigninByGoogleIntput;
 };
 
 
@@ -161,13 +158,9 @@ export enum Privilege {
 
 export type Query = {
   __typename?: 'Query';
-  /** {"publ":true,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false} */
   getRoleById: GetRoleByIdOutput;
-  /** {"publ":true,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false} */
   getRoles: Array<GetRolesOutput>;
-  /** {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false} */
   getRolesWasDeleted: Array<GetRolesWasDeletedOutput>;
-  /** {"publ":false,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false} */
   getRooms: GetRoomsOutput;
 };
 
@@ -213,6 +206,10 @@ export type RoomEntity = {
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
 
+export type SigninByGoogleIntput = {
+  token: Scalars['String'];
+};
+
 export type SigninIntput = {
   email: Scalars['String'];
   password: Scalars['String'];
@@ -229,9 +226,7 @@ export type SigninOutput = {
 };
 
 export type Signup = {
-  /** Email to login */
   email: Scalars['String'];
-  /** Password */
   password: Scalars['String'];
 };
 
@@ -277,6 +272,13 @@ export type SigninMutationVariables = Exact<{
 
 export type SigninMutation = { __typename?: 'Mutation', signin: { __typename?: 'SigninOutput', id: string, email: string, scp: Array<string>, token: string, refreshToken?: string | null } };
 
+export type SigninByGoogleMutationVariables = Exact<{
+  input: SigninByGoogleIntput;
+}>;
+
+
+export type SigninByGoogleMutation = { __typename?: 'Mutation', signinByGoogle: { __typename?: 'SigninOutput', id: string, email: string, scp: Array<string>, token: string, refreshToken?: string | null } };
+
 export type CreateOneRoomMutationVariables = Exact<{
   input: CreateOneRoomInput;
 }>;
@@ -293,6 +295,7 @@ export type GetRoomsQuery = { __typename?: 'Query', getRooms: { __typename?: 'Ge
 
 
 export const SigninDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"signin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SigninIntput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"scp"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]} as unknown as DocumentNode<SigninMutation, SigninMutationVariables>;
+export const SigninByGoogleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"signinByGoogle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SigninByGoogleIntput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signinByGoogle"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"scp"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]} as unknown as DocumentNode<SigninByGoogleMutation, SigninByGoogleMutationVariables>;
 export const CreateOneRoomDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createOneRoom"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateOneRoomInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOneRoom"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateOneRoomMutation, CreateOneRoomMutationVariables>;
 export const GetRoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getRooms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetRoomsIntput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getRooms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"topic"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pagination"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]}}]} as unknown as DocumentNode<GetRoomsQuery, GetRoomsQueryVariables>;
 export const namedOperations = {
@@ -301,6 +304,7 @@ export const namedOperations = {
   },
   Mutation: {
     signin: 'signin',
+    signinByGoogle: 'signinByGoogle',
     createOneRoom: 'createOneRoom'
   }
 }

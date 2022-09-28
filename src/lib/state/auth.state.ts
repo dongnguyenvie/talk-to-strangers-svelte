@@ -1,10 +1,13 @@
 import { browser } from '$app/env';
+import { KQL_SigninByGoogle } from '$lib/@shared/graphql/_kitql/graphqlStores';
 import type { Auth } from '$lib/types';
 import type { CredentialResponse } from 'google-one-tap';
 import type Google from 'google-one-tap';
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
+import { goto } from '$app/navigation';
+import { ROUTES } from '$lib/@core/constants';
+import jwtDecode from 'jwt-decode';
 
-let auth2: gapi.auth2.GoogleAuth;
 let google: typeof Google;
 const USER_INFO = 'USER_INFO';
 const stored =
@@ -26,8 +29,23 @@ if (browser) {
 		}
 	});
 
-	function handleCredentialResponse(response: CredentialResponse) {
-		console.log('Encoded JWT ID token: ' + response.credential);
+	async function handleCredentialResponse(response: CredentialResponse) {
+		const jwt = response.credential;
+		try {
+			const resp = await KQL_SigninByGoogle.mutate({
+				variables: {
+					input: {
+						token: jwt
+					}
+				}
+			});
+			if (resp.data?.signinByGoogle.id) {
+				const token = resp.data?.signinByGoogle.token!;
+				const user = jwtDecode(token) as Auth;
+				auth.set({ ...user, token });
+				goto(ROUTES.rooms);
+			}
+		} catch (error) {}
 	}
 	window.onload = function () {
 		google = window.google;
@@ -39,7 +57,9 @@ if (browser) {
 			document.getElementById('google-signin-tab-button')!,
 			{ theme: 'outline', size: 'large' } // customization attributes
 		);
-		// google.accounts.id.prompt(); // also display the One Tap dialog
+		if (!get(auth).id) {
+			google.accounts.id.prompt();
+		}
 	};
 }
 
