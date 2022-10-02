@@ -1,0 +1,10 @@
+# file .graphqlrc.yaml
+
+projects:
+  # You can add multiple projects and generate with -p args
+  default:
+    # 👇 For vscode-graphql and intellisense
+    schema:
+      - ./src/lib/@shared/graphql/schema.graphql
+    documents:
+      - ./src/**/*.gql

@@ -76,6 +76,55 @@ function KQL_SigninStore() {
  */
 export const KQL_Signin = KQL_SigninStore();
 
+function KQL_SigninByGoogleStore() {
+	const operationName = 'KQL_SigninByGoogle';
+	const operationType = ResponseResultType.Mutation;
+
+	// prettier-ignore
+	const { subscribe, set, update } = writable<RequestResult<Types.SigninByGoogleMutation, Types.SigninByGoogleMutationVariables>>({...defaultStoreValue, operationName, operationType});
+
+		async function mutateLocal(
+			params?: RequestParameters<Types.SigninByGoogleMutationVariables>
+		): Promise<RequestResult<Types.SigninByGoogleMutation, Types.SigninByGoogleMutationVariables>> {
+			let { fetch, variables } = params ?? {};
+
+			const storedVariables = get(KQL_SigninByGoogle).variables;
+			variables = variables ?? storedVariables;
+
+			update((c) => {
+				return { ...c, isFetching: true, status: RequestStatus.LOADING };
+			});
+
+			// prettier-ignore
+			const res = await kitQLClient.request<Types.SigninByGoogleMutation, Types.SigninByGoogleMutationVariables>({
+				skFetch: fetch,
+				document: Types.SigninByGoogleDocument,
+				variables, 
+				operationName, 
+				operationType, 
+				browser
+			});
+			const result = { ...res, isFetching: false, status: RequestStatus.DONE, variables };
+			set(result);
+			return result;
+		}
+
+	return {
+		subscribe,
+
+		/**
+		 * Can be used for SSR, but simpler option is `.queryLoad`
+		 * @returns fill this store & the cache
+		 */
+		mutate: mutateLocal,
+
+	};
+}
+/**
+ * KitQL Svelte Store with the latest `SigninByGoogle` Operation
+ */
+export const KQL_SigninByGoogle = KQL_SigninByGoogleStore();
+
 function KQL_CreateOneRoomStore() {
 	const operationName = 'KQL_CreateOneRoom';
 	const operationType = ResponseResultType.Mutation;

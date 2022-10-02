@@ -7,4 +7,6 @@ export interface Auth {
 	iat: number;
 	exp: number;
 	token: string;
+	social: string;
+	socialToken: string;
 }

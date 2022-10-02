@@ -2,7 +2,7 @@
 	import Button from '$lib/components/Button.svelte';
 	import { goto } from '$app/navigation';
 	import { KQL_Signin } from '$lib/@shared/graphql/_kitql/graphqlStores';
-	import { auth, googleAuth2 } from '$lib/state';
+	import { auth } from '$lib/state';
 	import { createForm } from 'svelte-forms-lib';
 	import { ROUTES } from '$lib/@core/constants';
 	import type { Auth } from '$lib/types';
@@ -53,14 +53,6 @@
 			} catch (error) {}
 		}
 	});
-
-	const handleSignupByGG = () => {
-		googleAuth2.signin();
-	};
-
-	const handleLogoutByGG = () => {
-		googleAuth2.signout();
-	};
 </script>
 
 <section class="flex justify-center pt-8">
@@ -105,24 +97,6 @@
 					type="submit"
 				>
 					Sign In
-				</Button>
-			</div>
-			<div class="flex items-center justify-center">
-				<Button
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="button"
-					onClick={handleSignupByGG}
-				>
-					Sign In by GG
-				</Button>
-			</div>
-			<div class="flex items-center justify-center">
-				<Button
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="button"
-					onClick={handleLogoutByGG}
-				>
-					Signout by GG
 				</Button>
 			</div>
 		</form>
