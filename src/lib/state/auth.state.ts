@@ -57,17 +57,26 @@ if (browser) {
 			document.getElementById('google-signin-tab-button')!,
 			{ theme: 'outline', size: 'large' } // customization attributes
 		);
-		if (!get(auth).id) {
-			google.accounts.id.prompt();
-		}
+		setTimeout(() => {
+			if (!get(auth).id) {
+				google.accounts.id.prompt();
+			}
+		}, 100);
 	};
 }
 
 export const googleAuth2 = {
 	signin: () => {
-		google.accounts.id.prompt();
+		window.location.replace('https://api.noinghe.com/v1/auth/google');
 	},
 	signout: () => {
 		google.accounts.id.disableAutoSelect();
 	}
+};
+
+export const validAndInjectToken = (token: string, isRedirect = true) => {
+	const user = jwtDecode(token) as Auth;
+	auth.set({ ...user, token });
+	if (!isRedirect) return;
+	goto(ROUTES.rooms);
 };
