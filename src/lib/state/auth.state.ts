@@ -67,7 +67,7 @@ if (browser) {
 
 export const googleAuth2 = {
 	signin: () => {
-		window.location.replace('https://api.noinghe.com/v1/auth/google');
+		window.location.replace('https://api.noinghe.com/api/auth/google');
 	},
 	signout: () => {
 		google.accounts.id.disableAutoSelect();
