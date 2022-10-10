@@ -65,9 +65,18 @@ if (browser) {
 	};
 }
 
-export const googleAuth2 = {
+export const googleOAuth2 = {
 	signin: () => {
 		window.location.replace('https://api.noinghe.com/api/auth/google');
+	},
+	signout: () => {
+		google.accounts.id.disableAutoSelect();
+	}
+};
+
+export const facebookOAuth2 = {
+	signin: () => {
+		window.location.replace('https://api.noinghe.com/api/auth/facebook');
 	},
 	signout: () => {
 		google.accounts.id.disableAutoSelect();
