@@ -151,7 +151,7 @@
 				<div class="flex items-center justify-center">
 					<Button
 						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
-						dark:bg-google"
+						dark:bg-google hover:dark:bg-google"
 						type="button"
 						onClick={handleSigninOrSignupByGG}
 					>
@@ -161,7 +161,7 @@
 				<div class="flex items-center justify-center">
 					<Button
 						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
-						dark:bg-facebook"
+						dark:bg-facebook dark:bg-facebook"
 						type="button"
 						onClick={handleSigninOrSignupByFB}
 					>
@@ -171,7 +171,7 @@
 				<div class="flex items-center justify-center">
 					<Button
 						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
-						dark:bg-twitter"
+						dark:bg-twitter hover:dark:bg-twitter"
 						type="button"
 						onClick={handleLogoutByGG}
 					>
