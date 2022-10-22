@@ -141,7 +141,7 @@
 					focus:dark:ring-transparent
 					h-[50px] text-base
 					"
-					type="button"
+					type="submit"
 				>
 					Log in
 				</Button>
