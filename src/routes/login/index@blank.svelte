@@ -8,7 +8,10 @@
 	import type { Auth } from '$lib/types';
 	import jwtDecode from 'jwt-decode';
 	import * as yup from 'yup';
-
+	import GoogleIcon from '$lib/icons/google.svg';
+	import FacebookIcon from '$lib/icons/facebook.svg';
+	import TwitterIcon from '$lib/icons/twitter.svg';
+	import GoogleSignin from '$lib/components/buttons/google-signin.button.svelte';
 	const {
 		// observables state
 		form,
@@ -67,31 +70,55 @@
 	};
 </script>
 
-<section class="flex justify-center pt-8">
-	<div class="w-full max-w-xs">
+<section class="flex justify-center pt-14">
+	<div class="w-full max-w-[450px]">
 		<form
 			class:valid={$isValid}
 			on:submit={handleSubmit}
-			class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
+			class="bg-white shadow-md rounded p-[60px] mb-4"
 		>
+			<div class="title">
+				<h3 class="text-3xl mb-2">Sign In to <strong>Talk Listen</strong></h3>
+				<p class="mb-7 text-base font-light text-gray-400">
+					Trang web dành cho người Việt giao lưu bla bla
+				</p>
+			</div>
 			<div class="mb-4">
-				<label class="block text-gray-700 text-sm font-bold mb-2" for="username"> Username </label>
+				<label class="block text-gray-700 text-sm font-normal mb-2" for="username"> Email </label>
 				<input
-					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-					type="text"
+					class="shadow appearance-none border border-gray-300
+					rounded w-full py-3 px-4 text-gray-700 leading-tight my-[1px]
+					focus:outline-none
+					focus:border-main-500
+					focus:shadow-transparent
+					focus:ring-transparent
+					focus:border-[2px]
+					focus:my-0
+					"
+					type="email"
 					placeholder="email"
 					name="email"
 					on:change={handleChange}
 					bind:value={$form.email}
 				/>
 				{#if $errors.email && $touched.email}
-					<p class="text-red-500 text-xs italic">Please choose a email.</p>
+					<p class="text-red-500 text-xs italic mt-1">Please choose a email.</p>
 				{/if}
 			</div>
 			<div class="mb-6">
-				<label class="block text-gray-700 text-sm font-bold mb-2" for="password"> Password </label>
+				<label class="block text-gray-700 text-sm font-normal mb-2" for="password">
+					Password
+				</label>
 				<input
-					class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+					class="shadow appearance-none border border-gray-300
+					rounded w-full py-3 px-4 text-gray-700 leading-tight my-[1px]
+					focus:outline-none
+					focus:border-main-500
+					focus:shadow-transparent
+					focus:ring-transparent
+					focus:border-[2px]
+					focus:my-0
+					"
 					id="password"
 					type="password"
 					placeholder="password"
@@ -105,40 +132,57 @@
 			</div>
 			<div class="flex items-center justify-center">
 				<Button
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="submit"
+					className="rounded-full max-w-[100%] dark:bg-main-500 hover:bg-main-700
+					outline-none
+					text-white font-medium py-2 px-4 focus:outline-none w-[100%]
+					hover:dark:bg-main-500
+					focus:shadow-none
+					focus:shadow-transparent
+					focus:dark:ring-transparent
+					h-[50px] text-base
+					"
+					type="button"
 				>
-					Sign In
+					Log in
 				</Button>
 			</div>
-			<div class="flex items-center justify-center">
-				<Button
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="button"
-					onClick={handleSigninOrSignupByGG}
-				>
-					Sign In by GG
-				</Button>
-			</div>
-			<div class="flex items-center justify-center">
-				<Button
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="button"
-					onClick={handleSigninOrSignupByFB}
-				>
-					Sign In by facebook
-				</Button>
-			</div>
-			<div class="flex items-center justify-center">
-				<Button
-					className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-					type="button"
-					onClick={handleLogoutByGG}
-				>
-					Signout by GG
-				</Button>
+			<p class="my-6 text-center text-gray-400">or sign in with</p>
+			<div class="flex justify-center gap-x-2">
+				<div class="flex items-center justify-center">
+					<Button
+						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
+						dark:bg-google hover:dark:bg-google btn-google"
+						type="button"
+						onClick={handleSigninOrSignupByGG}
+					>
+						<img class="w-5 h-5" src={GoogleIcon} alt="" />
+					</Button>
+				</div>
+				<div class="flex items-center justify-center">
+					<Button
+						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
+						dark:bg-facebook dark:bg-facebook btn-facebook"
+						type="button"
+						onClick={handleSigninOrSignupByFB}
+					>
+						<img class="w-5 h-5" src={FacebookIcon} alt="" />
+					</Button>
+				</div>
+				<div class="flex items-center justify-center">
+					<Button
+						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
+						dark:bg-twitter hover:dark:bg-twitter btn-twitter"
+						type="button"
+						onClick={handleLogoutByGG}
+					>
+						<img class="w-5 h-5" src={TwitterIcon} alt="" />
+					</Button>
+				</div>
 			</div>
 		</form>
-		<p class="text-center text-gray-500 text-xs">&copy;2020 Acme Corp. All rights reserved.</p>
+		<p class="text-center text-gray-500 text-xs">&copy;2022 Acme Corp. All rights reserved.</p>
 	</div>
 </section>
+
+<style>
+</style>
