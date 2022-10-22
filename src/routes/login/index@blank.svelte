@@ -86,7 +86,7 @@
 			<div class="mb-4">
 				<label class="block text-gray-700 text-sm font-normal mb-2" for="username"> Email </label>
 				<input
-					class="shadow appearance-none border border-gray-300 
+					class="shadow appearance-none border border-gray-300
 					rounded w-full py-3 px-4 text-gray-700 leading-tight my-[1px]
 					focus:outline-none
 					focus:border-main-500
@@ -151,7 +151,7 @@
 				<div class="flex items-center justify-center">
 					<Button
 						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
-						dark:bg-google hover:dark:bg-google"
+						dark:bg-google hover:dark:bg-google btn-google"
 						type="button"
 						onClick={handleSigninOrSignupByGG}
 					>
@@ -161,7 +161,7 @@
 				<div class="flex items-center justify-center">
 					<Button
 						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
-						dark:bg-facebook dark:bg-facebook"
+						dark:bg-facebook dark:bg-facebook btn-facebook"
 						type="button"
 						onClick={handleSigninOrSignupByFB}
 					>
@@ -171,7 +171,7 @@
 				<div class="flex items-center justify-center">
 					<Button
 						className="h-[50px] w-[50px] rounded-full text-white font-bold py-2 px-2 focus:outline-none focus:shadow-outline focus:dark:ring-transparent
-						dark:bg-twitter hover:dark:bg-twitter"
+						dark:bg-twitter hover:dark:bg-twitter btn-twitter"
 						type="button"
 						onClick={handleLogoutByGG}
 					>

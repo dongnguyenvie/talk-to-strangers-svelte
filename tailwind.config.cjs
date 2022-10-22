@@ -62,11 +62,7 @@ module.exports = {
 				cF5F5F5: '#F5F5F5',
 				c9E9E9E: '#9E9E9E',
 				cFAFAFA: '#FAFAFA'
-			},
-			google: "#ea4335",
-			facebook: "rgb(56, 92, 168)",
-			twitter: "rgb(29, 155, 240)",
-
+			}
 		}),
 		columns: {
 			auto: 'auto',
