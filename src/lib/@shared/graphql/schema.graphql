@@ -1,14 +1,3 @@
-input CreateOneRoomInput {
-  capacity: Float!
-  description: String
-  language: String!
-  topic: String!
-}
-
-type CreateOneRoomOutput {
-  id: String!
-}
-
 input CreateRoleIntput {
   isDefault: Boolean
   scp: [String!]!
@@ -16,6 +5,17 @@ input CreateRoleIntput {
 }
 
 type CreateRoleOutput {
+  id: String!
+}
+
+input CreateRoomInput {
+  capacity: Float!
+  description: String
+  language: String!
+  topic: String!
+}
+
+type CreateRoomOutput {
   id: String!
 }
 
@@ -28,6 +28,21 @@ input DeleteRoleIntput {
 
 type DeleteRoleOutput {
   id: String!
+}
+
+input DeleteUserInput {
+  id: String!
+}
+
+type DeleteUserOuput {
+  id: String!
+}
+
+type GetDeletedRolesOutput {
+  id: String!
+  isDefault: Boolean!
+  scp: [String!]!
+  title: String!
 }
 
 input GetRoleByIdInput {
@@ -49,15 +64,8 @@ type GetRolesOutput {
   title: String!
 }
 
-type GetRolesWasDeletedOutput {
-  id: String!
-  isDefault: Boolean!
-  scp: [String!]!
-  title: String!
-}
-
 input GetRoomsIntput {
-  pagination: PaginationIntput!
+  pagination: PaginationInput!
   relations: [String!] = []
 }
 
@@ -66,21 +74,63 @@ type GetRoomsOutput {
   pagination: Pagination!
 }
 
+input GetUserInput {
+  id: String!
+  relations: [String!] = []
+}
+
+type GetUserOutput {
+  createdAt: DateTime
+  email: String!
+  emailVerified: Boolean
+  fullName: String
+  id: String
+  image: String
+  phone: String
+  privilege: [Privilege!]
+  roles: [RoleEntity!]
+  updatedAt: DateTime
+}
+
+input GetUsersInput {
+  pagination: PaginationInput!
+  relations: [String!] = []
+}
+
+type GetUsersOutput {
+  data: [UserEntity!]!
+  pagination: Pagination!
+}
+
 # The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 scalar JSON
 
-type Mutation {
-  # {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
-  createOneRoom(input: CreateOneRoomInput!): CreateOneRoomOutput!
+type MeOutput {
+  email: String!
+  id: String!
+  scp: [String!]!
+  sub: String!
+  username: String!
+}
 
+type Mutation {
   # {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   createRole(input: CreateRoleIntput!): CreateRoleOutput!
+
+  # {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  createRoom(input: CreateRoomInput!): CreateRoomOutput!
 
   # {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   deleteRole(input: DeleteRoleIntput!): DeleteRoleOutput!
 
+  # {"publ":false,"t":"Xóa user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  deleteUser(input: DeleteUserInput!): DeleteUserOuput!
+
   # {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false}
   recoverRole(input: RecoverRoleIntput!): RecoverRoleOutput!
+
+  # {"publ":false,"t":"khôi phục user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  recoverUser(input: RecoverUserInput!): RecoverUserOutput!
 
   # {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
   signin(input: SigninIntput!): SigninOutput!
@@ -93,6 +143,12 @@ type Mutation {
 
   # {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   updateRole(input: UpdateRoleIntput!): UpdateRoleOuput!
+
+  # {"publ":false,"t":"Cập nhập thông tin cá nhân","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  updateUser(input: UpdateUserInput!): UpdateUserOutput!
+
+  # {"publ":false,"t":"Cập nhập thông tin user by admin","desc":"","sys":true,"sub":false,"gr":"user","d":false}
+  updateUserByAdmin(input: UpdateUserByAdminInput!): UpdateUserByAdminOutput!
 }
 
 type Pagination {
@@ -101,7 +157,7 @@ type Pagination {
   totalCount: Float!
 }
 
-input PaginationIntput {
+input PaginationInput {
   limit: Float!
   page: Float!
   totalCount: Float
@@ -112,17 +168,29 @@ enum Privilege {
 }
 
 type Query {
-  # {"publ":true,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  # {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  getDeletedRoles: [GetDeletedRolesOutput!]!
+
+  # {"publ":false,"t":"Lấy danh sách user đã xóa","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  getDeletedUsers(input: GetUsersInput!): GetUsersOutput!
+
+  # {"publ":false,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   getRoleById(input: GetRoleByIdInput!): GetRoleByIdOutput!
 
-  # {"publ":true,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  # {"publ":false,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   getRoles: [GetRolesOutput!]!
 
-  # {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
-  getRolesWasDeleted: [GetRolesWasDeletedOutput!]!
-
-  # {"publ":false,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  # {"publ":true,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
   getRooms(input: GetRoomsIntput!): GetRoomsOutput!
+
+  # {"publ":true,"t":"Lấy thông tin user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  getUser(input: GetUserInput!): GetUserOutput!
+
+  # {"publ":false,"t":"Lấy danh sách user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  getUsers(input: GetUsersInput!): GetUsersOutput!
+
+  # {"publ":true,"t":"Get me","desc":"","sys":false,"sub":false,"gr":"user","d":true}
+  me: MeOutput!
 }
 
 input RecoverRoleIntput {
@@ -130,6 +198,18 @@ input RecoverRoleIntput {
 }
 
 type RecoverRoleOutput {
+  id: String!
+}
+
+input RecoverUserInput {
+  id: String!
+}
+
+type RecoverUserOutput {
+  id: String!
+}
+
+input RelationshipInput {
   id: String!
 }
 
@@ -196,6 +276,28 @@ input UpdateRoleIntput {
 }
 
 type UpdateRoleOuput {
+  id: String!
+}
+
+input UpdateUserByAdminInput {
+  id: String!
+  roles: [RelationshipInput!]
+}
+
+type UpdateUserByAdminOutput {
+  id: String!
+}
+
+input UpdateUserInput {
+  fullName: String
+  id: String!
+  mobile: String
+  password: String
+  profile: String
+  username: String
+}
+
+type UpdateUserOutput {
   id: String!
 }
 

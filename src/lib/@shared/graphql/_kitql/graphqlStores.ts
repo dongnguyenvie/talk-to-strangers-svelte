@@ -125,19 +125,19 @@ function KQL_SigninByGoogleStore() {
  */
 export const KQL_SigninByGoogle = KQL_SigninByGoogleStore();
 
-function KQL_CreateOneRoomStore() {
-	const operationName = 'KQL_CreateOneRoom';
+function KQL_CreateRoomStore() {
+	const operationName = 'KQL_CreateRoom';
 	const operationType = ResponseResultType.Mutation;
 
 	// prettier-ignore
-	const { subscribe, set, update } = writable<RequestResult<Types.CreateOneRoomMutation, Types.CreateOneRoomMutationVariables>>({...defaultStoreValue, operationName, operationType});
+	const { subscribe, set, update } = writable<RequestResult<Types.CreateRoomMutation, Types.CreateRoomMutationVariables>>({...defaultStoreValue, operationName, operationType});
 
 		async function mutateLocal(
-			params?: RequestParameters<Types.CreateOneRoomMutationVariables>
-		): Promise<RequestResult<Types.CreateOneRoomMutation, Types.CreateOneRoomMutationVariables>> {
+			params?: RequestParameters<Types.CreateRoomMutationVariables>
+		): Promise<RequestResult<Types.CreateRoomMutation, Types.CreateRoomMutationVariables>> {
 			let { fetch, variables } = params ?? {};
 
-			const storedVariables = get(KQL_CreateOneRoom).variables;
+			const storedVariables = get(KQL_CreateRoom).variables;
 			variables = variables ?? storedVariables;
 
 			update((c) => {
@@ -145,9 +145,9 @@ function KQL_CreateOneRoomStore() {
 			});
 
 			// prettier-ignore
-			const res = await kitQLClient.request<Types.CreateOneRoomMutation, Types.CreateOneRoomMutationVariables>({
+			const res = await kitQLClient.request<Types.CreateRoomMutation, Types.CreateRoomMutationVariables>({
 				skFetch: fetch,
-				document: Types.CreateOneRoomDocument,
+				document: Types.CreateRoomDocument,
 				variables, 
 				operationName, 
 				operationType, 
@@ -170,9 +170,9 @@ function KQL_CreateOneRoomStore() {
 	};
 }
 /**
- * KitQL Svelte Store with the latest `CreateOneRoom` Operation
+ * KitQL Svelte Store with the latest `CreateRoom` Operation
  */
-export const KQL_CreateOneRoom = KQL_CreateOneRoomStore();
+export const KQL_CreateRoom = KQL_CreateRoomStore();
 
 function KQL_GetRoomsStore() {
 	const operationName = 'KQL_GetRooms';

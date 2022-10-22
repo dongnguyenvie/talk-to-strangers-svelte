@@ -1,5 +1,5 @@
-mutation createOneRoom($input: CreateOneRoomInput!) {
-	createOneRoom(input: $input) {
+mutation createRoom($input: CreateRoomInput!) {
+	createRoom(input: $input) {
 		id
 	}
 }

@@ -15,18 +15,6 @@ export type Scalars = {
   JSON: any;
 };
 
-export type CreateOneRoomInput = {
-  capacity: Scalars['Float'];
-  description?: InputMaybe<Scalars['String']>;
-  language: Scalars['String'];
-  topic: Scalars['String'];
-};
-
-export type CreateOneRoomOutput = {
-  __typename?: 'CreateOneRoomOutput';
-  id: Scalars['String'];
-};
-
 export type CreateRoleIntput = {
   isDefault?: InputMaybe<Scalars['Boolean']>;
   scp: Array<Scalars['String']>;
@@ -38,6 +26,18 @@ export type CreateRoleOutput = {
   id: Scalars['String'];
 };
 
+export type CreateRoomInput = {
+  capacity: Scalars['Float'];
+  description?: InputMaybe<Scalars['String']>;
+  language: Scalars['String'];
+  topic: Scalars['String'];
+};
+
+export type CreateRoomOutput = {
+  __typename?: 'CreateRoomOutput';
+  id: Scalars['String'];
+};
+
 export type DeleteRoleIntput = {
   id: Scalars['String'];
 };
@@ -45,6 +45,23 @@ export type DeleteRoleIntput = {
 export type DeleteRoleOutput = {
   __typename?: 'DeleteRoleOutput';
   id: Scalars['String'];
+};
+
+export type DeleteUserInput = {
+  id: Scalars['String'];
+};
+
+export type DeleteUserOuput = {
+  __typename?: 'DeleteUserOuput';
+  id: Scalars['String'];
+};
+
+export type GetDeletedRolesOutput = {
+  __typename?: 'GetDeletedRolesOutput';
+  id: Scalars['String'];
+  isDefault: Scalars['Boolean'];
+  scp: Array<Scalars['String']>;
+  title: Scalars['String'];
 };
 
 export type GetRoleByIdInput = {
@@ -68,16 +85,8 @@ export type GetRolesOutput = {
   title: Scalars['String'];
 };
 
-export type GetRolesWasDeletedOutput = {
-  __typename?: 'GetRolesWasDeletedOutput';
-  id: Scalars['String'];
-  isDefault: Scalars['Boolean'];
-  scp: Array<Scalars['String']>;
-  title: Scalars['String'];
-};
-
 export type GetRoomsIntput = {
-  pagination: PaginationIntput;
+  pagination: PaginationInput;
   relations?: InputMaybe<Array<Scalars['String']>>;
 };
 
@@ -87,21 +96,59 @@ export type GetRoomsOutput = {
   pagination: Pagination;
 };
 
+export type GetUserInput = {
+  id: Scalars['String'];
+  relations?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type GetUserOutput = {
+  __typename?: 'GetUserOutput';
+  createdAt?: Maybe<Scalars['DateTime']>;
+  email: Scalars['String'];
+  emailVerified?: Maybe<Scalars['Boolean']>;
+  fullName?: Maybe<Scalars['String']>;
+  id?: Maybe<Scalars['String']>;
+  image?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  privilege?: Maybe<Array<Privilege>>;
+  roles?: Maybe<Array<RoleEntity>>;
+  updatedAt?: Maybe<Scalars['DateTime']>;
+};
+
+export type GetUsersInput = {
+  pagination: PaginationInput;
+  relations?: InputMaybe<Array<Scalars['String']>>;
+};
+
+export type GetUsersOutput = {
+  __typename?: 'GetUsersOutput';
+  data: Array<UserEntity>;
+  pagination: Pagination;
+};
+
+export type MeOutput = {
+  __typename?: 'MeOutput';
+  email: Scalars['String'];
+  id: Scalars['String'];
+  scp: Array<Scalars['String']>;
+  sub: Scalars['String'];
+  username: Scalars['String'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
-  createOneRoom: CreateOneRoomOutput;
   createRole: CreateRoleOutput;
+  createRoom: CreateRoomOutput;
   deleteRole: DeleteRoleOutput;
+  deleteUser: DeleteUserOuput;
   recoverRole: RecoverRoleOutput;
+  recoverUser: RecoverUserOutput;
   signin: SigninOutput;
   signinByGoogle: SigninOutput;
   signup: SignupOutput;
   updateRole: UpdateRoleOuput;
-};
-
-
-export type MutationCreateOneRoomArgs = {
-  input: CreateOneRoomInput;
+  updateUser: UpdateUserOutput;
+  updateUserByAdmin: UpdateUserByAdminOutput;
 };
 
 
@@ -110,13 +157,28 @@ export type MutationCreateRoleArgs = {
 };
 
 
+export type MutationCreateRoomArgs = {
+  input: CreateRoomInput;
+};
+
+
 export type MutationDeleteRoleArgs = {
   input: DeleteRoleIntput;
 };
 
 
+export type MutationDeleteUserArgs = {
+  input: DeleteUserInput;
+};
+
+
 export type MutationRecoverRoleArgs = {
   input: RecoverRoleIntput;
+};
+
+
+export type MutationRecoverUserArgs = {
+  input: RecoverUserInput;
 };
 
 
@@ -139,6 +201,16 @@ export type MutationUpdateRoleArgs = {
   input: UpdateRoleIntput;
 };
 
+
+export type MutationUpdateUserArgs = {
+  input: UpdateUserInput;
+};
+
+
+export type MutationUpdateUserByAdminArgs = {
+  input: UpdateUserByAdminInput;
+};
+
 export type Pagination = {
   __typename?: 'Pagination';
   limit: Scalars['Float'];
@@ -146,7 +218,7 @@ export type Pagination = {
   totalCount: Scalars['Float'];
 };
 
-export type PaginationIntput = {
+export type PaginationInput = {
   limit: Scalars['Float'];
   page: Scalars['Float'];
   totalCount?: InputMaybe<Scalars['Float']>;
@@ -158,10 +230,19 @@ export enum Privilege {
 
 export type Query = {
   __typename?: 'Query';
+  getDeletedRoles: Array<GetDeletedRolesOutput>;
+  getDeletedUsers: GetUsersOutput;
   getRoleById: GetRoleByIdOutput;
   getRoles: Array<GetRolesOutput>;
-  getRolesWasDeleted: Array<GetRolesWasDeletedOutput>;
   getRooms: GetRoomsOutput;
+  getUser: GetUserOutput;
+  getUsers: GetUsersOutput;
+  me: MeOutput;
+};
+
+
+export type QueryGetDeletedUsersArgs = {
+  input: GetUsersInput;
 };
 
 
@@ -174,12 +255,35 @@ export type QueryGetRoomsArgs = {
   input: GetRoomsIntput;
 };
 
+
+export type QueryGetUserArgs = {
+  input: GetUserInput;
+};
+
+
+export type QueryGetUsersArgs = {
+  input: GetUsersInput;
+};
+
 export type RecoverRoleIntput = {
   id: Scalars['String'];
 };
 
 export type RecoverRoleOutput = {
   __typename?: 'RecoverRoleOutput';
+  id: Scalars['String'];
+};
+
+export type RecoverUserInput = {
+  id: Scalars['String'];
+};
+
+export type RecoverUserOutput = {
+  __typename?: 'RecoverUserOutput';
+  id: Scalars['String'];
+};
+
+export type RelationshipInput = {
   id: Scalars['String'];
 };
 
@@ -251,6 +355,30 @@ export type UpdateRoleOuput = {
   id: Scalars['String'];
 };
 
+export type UpdateUserByAdminInput = {
+  id: Scalars['String'];
+  roles?: InputMaybe<Array<RelationshipInput>>;
+};
+
+export type UpdateUserByAdminOutput = {
+  __typename?: 'UpdateUserByAdminOutput';
+  id: Scalars['String'];
+};
+
+export type UpdateUserInput = {
+  fullName?: InputMaybe<Scalars['String']>;
+  id: Scalars['String'];
+  mobile?: InputMaybe<Scalars['String']>;
+  password?: InputMaybe<Scalars['String']>;
+  profile?: InputMaybe<Scalars['String']>;
+  username?: InputMaybe<Scalars['String']>;
+};
+
+export type UpdateUserOutput = {
+  __typename?: 'UpdateUserOutput';
+  id: Scalars['String'];
+};
+
 export type UserEntity = {
   __typename?: 'UserEntity';
   createdAt?: Maybe<Scalars['DateTime']>;
@@ -279,12 +407,12 @@ export type SigninByGoogleMutationVariables = Exact<{
 
 export type SigninByGoogleMutation = { __typename?: 'Mutation', signinByGoogle: { __typename?: 'SigninOutput', id: string, email: string, scp: Array<string>, token: string, refreshToken?: string | null } };
 
-export type CreateOneRoomMutationVariables = Exact<{
-  input: CreateOneRoomInput;
+export type CreateRoomMutationVariables = Exact<{
+  input: CreateRoomInput;
 }>;
 
 
-export type CreateOneRoomMutation = { __typename?: 'Mutation', createOneRoom: { __typename?: 'CreateOneRoomOutput', id: string } };
+export type CreateRoomMutation = { __typename?: 'Mutation', createRoom: { __typename?: 'CreateRoomOutput', id: string } };
 
 export type GetRoomsQueryVariables = Exact<{
   input: GetRoomsIntput;
@@ -296,7 +424,7 @@ export type GetRoomsQuery = { __typename?: 'Query', getRooms: { __typename?: 'Ge
 
 export const SigninDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"signin"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SigninIntput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signin"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"scp"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]} as unknown as DocumentNode<SigninMutation, SigninMutationVariables>;
 export const SigninByGoogleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"signinByGoogle"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"SigninByGoogleIntput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"signinByGoogle"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"scp"}},{"kind":"Field","name":{"kind":"Name","value":"token"}},{"kind":"Field","name":{"kind":"Name","value":"refreshToken"}}]}}]}}]} as unknown as DocumentNode<SigninByGoogleMutation, SigninByGoogleMutationVariables>;
-export const CreateOneRoomDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createOneRoom"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateOneRoomInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOneRoom"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateOneRoomMutation, CreateOneRoomMutationVariables>;
+export const CreateRoomDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"createRoom"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateRoomInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createRoom"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]} as unknown as DocumentNode<CreateRoomMutation, CreateRoomMutationVariables>;
 export const GetRoomsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"getRooms"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"GetRoomsIntput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getRooms"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"data"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"capacity"}},{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"topic"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"pagination"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}}]}}]}}]} as unknown as DocumentNode<GetRoomsQuery, GetRoomsQueryVariables>;
 export const namedOperations = {
   Query: {
@@ -305,6 +433,6 @@ export const namedOperations = {
   Mutation: {
     signin: 'signin',
     signinByGoogle: 'signinByGoogle',
-    createOneRoom: 'createOneRoom'
+    createRoom: 'createRoom'
   }
 }
