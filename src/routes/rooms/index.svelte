@@ -3,7 +3,7 @@
 	import { ROUTES } from '$lib/@core/constants';
 	import { KQL_GetRooms } from '$lib/@shared/graphql/_kitql/graphqlStores';
 	import RoomCard from '$lib/components/RoomCard.svelte';
-
+	import RoomImage from '$lib/icons/image.png';
 	browser &&
 		KQL_GetRooms.query({
 			variables: {
@@ -21,14 +21,14 @@
 	};
 </script>
 
-<div class="flex flex-wrap">
+<div class="list-room">
 	{#each $KQL_GetRooms.data?.getRooms.data || [] as room}
-		<div class="inline-flex w-full sm:w-1/2 md:w-1/3">
+		<div class="inline-flex w-full">
 			<RoomCard
 				name={room.description || 'random description'}
 				title={room.topic}
 				tags={['freedom']}
-				avatar={'https://i.pravatar.cc/300'}
+				avatar={RoomImage}
 				emotions={[]}
 				id={room.id || ''}
 				isFull={false}
@@ -37,3 +37,11 @@
 		</div>
 	{/each}
 </div>
+<style>
+	.list-room{
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(344px, 1fr));
+		column-gap: 24px;
+		row-gap: 64px;
+	}
+</style>

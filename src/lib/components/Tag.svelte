@@ -3,7 +3,7 @@
 </script>
 
 <span
-	class={`inline-flex border rounded-[100px] border-main-cC4C4C4 bg-main-cF5F5F5 px-[12px] py-[8px] last:mr-[0px] mr-[5px] text-black text-opacity-[0.54] ${className}`}
+	class={`cursor-default inline-flex border rounded-full border-main-300 bg-white px-[12px] py-[5px] last:mr-[0px] mr-[5px] text-main-300 ${className}`}
 >
 	<slot />
 </span>

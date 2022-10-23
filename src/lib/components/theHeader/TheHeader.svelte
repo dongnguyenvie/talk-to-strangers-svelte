@@ -1,18 +1,12 @@
 <script lang="ts">
-	// import { page } from '$app/stores';
-	import logo from '$lib/icons/logo.svg';
+	import FlagEnIcon from '$lib/icons/ic_flag_en.svg';
+	import RingIcon from '$lib/icons/ic_ring.svg';
+	import UserGroupIcon from '$lib/icons/ic_user_group.svg';
+
 	export let className: string = '';
 </script>
 
-<header
-	class={`sticky top-0 left-0 z-10 flex justify-between px-5 py-2 bg-main-cFAFAFA ${className}`}
->
-	<div class="corner">
-		<a href="/">
-			<img src={logo} alt="SvelteKit" />
-		</a>
-	</div>
-
+<header class={`sticky top-0 left-0 z-10 flex justify-end px-5 py-2 bg-white ${className}`}>
 	<!-- <nav>
 		<svg viewBox="0 0 2 3" aria-hidden="true">
 			<path d="M0,0 L1,2 C1.5,3 1.5,3 2,3 L2,0 Z" />
@@ -31,12 +25,25 @@
 		</svg>
 	</nav> -->
 
-	<div>
-		<img
-			src="https://i.pravatar.cc/300"
-			alt=""
-			class="w-[50px] h-[50px] rounded-full border border-gray-500"
-		/>
+	<div class="">
+		<ul class="flex items-center gap-x-[32px]">
+			<li>
+				<img src={FlagEnIcon} alt="" />
+			</li>
+			<li>
+				<img src={RingIcon} alt="" />
+			</li>
+			<li>
+				<img src={UserGroupIcon} alt="" />
+			</li>
+			<li>
+				<img
+					src="https://i.pravatar.cc/300"
+					alt=""
+					class="w-[44px] h-[44px] rounded-full border border-gray-500"
+				/>
+			</li>
+		</ul>
 	</div>
 </header>
 

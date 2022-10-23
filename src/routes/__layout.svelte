@@ -19,7 +19,8 @@
 	import { appSettings, auth } from '$lib/state';
 	import Redirect from '$lib/components/redirect/Redirect.svelte';
 	import AutoCollapse from '$lib/components/AutoCollapse.svelte';
-	const { isCollapse } = appSettings;
+	import { SideBarMode } from '$lib/types';
+	const { isCollapse, sideBarMode } = appSettings;
 
 	// import type { Load, LoadOutput } from '@sveltejs/kit';
 
@@ -44,10 +45,10 @@
 	{/if}
 
 	{#if !!$auth.id}
-		<TheHeader className="min-h-76px" />
+		<TheHeader className="min-h-[92px] flex items-center" />
 		<div class="bg-white w-full flex min-h-full m-0 p-0 flex-grow">
 			<TheSidebar className={`flex-shrink-0`} />
-			<main class="w-[calc(100%_-_280px)] flex-grow px-5 py-4 bg-main-100">
+			<main class={`w-[calc(100vw_-_280px)] px-10 py-10 bg-white ${$sideBarMode === SideBarMode.SIDE ? 'sibar-side' : ''}`}>
 				<slot />
 			</main>
 		</div>
@@ -56,4 +57,7 @@
 </div>
 
 <style>
+	.sibar-side{
+		margin-left: 280px;
+	}
 </style>
