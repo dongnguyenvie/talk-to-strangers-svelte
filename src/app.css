@@ -63,3 +63,12 @@
 		rgb(24 144 255) 0px 0px 1px, rgb(24 144 255) 0px 0px 2px, rgb(24 144 255) 0px 0px 3px,
 		rgb(24 144 255) 0px 0px 4px;
 }
+.btn-google{
+	background-color: #ea4335;
+}
+.btn-facebook{
+	background-color: rgb(56, 92, 168);
+}
+.btn-twitter{
+	background-color: rgb(29, 155, 240);
+}
