@@ -10,18 +10,23 @@
 
 <aside
 	class={`bg-white ${className} transition-[width] ${
-		$isCollapse ? 'w-[55px]' : 'w-[280px]'
-	} z-10 fixed h-[100vh] top-0
-	`}
-	aria-label="Sidebar"
+		$isCollapse ? 'w-[45px]' : 'w-[280px]'
+	} z-10 fixed h-[100vh] top-0 overflow-hidden`}
 >
-	<div class="corner pt-6 pb-[14px] px-[20px] ">
-		<a href="/">
-			<img src={logo} alt="SvelteKit" />
-		</a>
+	<div class="corner md:pt-2 md:px-[20px] min-h-[90px]">
+		{#if !$isCollapse}
+			<a href="/">
+				<img src={logo} class="w-full max-w-[150px]" alt="SvelteKit" />
+			</a>
+		{/if}
 	</div>
-	<div class="user-info mx-[20px] mt-[18px] mb-4 py-[18px] px-[20px] rounded-xl flex items-center">
-		<div class="avatar mr-4">
+
+	<div class={`flex ${$isCollapse ? '' : 'justify-end'} px-3 py-2`}>
+		<button on:click={onToggleCollapse}>{$isCollapse ? '>>' : '<<'}</button>
+	</div>
+
+	<div class="bg-gray-300 px-2 flex overflow-hidden h-[60px] rounded-xl py-2">
+		<div class="avatar mr-4 overflow-hidden">
 			<img
 				class="rounded-full w-[40px] h-[40px]"
 				src="https://i.pravatar.cc/300"
@@ -33,12 +38,13 @@
 			<p class="role text-sm font-normal leading-[22px]">Admin</p>
 		</div>
 	</div>
-	<div class="sticky p-0 m-0 top-[90px]">
+
+	<div class="sticky p-0 m-0 top-[90px] mt-4">
 		<div class="rounded overflow-hidden">
-			<ul class="space-y-2 mx-4 ">
+			<ul class="space-y-2">
 				{#each sidebarConfig as item}
 					<li
-						class="active px-[19px] py-[14px] rounded-lg hover:bg-primary-80 "
+						class="active py-[14px] rounded-lg hover:bg-primary-80 "
 						class:active={$page.url.pathname === item.path}
 					>
 						<a

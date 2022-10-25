@@ -30,8 +30,6 @@
 	// 		}
 	// 	}
 	// });
-
-	const handleResize = (a: string) => {};
 </script>
 
-<svelte:window bind:innerWidth bind:innerHeight on:resize={handleResize} />
+<svelte:window bind:innerWidth bind:innerHeight />
