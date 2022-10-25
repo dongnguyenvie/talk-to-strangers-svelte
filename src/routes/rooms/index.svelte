@@ -8,8 +8,8 @@
 	import { browser } from '$app/env';
 	import { ROUTES } from '$lib/@core/constants';
 	import { KQL_GetRooms } from '$lib/@shared/graphql/_kitql/graphqlStores';
-	import RoomCard from '$lib/components/RoomCard.svelte';
-	import Tag from '$lib/components/Tag.svelte';
+	import RoomCard from '$lib/components/room-card.svelte';
+	import Tag from '$lib/components/tag.svelte';
 
 	browser &&
 		KQL_GetRooms.query({

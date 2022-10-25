@@ -4,7 +4,7 @@
 	import { page } from '$app/stores';
 	import { srcObject } from '$lib/@shared/directives/src-object.directive';
 	import { initRoomEvent } from '$lib/@shared/socket/events';
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/button.svelte';
 	import { room } from '$lib/state';
 	import { onDestroy } from 'svelte';
 	import { derived, get } from 'svelte/store';
@@ -12,8 +12,8 @@
 	import { nonNullAssert } from '$lib/@shared/util/operator';
 	import type { SocketID } from '$lib/types/socket';
 	import { browser } from '$app/env';
-	import ChatInput from '$lib/components/chat/ChatInput.svelte';
-	import UserCard from '$lib/components/UserCard.svelte';
+	import UserCard from '$lib/components/user-card.svelte';
+	import ChatInput from '$lib/components/chat/chat-input.svelte';
 	if (browser) {
 		window.process = process;
 	}

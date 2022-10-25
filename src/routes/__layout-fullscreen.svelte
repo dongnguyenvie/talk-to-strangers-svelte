@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { auth } from '$lib/state';
-	import Redirect from '$lib/components/redirect/Redirect.svelte';
+	import Redirect from '$lib/components/redirect.svelte';
 </script>
 
 <div

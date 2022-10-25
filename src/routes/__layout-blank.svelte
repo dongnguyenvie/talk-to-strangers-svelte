@@ -1,9 +1,9 @@
 <script lang="ts">
-	import TheSidebar from '$lib/components/theHeader/TheHeader.svelte';
+	import MainSidebar from '$lib/components/sidebars/main-sidebar.svelte';
 	import '../app.css';
 </script>
 
-<TheSidebar />
+<MainSidebar />
 
 <main>
 	<slot />

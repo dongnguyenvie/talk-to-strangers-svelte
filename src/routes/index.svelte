@@ -6,8 +6,7 @@
 <script lang="ts">
 	import { ROUTES } from '$lib/@core/constants';
 
-	import Redirect from '$lib/components/redirect/Redirect.svelte';
-	import RoomCard from '$lib/components/RoomCard.svelte';
+	import Redirect from '$lib/components/redirect.svelte';
 </script>
 
 <svelte:head>

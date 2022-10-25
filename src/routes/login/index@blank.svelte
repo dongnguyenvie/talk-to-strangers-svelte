@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Button from '$lib/components/Button.svelte';
+	import Button from '$lib/components/button.svelte';
 	import { goto } from '$app/navigation';
 	import { KQL_Signin } from '$lib/@shared/graphql/_kitql/graphqlStores';
 	import { auth, facebookOAuth2, googleOAuth2 } from '$lib/state';

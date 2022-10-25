@@ -2,8 +2,8 @@
 </script>
 
 <script lang="ts">
-	import Button from '$lib/components/Button.svelte';
-	import RoomCard from '$lib/components/RoomCard.svelte';
+	import Button from '$lib/components/button.svelte';
+	import RoomCard from '$lib/components/room-card.svelte';
 </script>
 
 <svelte:head>

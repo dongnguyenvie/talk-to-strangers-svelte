@@ -1,7 +1,7 @@
 <script lang="ts">
 	import ic_shape from '$lib/icons/ic_shape.svg';
-	import Button from './Button.svelte';
-	import Tag from './Tag.svelte';
+	import Button from './button.svelte';
+	import Tag from './tag.svelte';
 
 	export let id: string;
 	export let title: string;
