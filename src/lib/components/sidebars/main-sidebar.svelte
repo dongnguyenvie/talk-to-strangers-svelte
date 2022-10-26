@@ -9,11 +9,11 @@
 </script>
 
 <aside
-	class={`bg-white px-4 ${className} transition-[width] ${
+	class={`bg-white ${className} transition-[width] ${
 		$isCollapse ? 'w-[45px]' : 'w-[280px]'
 	} z-10 fixed h-[100vh] top-0 overflow-hidden`}
 >
-	<div class="corner pt-6 min-h-[90px]">
+	<div class="corner md:pt-2 md:px-[20px] min-h-[90px]">
 		{#if !$isCollapse}
 			<a href="/">
 				<img src={logo} class="w-full max-w-[150px]" alt="SvelteKit" />
@@ -25,7 +25,7 @@
 		<button on:click={onToggleCollapse}>{$isCollapse ? '>>' : '<<'}</button>
 	</div>
 
-	<div class="bg-gray-100 px-[20px] py-[18px] flex overflow-hidden h-[76px] rounded-xl">
+	<div class="bg-gray-300 px-2 flex overflow-hidden h-[60px] rounded-xl py-2">
 		<div class="avatar mr-4 overflow-hidden">
 			<img
 				class="rounded-full w-[40px] h-[40px]"
@@ -35,7 +35,7 @@
 		</div>
 		<div class="info-content">
 			<p class="username text-sm font-bold leading-[22px]">Carlota Monteiro</p>
-			<p class="role text-secondary text-sm font-normal leading-[22px]">Admin</p>
+			<p class="role text-sm font-normal leading-[22px]">Admin</p>
 		</div>
 	</div>
 
@@ -54,10 +54,10 @@
 								goto(item.path);
 							}}
 						>
-							<span class="px-[19px]">
+							<span class="px-2">
 								{@html item.icon($page.url.pathname === item.path ? '#4DB6AC' : '#637381')}
 							</span>
-							<span class="ml-2 flex-shrink text-secondary">{item.name}</span>
+							<span class="ml-2 flex-shrink">{item.name}</span>
 						</a>
 					</li>
 				{/each}
@@ -67,11 +67,20 @@
 </aside>
 
 <style>
+	.user-info {
+		background-color: var(--bg-gray-80);
+	}
+	.role {
+		color: var(--text-secondary);
+	}
 	li.active {
 		@apply bg-primary-80;
 	}
 	li.active span {
 		@apply text-main-300 font-bold;
+	}
+	li span {
+		color: var(--text-secondary);
 	}
 	aside {
 		border-right: 1px dashed rgba(145, 158, 171, 0.24);

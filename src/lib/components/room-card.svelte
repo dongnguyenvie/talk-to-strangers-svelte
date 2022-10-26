@@ -1,5 +1,5 @@
 <script lang="ts">
-	import icShape from '$lib/icons/ic_shape.svg';
+	import ic_shape from '$lib/icons/ic_shape.svg';
 	import Button from './button.svelte';
 	import Tag from './tag.svelte';
 
@@ -18,7 +18,7 @@
 	<div class="flex flex-col relative">
 		<img class="rounded-tl-2xl rounded-tr-2xl " src={avatar} alt="avatar-room" />
 		<div class="absolute top-[9px] right-[13px] cursor-pointer">
-			<img src={icShape} alt="">
+			<img src={ic_shape} alt="">
 		</div>
 		<div class="room-info mt-[39px] p-6">
 			<h5 class="text-sm leading-[22px] font-bold mb-4 text-primary capitalize">{name}</h5>
