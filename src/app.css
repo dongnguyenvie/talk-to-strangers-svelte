@@ -3,12 +3,6 @@
 @tailwind utilities;
 
 /* @import '@fontsource/fira-mono';yarn d */
-:root{
-	/* color */
-	--text-secondary: #637381;
-	/* background color */
-	--bg-gray-80: rgba(145, 158, 171, 0.08);
-}
 .text-overline {
 	@apply text-[10px] font-[700] uppercase;
 }
