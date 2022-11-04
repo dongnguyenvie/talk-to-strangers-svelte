@@ -274,7 +274,11 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const audioStream = me.audioStream;
 			if (!audioStream) return;
 			getPeers({ isSentAudio: true }).forEach((peerState) => {
-				peerState.inst.removeStream(audioStream);
+				try {
+					peerState.inst.removeStream(audioStream);
+				} catch (error) {
+					console.warn('off mic', error);
+				}
 			});
 
 			room.updateClientStream({
@@ -301,7 +305,11 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const mediaStream = me.mediaStream;
 			if (!mediaStream) return;
 			getPeers({ isSentVideo: true }).forEach((peerState) => {
-				peerState.inst.removeStream(mediaStream);
+				try {
+					peerState.inst.removeStream(mediaStream);
+				} catch (error) {
+					console.warn('off cam', error);
+				}
 			});
 
 			room.updateClientStream({

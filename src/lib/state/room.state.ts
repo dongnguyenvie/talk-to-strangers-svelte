@@ -40,7 +40,8 @@ const clientSelected = derived([{ subscribe }, clientIdSelected], ($values) => {
 });
 const mediaSelected = derived(clientSelected, ($client) => {
 	let share = $client?.share;
-	if (!share) return null;
+	const isActive = $client?.isVideo;
+	if (!share || !isActive) return null;
 	return $client[share];
 });
 
