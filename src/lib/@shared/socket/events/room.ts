@@ -97,7 +97,10 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		io.on(
 			EVENT_ROOM_PERSONAL_CLIENT.allUsers,
 			(event: {
-				users: Pick<Client, 'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'focusId' | 'share'>[];
+				users: Pick<
+					Client,
+					'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'watchingId' | 'share'
+				>[];
 			}) => {
 				const { users } = event;
 				users.forEach((client) => {
@@ -107,7 +110,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						isVideo: client.isVideo || false,
 						isAudio: client.isAudio || false,
 						avatar: client.avatar || '',
-						focusId: client.focusId || null,
+						watchingId: client.watchingId || null,
 						share: client.share || null
 					});
 				});
@@ -150,12 +153,12 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		});
 
 		io.on(EVENT_ROOM_CLIENT.syncUserState, (event: ClientStateEvent) => {
-			const { from, isAudio, isVideo, focusId, share } = event;
+			const { from, isAudio, isVideo, watchingId, share } = event;
 			room.updateClientState({
 				socketId: from,
 				isAudio: isAudio,
 				isVideo: isVideo,
-				focusId: focusId,
+				watchingId: watchingId,
 				share: share
 			});
 		});
@@ -271,7 +274,11 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const audioStream = me.audioStream;
 			if (!audioStream) return;
 			getPeers({ isSentAudio: true }).forEach((peerState) => {
-				peerState.inst.removeStream(audioStream);
+				try {
+					peerState.inst.removeStream(audioStream);
+				} catch (error) {
+					console.warn('off mic', error);
+				}
 			});
 
 			room.updateClientStream({
@@ -298,7 +305,11 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const mediaStream = me.mediaStream;
 			if (!mediaStream) return;
 			getPeers({ isSentVideo: true }).forEach((peerState) => {
-				peerState.inst.removeStream(mediaStream);
+				try {
+					peerState.inst.removeStream(mediaStream);
+				} catch (error) {
+					console.warn('off cam', error);
+				}
 			});
 
 			room.updateClientStream({
@@ -320,12 +331,12 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 				stopBothVideoAndAudio(mediaStream);
 			}, 200);
 		},
-		openFocusOn(focusId: SocketID) {
+		openFocusOn(watchingId: SocketID) {
 			io.emit(
 				EVENT_ROOM_SERVER.syncUserState,
 				new ClientStateEvent({
 					roomId: roomId,
-					focusId: focusId
+					watchingId: watchingId
 				})
 			);
 		},
@@ -366,12 +377,12 @@ function createPeer({
 	stream,
 	isAudio,
 	isVideo,
-	focusId,
+	watchingId: watchingId,
 	share
 }: {
 	callerID: string;
 	roomId: string;
-	focusId: string | null;
+	watchingId: string | null;
 	stream?: MediaStream;
 } & UserConfig &
 	Pick<Client, 'share'>) {
@@ -413,7 +424,7 @@ function createPeer({
 		peer,
 		isAudio: isAudio,
 		isVideo: isVideo,
-		focusId: focusId,
+		watchingId: watchingId,
 		share: share
 	});
 

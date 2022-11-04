@@ -33,19 +33,20 @@ const myMedia = derived({ subscribe }, ($room) => {
 const messages = derived({ subscribe }, ($room) => {
 	return $room.messages;
 });
-const clientIdSelected = derived(myMedia, ($me) => $me?.focusId);
+const clientIdSelected = derived(myMedia, ($me) => $me?.watchingId);
 const clientSelected = derived([{ subscribe }, clientIdSelected], ($values) => {
 	const [room, selectId] = $values;
 	return room.clientsMap[selectId as unknown as SocketID];
 });
 const mediaSelected = derived(clientSelected, ($client) => {
 	let share = $client?.share;
-	if (!share) return null;
+	const isActive = $client?.isVideo;
+	if (!share || !isActive) return null;
 	return $client[share];
 });
 
 const watchersMap = derived(clients, ($clients) => {
-	return _.groupBy($clients, 'focusId');
+	return _.groupBy($clients, 'watchingId');
 });
 
 const watchersEntries = derived(watchersMap, ($watchersMap) => {
