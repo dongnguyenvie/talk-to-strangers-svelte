@@ -6,7 +6,7 @@ export class ClientStateEvent implements Pick<Client, 'isVideo' | 'isAudio'> {
 	isAudio!: boolean;
 	from!: SocketID;
 	roomId!: string;
-	focusId: SocketID | null = null;
+	watchingId: SocketID | null = null;
 	share!: ClientShareable;
 
 	constructor(partial: Pick<ClientStateEvent, 'roomId'> & Partial<ClientStateEvent>) {
