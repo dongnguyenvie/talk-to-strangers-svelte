@@ -549,25 +549,28 @@ function stopAudioOnly(stream: MediaStream) {
 function addTracksToPeerFcn(peer: SimplePeer.Instance, stream: MediaStream, isAdd = false) {
 	let vidtracks = stream.getVideoTracks();
 	let audtracks = stream.getAudioTracks();
+	try {
+		console.log('Track vidtracks: ', vidtracks); // Check to make sure track exists: it does
+		console.log('Track audtracks: ', audtracks);
+		if (isAdd) {
+			if (vidtracks.length) {
+				peer.addTrack(vidtracks[0], stream);
+			}
+			if (audtracks.length) {
+				peer.addTrack(audtracks[0], stream);
+			}
+		} else {
+			// if (vidtracks.length) {
+			// 	peer.removeTrack(vidtracks[0], stream);
+			// }
+			// if (audtracks.length) {
+			// 	peer.removeTrack(audtracks[0], stream);
+			// }
+		}
 
-	console.log('Track vidtracks: ', vidtracks); // Check to make sure track exists: it does
-	console.log('Track audtracks: ', audtracks);
-	if (isAdd) {
-		if (vidtracks.length) {
-			peer.addTrack(vidtracks[0], stream);
-		}
-		if (audtracks.length) {
-			peer.addTrack(audtracks[0], stream);
-		}
-	} else {
-		// if (vidtracks.length) {
-		// 	peer.removeTrack(vidtracks[0], stream);
-		// }
-		// if (audtracks.length) {
-		// 	peer.removeTrack(audtracks[0], stream);
-		// }
+		// Check for added streams: none.
+		console.log('Streams now: ', peer.streams);
+	} catch (error) {
+		console.warn('addTracksToPeerFcn', { error });
 	}
-
-	// Check for added streams: none.
-	console.log('Streams now: ', peer.streams);
 }
