@@ -1,5 +1,4 @@
-import { browser } from '$app/env';
-import { KQL_SigninByGoogle } from '$lib/@shared/graphql/_kitql/graphqlStores';
+import { browser } from '$app/environment';
 import type { Auth } from '$lib/types';
 import type { CredentialResponse } from 'google-one-tap';
 import type Google from 'google-one-tap';
@@ -7,6 +6,7 @@ import { writable, get } from 'svelte/store';
 import { goto } from '$app/navigation';
 import { ROUTES } from '$lib/@core/constants';
 import jwtDecode from 'jwt-decode';
+import { GQL_signinByGoogle } from '$houdini';
 
 let google: typeof Google;
 const USER_INFO = 'USER_INFO';
@@ -32,15 +32,13 @@ if (browser) {
 	async function handleCredentialResponse(response: CredentialResponse) {
 		const jwt = response.credential;
 		try {
-			const resp = await KQL_SigninByGoogle.mutate({
-				variables: {
-					input: {
-						token: jwt
-					}
+			const data = await GQL_signinByGoogle.mutate({
+				input: {
+					token: jwt
 				}
 			});
-			if (resp.data?.signinByGoogle.id) {
-				const token = resp.data?.signinByGoogle.token!;
+			if (data?.signinByGoogle.id) {
+				const token = data?.signinByGoogle.token!;
 				const user = jwtDecode(token) as Auth;
 				auth.set({ ...user, token });
 				goto(ROUTES.rooms);

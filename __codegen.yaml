@@ -14,7 +14,7 @@
 # #   - typescript-operations
 # #   - '@kitql/graphql-codegen'
 # # - typescript-react-apollo
-schema: 'src/lib/@shared/graphql/schema.graphql'
+schema: 'src/lib/@shared/graphql/schema.graphqlxxx'
 documents: "./src/**/*.gql"
 generates:
   ./src/lib/@shared/graphql/_kitql/graphqlTypes.ts:

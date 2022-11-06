@@ -1,13 +1,13 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
 	import { goto } from '$app/navigation';
-	import { KQL_Signin } from '$lib/@shared/graphql/_kitql/graphqlStores';
 	import { auth } from '$lib/state';
 	import { createForm } from 'svelte-forms-lib';
 	import { ROUTES } from '$lib/@core/constants';
 	import type { Auth } from '$lib/types';
 	import jwtDecode from 'jwt-decode';
 	import * as yup from 'yup';
+	import { GQL_signin } from '$houdini';
 
 	const {
 		// observables state
@@ -33,14 +33,13 @@
 		onSubmit: async (values) => {
 			try {
 				const { email, password } = values;
-				const { data, errors } = await KQL_Signin.mutate({
-					variables: {
-						input: {
-							email: email,
-							password: password
-						}
+				const data = await GQL_signin.mutate({
+					input: {
+						email: email,
+						password: password
 					}
 				});
+
 				if (!!errors) {
 					console.log({ errors });
 					alert('user or password are wrong');

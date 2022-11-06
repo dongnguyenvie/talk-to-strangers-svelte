@@ -3,7 +3,7 @@ import { io } from '..';
 import SimplePeer, { getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { room } from '$lib/state';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import { CallEvent } from '$lib/@core/events/sockets/call.event';
 interface NewPeer {
 	socketId: string;

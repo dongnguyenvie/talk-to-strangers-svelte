@@ -8,7 +8,7 @@ import { io } from '..';
 import SimplePeer, { createClient, getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { room } from '$lib/state';
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import { P2PEvent, ClientStateEvent, CallEvent } from '$lib/@core/events/sockets';
 import type { SocketID } from '$lib/types/socket';
 import { MediaRequest } from '$lib/@core/enums';

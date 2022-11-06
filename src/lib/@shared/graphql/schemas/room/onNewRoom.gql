@@ -1,0 +1,19 @@
+subscription onNewRoom {
+	onNewRoom {
+		id
+		capacity
+		description
+		language
+		clients {
+			id
+			avatar
+			username
+		}
+		creator {
+			id
+			avatar
+			username
+		}
+        
+	}
+}

@@ -1,8 +1,3 @@
-<script context="module" lang="ts">
-	export const prerender = true;
-	export const xxxx = 'helloooo';
-</script>
-
 <script lang="ts">
 	import { ROUTES } from '$lib/@core/constants';
 

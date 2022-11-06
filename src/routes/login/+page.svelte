@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Button from '$lib/components/button.svelte';
 	import { goto } from '$app/navigation';
-	import { KQL_Signin } from '$lib/@shared/graphql/_kitql/graphqlStores';
 	import { auth, facebookOAuth2, googleOAuth2 } from '$lib/state';
 	import { createForm } from 'svelte-forms-lib';
 	import { ROUTES } from '$lib/@core/constants';
@@ -12,6 +11,8 @@
 	import FacebookIcon from '$lib/icons/facebook.svg';
 	import TwitterIcon from '$lib/icons/twitter.svg';
 	import GoogleSignin from '$lib/components/buttons/google-signin.button.svelte';
+	import { GQL_signin, GQL_onNewRoom } from '$houdini';
+
 	const {
 		// observables state
 		form,
@@ -36,19 +37,18 @@
 		onSubmit: async (values) => {
 			try {
 				const { email, password } = values;
-				const { data, errors } = await KQL_Signin.mutate({
-					variables: {
-						input: {
-							email: email,
-							password: password
-						}
+				const data = await GQL_signin.mutate({
+					input: {
+						email: email,
+						password: password
 					}
 				});
-				if (!!errors) {
-					console.log({ errors });
-					alert('user or password are wrong');
-					return;
-				}
+				console.log('login', data);
+				// if (!!errors) {
+				// 	console.log({ errors });
+				// 	alert('user or password are wrong');
+				// 	return;
+				// }
 				const token = data?.signin.token!;
 				const user = jwtDecode(token) as Auth;
 				auth.set({ ...user, token });

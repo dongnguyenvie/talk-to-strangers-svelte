@@ -1,4 +1,4 @@
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 import { SideBarMode, type App } from '$lib/types';
 import { derived, writable } from 'svelte/store';
 

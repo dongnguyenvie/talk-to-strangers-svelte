@@ -3,16 +3,18 @@ query getRooms($input: GetRoomsIntput!) {
 		data {
 			id
 			capacity
-			language
 			description
-			topic
-			createdAt
-			# creator {
-			# 	id
-			# }
-			# clients {
-			# 	id
-			# }
+			language
+			clients {
+				id
+				avatar
+				username
+			}
+			creator {
+				id
+				avatar
+				username
+			}
 		}
 		pagination {
 			limit
