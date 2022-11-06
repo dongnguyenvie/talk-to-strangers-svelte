@@ -13,7 +13,6 @@
 </script>
 
 <script lang="ts">
-	import '../app.css';
 	import MainHeader from '$lib/components/headers/main-header.svelte';
 	import MainSidebar from '$lib/components/sidebars/main-sidebar.svelte';
 	import { appSettings, auth } from '$lib/state';

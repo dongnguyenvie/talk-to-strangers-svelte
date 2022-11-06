@@ -4,15 +4,20 @@
 	import PlusIcon from '$lib/icons/ic_plus.svg';
 	import FilterIcon from '$lib/icons/ic_filter.svg';
 	import DownIcon from '$lib/icons/ic_chevron_down.svg';
-	// code
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import { ROUTES } from '$lib/@core/constants';
-	import { KQL_GetRooms } from '$lib/@shared/graphql/_kitql/graphqlStores';
 	import RoomCard from '$lib/components/room-card.svelte';
 	import Tag from '$lib/components/tag.svelte';
+	import CreateRoomDialog from '$lib/components/dialogs/create-room-dialog.svelte';
+	let isCreateRoomDialog = false;
+	import { GQL_getRooms } from '$houdini';
+
+	const handleToggleCreateRoomDialog = () => {
+		isCreateRoomDialog = !isCreateRoomDialog;
+	};
 
 	browser &&
-		KQL_GetRooms.query({
+		GQL_getRooms.fetch({
 			variables: {
 				input: {
 					pagination: {
@@ -32,7 +37,10 @@
 	<div class="toolbar mb-[40px]">
 		<h3 class="text-primary text-2xl leading-[36px] font-bold">Phòng chờ</h3>
 		<div class="toolbar-items mt-[40px] flex gap-x-[50px] gap-y-[20px] items-center flex-wrap">
-			<button class="btn-talk w-[126px] bg-main-300 flex justify-center items-center py-[6px]">
+			<button
+				class="btn-talk w-[126px] bg-main-300 flex justify-center items-center py-[6px]"
+				on:click={handleToggleCreateRoomDialog}
+			>
 				<img class="pr-[4px]" src={PlusIcon} alt="" />
 				<span class="font-bold text-sm leading-[24px] text-white"> Tạo Phòng </span>
 			</button>
@@ -51,11 +59,11 @@
 		</div>
 	</div>
 	<div class="list-room">
-		{#each $KQL_GetRooms.data?.getRooms.data || [] as room}
+		{#each $GQL_getRooms.data?.getRooms.data || [] as room}
 			<div class="inline-flex w-full">
 				<RoomCard
 					name={room.description || 'random description'}
-					title={room.topic}
+					title={room.description || ''}
 					tags={['freedom']}
 					avatar={RoomImage}
 					emotions={[]}
@@ -67,6 +75,7 @@
 		{/each}
 	</div>
 </div>
+<CreateRoomDialog isOpen={isCreateRoomDialog} onToggle={handleToggleCreateRoomDialog} />
 
 <style>
 	.list-room {

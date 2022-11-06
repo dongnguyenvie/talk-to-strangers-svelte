@@ -11,7 +11,7 @@
 	import * as process from 'process';
 	import { nonNullAssert } from '$lib/@shared/util/operator';
 	import type { SocketID } from '$lib/types/socket';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import UserCard from '$lib/components/user-card.svelte';
 	import ChatInput from '$lib/components/chat/chat-input.svelte';
 	if (browser) {

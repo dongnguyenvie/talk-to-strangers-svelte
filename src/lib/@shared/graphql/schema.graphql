@@ -1,3 +1,11 @@
+input CreateBlogInput {
+  title: String!
+}
+
+type CreateBlogOutput {
+  id: String!
+}
+
 input CreateRoleIntput {
   isDefault: Boolean
   scp: [String!]!
@@ -19,7 +27,9 @@ type CreateRoomOutput {
   id: String!
 }
 
-# A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
 scalar DateTime
 
 input DeleteRoleIntput {
@@ -70,7 +80,7 @@ input GetRoomsIntput {
 }
 
 type GetRoomsOutput {
-  data: [RoomEntity!]!
+  data: [RoomOutput!]!
   pagination: Pagination!
 }
 
@@ -102,7 +112,9 @@ type GetUsersOutput {
   pagination: Pagination!
 }
 
-# The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
 scalar JSON
 
 type MeOutput {
@@ -114,41 +126,79 @@ type MeOutput {
 }
 
 type Mutation {
-  # {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Tạo Blog","desc":"","sys":false,"sub":false,"gr":"blog","d":false}
+  """
+  createBlog(input: CreateBlogInput!): CreateBlogOutput!
+
+  """
+  {"publ":false,"t":"Tạo vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
   createRole(input: CreateRoleIntput!): CreateRoleOutput!
 
-  # {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
+  {"publ":false,"t":"Tạo room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
   createRoom(input: CreateRoomInput!): CreateRoomOutput!
 
-  # {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
   deleteRole(input: DeleteRoleIntput!): DeleteRoleOutput!
 
-  # {"publ":false,"t":"Xóa user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":false,"t":"Xóa user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
   deleteUser(input: DeleteUserInput!): DeleteUserOuput!
 
-  # {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Phục hồi quyền","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  """
   recoverRole(input: RecoverRoleIntput!): RecoverRoleOutput!
 
-  # {"publ":false,"t":"khôi phục user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":false,"t":"khôi phục user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
   recoverUser(input: RecoverUserInput!): RecoverUserOutput!
 
-  # {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
+  {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
   signin(input: SigninIntput!): SigninOutput!
 
-  # {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
+  {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
   signinByGoogle(input: SigninByGoogleIntput!): SigninOutput!
 
-  # {"publ":true,"t":"Đăng kí","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
+  {"publ":true,"t":"Đăng kí","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  """
   signup(input: Signup!): SignupOutput!
 
-  # {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
   updateRole(input: UpdateRoleIntput!): UpdateRoleOuput!
 
-  # {"publ":false,"t":"Cập nhập thông tin cá nhân","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":false,"t":"Cập nhập thông tin cá nhân","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
   updateUser(input: UpdateUserInput!): UpdateUserOutput!
 
-  # {"publ":false,"t":"Cập nhập thông tin user by admin","desc":"","sys":true,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":false,"t":"Cập nhập thông tin user by admin","desc":"","sys":true,"sub":false,"gr":"user","d":false}
+  """
   updateUserByAdmin(input: UpdateUserByAdminInput!): UpdateUserByAdminOutput!
+}
+
+type OnNewRoomOutPut {
+  capacity: Float!
+  clients: [RoomUserOutPut!]!
+  creator: RoomUserOutPut!
+  description: String
+  id: String!
+  language: String!
 }
 
 type Pagination {
@@ -158,9 +208,9 @@ type Pagination {
 }
 
 input PaginationInput {
-  limit: Float!
-  page: Float!
-  totalCount: Float
+  limit: Float = 100
+  page: Float = 1
+  totalCount: Float = null
 }
 
 enum Privilege {
@@ -168,28 +218,44 @@ enum Privilege {
 }
 
 type Query {
-  # {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
+  """
   getDeletedRoles: [GetDeletedRolesOutput!]!
 
-  # {"publ":false,"t":"Lấy danh sách user đã xóa","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":false,"t":"Lấy danh sách user đã xóa","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
   getDeletedUsers(input: GetUsersInput!): GetUsersOutput!
 
-  # {"publ":false,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Lấy vai trò bằng ID","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
   getRoleById(input: GetRoleByIdInput!): GetRoleByIdOutput!
 
-  # {"publ":false,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
+  {"publ":false,"t":"Lấy danh sách vai trò","desc":"","sys":false,"sub":false,"gr":"role","d":false}
+  """
   getRoles: [GetRolesOutput!]!
 
-  # {"publ":true,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
+  {"publ":true,"t":"Lấy danh sách room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
   getRooms(input: GetRoomsIntput!): GetRoomsOutput!
 
-  # {"publ":true,"t":"Lấy thông tin user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":true,"t":"Lấy thông tin user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
   getUser(input: GetUserInput!): GetUserOutput!
 
-  # {"publ":false,"t":"Lấy danh sách user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
+  {"publ":false,"t":"Lấy danh sách user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
+  """
   getUsers(input: GetUsersInput!): GetUsersOutput!
 
-  # {"publ":true,"t":"Get me","desc":"","sys":false,"sub":false,"gr":"user","d":true}
+  """
+  {"publ":true,"t":"Get me","desc":"","sys":false,"sub":false,"gr":"user","d":true}
+  """
   me: MeOutput!
 }
 
@@ -222,16 +288,19 @@ type RoleEntity {
   updatedAt: DateTime
 }
 
-type RoomEntity {
+type RoomOutput {
   capacity: Float!
-  clients: [UserEntity!]
-  createdAt: DateTime
-  creator: UserEntity!
+  clients: [RoomUserOutPut!]!
+  creator: RoomUserOutPut!
   description: String
-  id: String
+  id: String!
   language: String!
-  topic: String!
-  updatedAt: DateTime
+}
+
+type RoomUserOutPut {
+  avatar: String!
+  id: String!
+  username: String!
 }
 
 input SigninByGoogleIntput {
@@ -253,10 +322,10 @@ type SigninOutput {
 }
 
 input Signup {
-  # Email to login
+  """Email to login"""
   email: String!
 
-  # Password
+  """Password"""
   password: String!
 }
 
@@ -266,6 +335,13 @@ type SignupOutput {
   refreshToken: String
   scp: [String!]!
   token: String!
+}
+
+type Subscription {
+  """
+  {"publ":true,"t":"Lấy danh sách room","desc":"","sys":false,"sub":true,"gr":"room","d":false}
+  """
+  onNewRoom: OnNewRoomOutPut!
 }
 
 input UpdateRoleIntput {

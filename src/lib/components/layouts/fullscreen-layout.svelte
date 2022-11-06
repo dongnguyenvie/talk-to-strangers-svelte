@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.css';
+	import '../../../app.css';
 	import { auth } from '$lib/state';
 	import Redirect from '$lib/components/redirect.svelte';
 </script>

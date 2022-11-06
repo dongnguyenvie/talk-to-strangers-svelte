@@ -6,7 +6,7 @@
 
 <script lang="ts">
 	import { appSettings } from '$lib/state';
-	import { browser } from '$app/env';
+	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	const { isCollapse, onToggleCollapse } = appSettings;
 	import { get } from 'svelte/store';
