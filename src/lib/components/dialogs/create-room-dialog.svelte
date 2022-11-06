@@ -1,11 +1,8 @@
 <script>
-	import { Button, Modal, Label, Input, Checkbox } from 'flowbite-svelte';
+	import { Button, Modal, Label, Input } from 'flowbite-svelte';
 	export let isOpen = false;
 	export const onToggle = () => {};
-	import { goto } from '$app/navigation';
 	import { createForm } from 'svelte-forms-lib';
-	import { ROUTES } from '$lib/@core/constants';
-	import jwtDecode from 'jwt-decode';
 	import * as yup from 'yup';
 	import { GQL_createRoom } from '$houdini';
 
@@ -29,27 +26,30 @@
 			description: ''
 		},
 		validationSchema: yup.object().shape({
-			topic: yup.string().required()
+			topic: yup.string().required(),
+			capacity: yup.number().required()
 		}),
 		onSubmit: async (values) => {
 			try {
 				const { capacity, description, language, topic } = values;
 				const result = await GQL_createRoom.mutate({
 					input: {
-						capacity,
+						capacity: Number(capacity),
 						description,
 						language,
 						topic
 					}
 				});
-				// result?.createRoom.id
-			} catch (error) {}
+				onToggle();
+			} catch (error) {
+				console.log('create room', error);
+			}
 		}
 	});
 </script>
 
 <Modal bind:open={isOpen} size="xs" autoclose={false}>
-	<form class="flex flex-col space-y-6" action="#">
+	<form class="flex flex-col space-y-6" action="#" on:submit={handleSubmit}>
 		<h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">Tạo phòng trò chuyện</h3>
 		<Label class="space-y-2">
 			<span>Chủ đề</span>
@@ -63,8 +63,14 @@
 			/>
 		</Label>
 		<Label class="space-y-2">
-			<span>Chủ đề</span>
-			<Input type="number" name="capacity" on:change={handleChange} value={`0`} required />
+			<span>Số người</span>
+			<Input
+				type="number"
+				name="capacity"
+				on:change={handleChange}
+				value={`${$form.capacity || 0}`}
+				required
+			/>
 		</Label>
 		<Button type="submit" class="w-full">Tạo phòng</Button>
 	</form>
