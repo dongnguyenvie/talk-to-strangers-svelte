@@ -1,13 +1,12 @@
 <script>
 	import { Button, Modal, Label, Input } from 'flowbite-svelte';
 	export let isOpen = false;
-	export const onToggle = () => {};
+	export let onClose = () => {};
 	import { createForm } from 'svelte-forms-lib';
 	import * as yup from 'yup';
 	import { GQL_createRoom } from '$houdini';
 
 	const {
-		// observables state
 		form,
 		errors,
 		state,
@@ -40,15 +39,16 @@
 						topic
 					}
 				});
-				onToggle();
+				console.log('create room', result);
+				onClose();
 			} catch (error) {
-				console.log('create room', error);
+				console.log('error room', error);
 			}
 		}
 	});
 </script>
 
-<Modal bind:open={isOpen} size="xs" autoclose={false}>
+<Modal bind:open={isOpen} on:hide={onClose} size="xs" autoclose={true}>
 	<form class="flex flex-col space-y-6" action="#" on:submit={handleSubmit}>
 		<h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">Tạo phòng trò chuyện</h3>
 		<Label class="space-y-2">

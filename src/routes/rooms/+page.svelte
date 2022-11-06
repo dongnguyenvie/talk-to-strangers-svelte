@@ -16,6 +16,10 @@
 		isCreateRoomDialog = !isCreateRoomDialog;
 	};
 
+	const handleCloseCreateRoomDialog = () => {
+		isCreateRoomDialog = false;
+	};
+
 	browser &&
 		GQL_getRooms.fetch({
 			variables: {
@@ -75,7 +79,7 @@
 		{/each}
 	</div>
 </div>
-<CreateRoomDialog isOpen={isCreateRoomDialog} onToggle={handleToggleCreateRoomDialog} />
+<CreateRoomDialog isOpen={isCreateRoomDialog} onClose={handleCloseCreateRoomDialog} />
 
 <style>
 	.list-room {
