@@ -24,6 +24,7 @@
         "@kitql/graphql-codegen": "^0.5.4",
         "@playwright/test": "^1.22.2",
         "@sveltejs/adapter-auto": "next",
+        "@sveltejs/adapter-node": "^1.0.0-next.100",
         "@sveltejs/adapter-static": "^1.0.0-next.48",
         "@sveltejs/kit": "^1.0.0-next.535",
         "@types/cookie": "^0.5.1",
