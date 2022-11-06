@@ -12,7 +12,7 @@ const config = {
 	}),
 
 	kit: {
-		adapter: adapter({}),
+		adapter: adapter({ out: 'public', fallback: 'index.html' }),
 		alias: {
 			$houdini: './$houdini'
 		}
