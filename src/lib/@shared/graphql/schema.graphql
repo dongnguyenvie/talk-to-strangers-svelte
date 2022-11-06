@@ -339,7 +339,7 @@ type SignupOutput {
 
 type Subscription {
   """
-  {"publ":true,"t":"Lấy danh sách room","desc":"","sys":false,"sub":true,"gr":"room","d":false}
+  {"publ":true,"t":"Watch new room","desc":"","sys":false,"sub":true,"gr":"room","d":false}
   """
   onNewRoom: OnNewRoomOutPut!
 }
