@@ -25,7 +25,7 @@ async function fetchQuery({ fetch, text = '', variables = {}, metadata }: Reques
 let socketClient: SubscriptionHandler | null = null;
 if (browser) {
 	// instantiate the transport client
-	const client = new SubscriptionClient(import.meta.env.VITE_SOCKET_ENDPOINT, {
+	const client = new SubscriptionClient(import.meta.env.VITE_GRAPHQLWS_ENDPOINT, {
 		reconnect: true
 	});
 
