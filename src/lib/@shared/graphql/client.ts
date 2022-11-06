@@ -1,12 +1,7 @@
 import { HoudiniClient, type RequestHandlerArgs } from '$houdini';
 
-async function fetchQuery({
-	fetch,
-	text = '',
-	variables = {},
-	metadata
-}: RequestHandlerArgs) {
-	const url = 'http://localhost:7001/graphql';
+async function fetchQuery({ fetch, text = '', variables = {}, metadata }: RequestHandlerArgs) {
+	const url = import.meta.env.VITE_GRAPHQL_ENDPOINT;
 	const result = await fetch(url, {
 		method: 'POST',
 		headers: {
