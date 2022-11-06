@@ -4,6 +4,7 @@ subscription onNewRoom {
 		capacity
 		description
 		language
+		topic
 		clients {
 			id
 			avatar

@@ -1,6 +1,8 @@
-import { HoudiniClient, type RequestHandlerArgs } from '$houdini';
+import { SubscriptionClient } from 'subscriptions-transport-ws';
+import { HoudiniClient, type RequestHandlerArgs, type SubscriptionHandler } from '$houdini';
 import { auth } from '$lib/state';
 import { get } from 'svelte/store';
+import { browser } from '$app/environment';
 
 async function fetchQuery({ fetch, text = '', variables = {}, metadata }: RequestHandlerArgs) {
 	const userLogon = get(auth);
@@ -20,4 +22,23 @@ async function fetchQuery({ fetch, text = '', variables = {}, metadata }: Reques
 	return await result.json();
 }
 
-export default new HoudiniClient(fetchQuery);
+let socketClient: SubscriptionHandler | null = null;
+if (browser) {
+	// instantiate the transport client
+	const client = new SubscriptionClient(import.meta.env.VITE_SOCKET_ENDPOINT, {
+		reconnect: true
+	});
+
+	// wrap the client in something houdini can use
+	socketClient = {
+		subscribe(payload, handlers) {
+			// send the request
+			const { unsubscribe } = client.request(payload).subscribe(handlers as any);
+
+			// return the function to unsubscribe
+			return unsubscribe;
+		}
+	};
+}
+
+export default new HoudiniClient(fetchQuery, socketClient as unknown as SubscriptionHandler);

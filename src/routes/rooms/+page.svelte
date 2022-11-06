@@ -1,5 +1,4 @@
 <script lang="ts">
-	// assets
 	import RoomImage from '$lib/icons/image.png';
 	import PlusIcon from '$lib/icons/ic_plus.svg';
 	import FilterIcon from '$lib/icons/ic_filter.svg';
@@ -10,7 +9,8 @@
 	import Tag from '$lib/components/tag.svelte';
 	import CreateRoomDialog from '$lib/components/dialogs/create-room-dialog.svelte';
 	let isCreateRoomDialog = false;
-	import { GQL_getRooms } from '$houdini';
+	import { GQL_getRooms, GQL_onNewRoom, type getRooms$result } from '$houdini';
+	import { onDestroy } from 'svelte';
 
 	const handleToggleCreateRoomDialog = () => {
 		isCreateRoomDialog = !isCreateRoomDialog;
@@ -31,6 +31,25 @@
 				}
 			}
 		});
+	GQL_onNewRoom.listen(null);
+
+	let roomMap = {} as Record<string, getRooms$result['getRooms']['data'][0]>;
+	$: {
+		($GQL_getRooms.data?.getRooms.data || []).forEach((data) => {
+			roomMap[data.id] = data;
+		});
+	}
+	$: {
+		if (!!$GQL_onNewRoom?.onNewRoom) {
+			roomMap[$GQL_onNewRoom?.onNewRoom.id] = $GQL_onNewRoom?.onNewRoom;
+		}
+	}
+
+	onDestroy(() => {
+		GQL_onNewRoom.unlisten();
+	});
+
+	$: rooms = Object.values(roomMap || {});
 
 	const handleJoinRoom = (id: string) => () => {
 		window.open(ROUTES.roomDetail.replace('{{id}}', id), '_blank');
@@ -63,11 +82,11 @@
 		</div>
 	</div>
 	<div class="list-room">
-		{#each $GQL_getRooms.data?.getRooms.data || [] as room}
+		{#each rooms || [] as room}
 			<div class="inline-flex w-full">
 				<RoomCard
-					name={room.description || 'random description'}
-					title={room.description || ''}
+					name={room.description || 'xx'}
+					title={room.topic || ''}
 					tags={['freedom']}
 					avatar={RoomImage}
 					emotions={[]}

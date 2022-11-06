@@ -5,6 +5,7 @@ query getRooms($input: GetRoomsIntput!) {
 			capacity
 			description
 			language
+      		topic
 			clients {
 				id
 				avatar

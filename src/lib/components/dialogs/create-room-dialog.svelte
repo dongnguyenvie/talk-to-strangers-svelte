@@ -63,6 +63,17 @@
 			/>
 		</Label>
 		<Label class="space-y-2">
+			<span>Mô tả</span>
+			<Input
+				type="text"
+				name="description"
+				on:change={handleChange}
+				bind:value={$form.description}
+				placeholder=""
+				required
+			/>
+		</Label>
+		<Label class="space-y-2">
 			<span>Số người</span>
 			<Input
 				type="number"

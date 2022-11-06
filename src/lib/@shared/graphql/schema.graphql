@@ -199,6 +199,7 @@ type OnNewRoomOutPut {
   description: String
   id: String!
   language: String!
+  topic: String
 }
 
 type Pagination {
@@ -295,6 +296,7 @@ type RoomOutput {
   description: String
   id: String!
   language: String!
+  topic: String
 }
 
 type RoomUserOutPut {
