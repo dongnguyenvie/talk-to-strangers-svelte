@@ -5,7 +5,9 @@
 		faVideoCamera,
 		faVideoSlash,
 		faMicrophone,
-		faPhone
+		faPhone,
+		faAlignRight,
+		faAngleRight
 	} from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 	import { srcObject } from '$lib/@shared/directives/src-object.directive';
@@ -104,14 +106,14 @@
 {/if}
 
 {#if $accessable}
-	<div class="flex flex-grow flex-row justify-between relative h-full max-h-screen">
+	<div class="flex flex-grow flex-row justify-between relative h-full bg-slate-800 max-h-screen">
 		<section class="flex flex-col justify-between w-full flex-shrink">
 			<section class="flex justify-center py-2 ">
-				<div>
+				<div class="bg-slate-900 p-3 rounded-md">
 					<!-- mic -->
 					{#if !$myMedia?.audioStream}
 						<span
-							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400"
 							on:click={handleOpenMic}
 						>
 							<Icon data={faMicrophone} label="open camera" flip="horizontal" scale={1.2} />
@@ -120,7 +122,7 @@
 
 					{#if $myMedia?.audioStream}
 						<span
-							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400"
 							on:click={handleOffMic}
 						>
 							<Icon data={faMicrophoneSlash} label="open camera" flip="horizontal" scale={1.2} />
@@ -131,7 +133,7 @@
 					<!-- mic -->
 					{#if !$myMedia?.mediaStream}
 						<span
-							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400"
 							on:click={handleOpenCam}
 						>
 							<Icon data={faVideoCamera} label="open camera" flip="horizontal" scale={1.2} />
@@ -140,7 +142,7 @@
 
 					{#if $myMedia?.mediaStream}
 						<span
-							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400"
 							on:click={handleOffCam}
 						>
 							<Icon data={faVideoSlash} label="open camera" flip="horizontal" scale={1.2} />
@@ -149,7 +151,7 @@
 					<!-- end mic -->
 
 					<span
-						class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800 rotate-6"
+						class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400 rotate-6"
 						on:click={handleOutRoom}
 					>
 						<Icon
@@ -221,9 +223,17 @@
 			</section>
 		</section>
 
-		<section class="w-[320px]">
-			<div class="flex flex-col justify-between border w-full h-full">
-				<div class="h-[45px] bg-slate-300" />
+		<section class="w-[320px] shadow-lg">
+			<div class="flex flex-col justify-between w-full h-full">
+				<div class="h-[45px] bg-slate-700 flex flex-row justify-between items-center px-2">
+					<div>
+						<span>.</span>
+					</div>
+					<span class="cursor-pointer">
+						<Icon data={faAngleRight} />
+					</span>
+				</div>
+
 				<div class="flex-grow bg-slate-400">
 					{#each $messages as message}
 						<div>
