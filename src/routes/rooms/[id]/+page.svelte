@@ -1,6 +1,12 @@
 <script lang="ts">
 	import Fa from 'svelte-fa';
-	import { faMicrophoneSlash } from '@fortawesome/free-solid-svg-icons';
+	import {
+		faMicrophoneSlash,
+		faVideoCamera,
+		faVideoSlash,
+		faMicrophone,
+		faPhone
+	} from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 	import { srcObject } from '$lib/@shared/directives/src-object.directive';
 	import { initRoomEvent } from '$lib/@shared/socket/events';
@@ -14,6 +20,8 @@
 	import { browser } from '$app/environment';
 	import UserCard from '$lib/components/user-card.svelte';
 	import ChatInput from '$lib/components/chat/chat-input.svelte';
+	import Icon from 'svelte-awesome';
+
 	if (browser) {
 		window.process = process;
 	}
@@ -75,6 +83,14 @@
 	const handleChatMessage = (message: string) => {
 		roomEvent?.onSendMessage(message);
 	};
+
+	const handleOutRoom = () => {
+		const text = 'Do you want to out room?';
+		if (confirm(text)) {
+			window.location.reload();
+		} else {
+		}
+	};
 </script>
 
 {#if !$accessable}
@@ -88,36 +104,67 @@
 {/if}
 
 {#if $accessable}
-	<div class="flex flex-row justify-between relative h-full max-h-screen">
+	<div class="flex flex-grow flex-row justify-between relative h-full max-h-screen">
 		<section class="flex flex-col justify-between w-full flex-shrink">
 			<section class="flex justify-center py-2 ">
 				<div>
-					{#if !$myMedia?.mediaStream}
-						<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenCam}>
-							open cam
-						</Button>
-					{/if}
-
-					{#if $myMedia?.mediaStream}
-						<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffCam}>
-							off cam
-						</Button>
+					<!-- mic -->
+					{#if !$myMedia?.audioStream}
+						<span
+							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							on:click={handleOpenMic}
+						>
+							<Icon data={faMicrophone} label="open camera" flip="horizontal" scale={1.2} />
+						</span>
 					{/if}
 
 					{#if $myMedia?.audioStream}
-						<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOffMic}>
-							off mic
-						</Button>
+						<span
+							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							on:click={handleOffMic}
+						>
+							<Icon data={faMicrophoneSlash} label="open camera" flip="horizontal" scale={1.2} />
+						</span>
 					{/if}
-					{#if !$myMedia?.audioStream}
-						<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleOpenMic}>
-							open mic
-						</Button>
+					<!-- end-mic -->
+
+					<!-- mic -->
+					{#if !$myMedia?.mediaStream}
+						<span
+							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							on:click={handleOpenCam}
+						>
+							<Icon data={faVideoCamera} label="open camera" flip="horizontal" scale={1.2} />
+						</span>
 					{/if}
 
-					<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
+					{#if $myMedia?.mediaStream}
+						<span
+							class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800"
+							on:click={handleOffCam}
+						>
+							<Icon data={faVideoSlash} label="open camera" flip="horizontal" scale={1.2} />
+						</span>
+					{/if}
+					<!-- end mic -->
+
+					<span
+						class="border-2 border-main-800 p-1 rounded-md cursor-pointer text-main-800 rotate-6"
+						on:click={handleOutRoom}
+					>
+						<Icon
+							data={faPhone}
+							label="open camera"
+							scale={1.2}
+							style={`transform:rotate(133deg)`}
+						/>
+					</span>
+
+					<!-- faPhone -->
+
+					<!-- <Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
 						send text stream
-					</Button>
+					</Button> -->
 				</div>
 			</section>
 
