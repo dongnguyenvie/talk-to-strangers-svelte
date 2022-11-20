@@ -12,7 +12,7 @@
 	{/if}
 
 	{#if $auth.id}
-		<main class="flex w-full flex-grow flex-col bg-main-100">
+		<main class="flex w-full flex-grow flex-col">
 			<slot />
 		</main>
 	{/if}

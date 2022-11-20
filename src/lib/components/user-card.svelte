@@ -30,12 +30,12 @@
 	</div>
 
 	<div
-		class={`relative cursor-pointer w-[96px] h-[96px] ${
+		class={`relative cursor-pointer w-[96px] h-[96px] rounded-sm ${
 			client.socketId === idSelected ? 'avatar-active' : ''
 		}`}
 		on:click={handleFocusOn(client.socketId)}
 	>
-		<img class="block object-cover w-full h-full" src={client.avatar} alt={client.socketId} />
+		<img class="block object-cover w-full h-full rounded-sm" src={client.avatar} alt={client.socketId} />
 		<div class={`absolute bottom-0 bg-green-700`}>
 			{#if client.isVideo}
 				<p>Video: on</p>
