@@ -3,7 +3,7 @@
 	import type { SocketID } from '$lib/types/socket';
 	import Icon from 'svelte-awesome';
 	import { faMicrophoneSlash, faVideoCamera, faGear } from '@fortawesome/free-solid-svg-icons';
-	// import {} from '@fortawesome/free-brands-svg-icons';
+	import { onDestroy } from 'svelte';
 
 	export let watchersMap = {} as Record<string, any>;
 	export let client: Client;
@@ -12,9 +12,55 @@
 
 	export let onFocusOn: (id: SocketID) => void;
 
+	let volumeLevel = '20%';
+
 	const handleFocusOn = (id: SocketID) => () => {
 		onFocusOn(id);
 	};
+
+	let volumeInterval: any;
+
+	const handleCheckVolumeLevel = () => {
+		if (client.audioStream && client.isAudio) {
+			const audioContext = new window.AudioContext();
+			const audioSource = audioContext.createMediaStreamSource(client.audioStream);
+			const analyser = audioContext.createAnalyser();
+			analyser.fftSize = 512;
+			analyser.minDecibels = -127;
+			analyser.maxDecibels = 0;
+			analyser.smoothingTimeConstant = 0.4;
+			audioSource.connect(analyser);
+			const volumes = new Uint8Array(analyser.frequencyBinCount);
+
+			const volumeCallback = () => {
+				analyser.getByteFrequencyData(volumes);
+				let volumeSum = 0;
+				for (const volume of volumes) volumeSum += volume;
+				const averageVolume = volumeSum / volumes.length;
+				// Value range: 127 = analyser.maxDecibels - analyser.minDecibels;
+				volumeLevel = (averageVolume * 100) / 127 + '%';
+				// volumeVisualizer.style.setProperty('--volume', (averageVolume * 100) / 127 + '%');
+			};
+
+			if (!volumeInterval) {
+				volumeInterval = setInterval(volumeCallback, 100);
+			}
+		} else {
+			if (!client.audioStream) {
+				!!volumeInterval && clearInterval(volumeInterval);
+				volumeLevel = '0%';
+				volumeInterval = null;
+			}
+		}
+	};
+
+	$: client.isAudio && handleCheckVolumeLevel();
+
+	onDestroy(() => {
+		!!volumeInterval && clearInterval(volumeInterval);
+		volumeLevel = '0%';
+		volumeInterval = null;
+	});
 </script>
 
 <div class={`relative max-w-[96px] min-w-[60px] ml-1`} title={client.socketId}>
@@ -43,6 +89,7 @@
 			src={client.avatar}
 			alt={client.socketId}
 		/>
+
 		<div>
 			{#if client.isVideo}
 				<span
@@ -66,6 +113,35 @@
 					<Icon data={faMicrophoneSlash} label="open camera" flip="horizontal" scale={1.2} />
 				</span>
 			{/if}
+			{#if client.isAudio}
+				<span class="absolute bottom-1 right-1 z-10">
+					<div
+						style="--volume: {volumeLevel}"
+						class="text-blue-800 volume-visualizer rounded-sm opacity-75"
+					/>
+				</span>
+			{/if}
 		</div>
 	</div>
 </div>
+
+<style>
+	.volume-visualizer {
+		--volume: 0%;
+		position: relative;
+		width: 10px;
+		height: 50px;
+		background-color: #ddd;
+	}
+
+	.volume-visualizer::before {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		height: var(--volume);
+		width: 100%;
+		background-color: green;
+		transition: width 100ms linear;
+	}
+</style>
