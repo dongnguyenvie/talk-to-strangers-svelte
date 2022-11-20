@@ -3,9 +3,7 @@
 	import type { SocketID } from '$lib/types/socket';
 	import Icon from 'svelte-awesome';
 	import { faMicrophoneSlash, faVideoCamera, faGear } from '@fortawesome/free-solid-svg-icons';
-	import { AudioContext, OfflineAudioContext } from 'standardized-audio-context';
-	import { onMount, onDestroy } from 'svelte';
-	// import {} from '@fortawesome/free-brands-svg-icons';
+	import { onDestroy } from 'svelte';
 
 	export let watchersMap = {} as Record<string, any>;
 	export let client: Client;
@@ -24,7 +22,7 @@
 
 	const handleCheckVolumeLevel = () => {
 		if (client.audioStream && client.isAudio) {
-			const audioContext = new AudioContext();
+			const audioContext = new window.AudioContext();
 			const audioSource = audioContext.createMediaStreamSource(client.audioStream);
 			const analyser = audioContext.createAnalyser();
 			analyser.fftSize = 512;
