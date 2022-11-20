@@ -48,6 +48,7 @@
 		roomEvent?.destroy();
 	});
 
+	let navCollapse = false;
 	const accessable = derived(room, ($room) => $room.accessable);
 
 	const usersId = derived(clients, ($clients) => $clients.map((c) => c.socketId));
@@ -93,6 +94,10 @@
 		} else {
 		}
 	};
+
+	const handleToggleNav = () => {
+		navCollapse = !navCollapse;
+	};
 </script>
 
 {#if !$accessable}
@@ -130,7 +135,7 @@
 					{/if}
 					<!-- end-mic -->
 
-					<!-- mic -->
+					<!-- webcam -->
 					{#if !$myMedia?.mediaStream}
 						<span
 							class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400"
@@ -148,7 +153,7 @@
 							<Icon data={faVideoSlash} label="open camera" flip="horizontal" scale={1.2} />
 						</span>
 					{/if}
-					<!-- end mic -->
+					<!-- end webcam -->
 
 					<span
 						class="border-2 border-main-a400 p-1 rounded-md cursor-pointer text-main-a400 rotate-6"
@@ -161,8 +166,6 @@
 							style={`transform:rotate(133deg)`}
 						/>
 					</span>
-
-					<!-- faPhone -->
 
 					<!-- <Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleChat}>
 						send text stream
@@ -223,13 +226,13 @@
 			</section>
 		</section>
 
-		<section class="w-[320px] shadow-lg">
+		<section class={navCollapse ? 'w-[30px] shadow-lg' : 'w-[320px] shadow-lg'}>
 			<div class="flex flex-col justify-between w-full h-full">
 				<div class="h-[45px] bg-slate-700 flex flex-row justify-between items-center px-2">
 					<div>
 						<span>.</span>
 					</div>
-					<span class="cursor-pointer">
+					<span class="cursor-pointer" on:click={handleToggleNav}>
 						<Icon data={faAngleRight} />
 					</span>
 				</div>
