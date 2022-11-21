@@ -21,6 +21,9 @@ import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
 
 const { myMedia, watchersMap, onUpdateMessage } = room;
 
+const PLAYHOLDER_AVATAR =
+	'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
+
 interface PeerState {
 	inst: SimplePeer.Instance;
 	isSentAudio: boolean;
@@ -99,7 +102,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			(event: {
 				users: Pick<
 					Client,
-					'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'watchingId' | 'share'
+					'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'watchingId' | 'share' | 'avatar'
 				>[];
 			}) => {
 				const { users } = event;
@@ -109,7 +112,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						callerID: client.socketId,
 						isVideo: client.isVideo || false,
 						isAudio: client.isAudio || false,
-						avatar: client.avatar || '',
+						avatar: client.avatar || PLAYHOLDER_AVATAR,
 						watchingId: client.watchingId || null,
 						share: client.share || null
 					});
@@ -378,7 +381,8 @@ function createPeer({
 	isAudio,
 	isVideo,
 	watchingId: watchingId,
-	share
+	share,
+	avatar
 }: {
 	callerID: string;
 	roomId: string;
@@ -425,7 +429,8 @@ function createPeer({
 		isAudio: isAudio,
 		isVideo: isVideo,
 		watchingId: watchingId,
-		share: share
+		share: share,
+		avatar: avatar
 	});
 
 	room.updateClient(client);

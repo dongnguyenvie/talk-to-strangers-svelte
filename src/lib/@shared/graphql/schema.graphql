@@ -90,12 +90,12 @@ input GetUserInput {
 }
 
 type GetUserOutput {
+  avatar: String
   createdAt: DateTime
   email: String!
   emailVerified: Boolean
   fullName: String
   id: String
-  image: String
   phone: String
   privilege: [Privilege!]
   roles: [RoleEntity!]
@@ -118,6 +118,7 @@ The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://
 scalar JSON
 
 type MeOutput {
+  avatar: String!
   email: String!
   id: String!
   scp: [String!]!
@@ -380,12 +381,12 @@ type UpdateUserOutput {
 }
 
 type UserEntity {
+  avatar: String
   createdAt: DateTime
   email: String!
   emailVerified: Boolean
   fullName: String
   id: String
-  image: String
   phone: String
   privilege: [Privilege!]
   roles: [RoleEntity!]
