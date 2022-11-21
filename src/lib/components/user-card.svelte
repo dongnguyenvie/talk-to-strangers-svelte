@@ -54,7 +54,7 @@
 		}
 	};
 
-	$: client.isAudio && handleCheckVolumeLevel();
+	// $: client.isAudio && handleCheckVolumeLevel();
 
 	onDestroy(() => {
 		!!volumeInterval && clearInterval(volumeInterval);
@@ -113,14 +113,14 @@
 					<Icon data={faMicrophoneSlash} label="open camera" flip="horizontal" scale={1.2} />
 				</span>
 			{/if}
-			{#if client.isAudio}
+			<!-- {#if client.isAudio}
 				<span class="absolute bottom-1 right-1 z-10">
 					<div
 						style="--volume: {volumeLevel}"
 						class="text-blue-800 volume-visualizer rounded-sm opacity-75"
 					/>
 				</span>
-			{/if}
+			{/if} -->
 		</div>
 	</div>
 </div>
