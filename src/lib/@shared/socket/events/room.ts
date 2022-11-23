@@ -7,7 +7,7 @@ import {
 import { io } from '..';
 import SimplePeer, { createClient, getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
-import { room } from '$lib/state';
+import { auth, room } from '$lib/state';
 import { browser } from '$app/environment';
 import { P2PEvent, ClientStateEvent, CallEvent } from '$lib/@core/events/sockets';
 import type { SocketID } from '$lib/types/socket';
@@ -18,11 +18,9 @@ import { ClientShareable, type Client } from '$lib/types';
 import type { UserConfig } from '$lib/@core/interfaces/room.interface';
 import _ from 'underscore';
 import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
+import type { UserID, UserInfo } from '$lib/types/user.type';
 
 const { myMedia, watchersMap, onUpdateMessage } = room;
-
-const PLAYHOLDER_AVATAR =
-	'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y';
 
 interface PeerState {
 	inst: SimplePeer.Instance;
@@ -67,12 +65,15 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			new JoinRoomEvent({ roomId: roomId, isAudio: false, isVideo: false })
 		);
 		myID = io.id;
-		room.initRoom({ socketId: myID, roomId: roomId });
+		const userId = get(auth).id;
+		room.initRoom({ socketId: myID, roomId: roomId, id: userId });
 
 		// newcomer
 		io.on(EVENT_ROOM_CLIENT.joinRoom, (event: JoinRoomEvent) => {
-			const { roomId, socketId } = event;
-			const peerState = addPeer({ roomId: roomId, callerID: socketId });
+			const { roomId, sid, id, userInfo } = event;
+			console.log('new commer', userInfo);
+			const peerState = addPeer({ roomId: roomId, callerID: sid, id: id });
+			room.onUpdateUserInfo([userInfo]);
 
 			const myAudioStream = get(myMedia).audioStream;
 			if (!myAudioStream) return;
@@ -94,29 +95,28 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		// newcomer
 		io.on(EVENT_ROOM_CLIENT.leaveRoom, (event) => {
 			const { roomId, socketId } = event;
-			room.removePeer({ socketId: socketId });
+			room.removePeer({ sid: socketId });
 		});
 
 		io.on(
 			EVENT_ROOM_PERSONAL_CLIENT.allUsers,
 			(event: {
-				users: Pick<
-					Client,
-					'isAudio' | 'isVideo' | 'socketId' | 'avatar' | 'watchingId' | 'share' | 'avatar'
-				>[];
+				users: Pick<Client, 'isAudio' | 'isVideo' | 'sid' | 'id' | 'wid' | 'share'>[];
+				userInfos: UserInfo[];
 			}) => {
-				const { users } = event;
+				const { users, userInfos } = event;
 				users.forEach((client) => {
 					createPeer({
 						roomId: roomId,
-						callerID: client.socketId,
+						callerID: client.sid,
 						isVideo: client.isVideo || false,
 						isAudio: client.isAudio || false,
-						avatar: client.avatar || PLAYHOLDER_AVATAR,
-						watchingId: client.watchingId || null,
-						share: client.share || null
+						watchingId: client.wid || null,
+						share: client.share || null,
+						id: client.id
 					});
 				});
+				room.onUpdateUserInfo(userInfos);
 				console.log('all users', event);
 			}
 		);
@@ -158,10 +158,10 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		io.on(EVENT_ROOM_CLIENT.syncUserState, (event: ClientStateEvent) => {
 			const { from, isAudio, isVideo, watchingId, share } = event;
 			room.updateClientState({
-				socketId: from,
+				sid: from,
 				isAudio: isAudio,
 				isVideo: isVideo,
-				watchingId: watchingId,
+				wid: watchingId,
 				share: share
 			});
 		});
@@ -176,15 +176,15 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			const me = get(myMedia);
 			if (!me?.mediaStream) return;
 			const newWatchersState = newWatchers
-				.filter((watcher) => watcher.socketId !== myID)
-				.map((watcher) => getPeer(watcher.socketId));
+				.filter((watcher) => watcher.sid !== myID)
+				.map((watcher) => getPeer(watcher.sid));
 
 			broadcastStreamToPeers(newWatchersState, { stream: me.mediaStream, isVideo: true });
 
 			leavedWatchers
-				.filter((watcher) => watcher.socketId !== myID)
+				.filter((watcher) => watcher.sid !== myID)
 				.forEach((watcher) => {
-					const watcherState = getPeer(watcher.socketId);
+					const watcherState = getPeer(watcher.sid);
 					if (!watcherState.inst || !me.mediaStream) return;
 					addTracksToPeerFcn(watcherState.inst, me.mediaStream, false);
 				});
@@ -210,9 +210,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 		openCam: () => {
 			const me = get(myMedia);
 			if (me.mediaStream) return;
-			const watchers = (get(watchersMap)[me.socketId] || []).map((client) =>
-				getPeer(client.socketId)
-			);
+			const watchers = (get(watchersMap)[me.sid] || []).map((client) => getPeer(client.sid));
 			const getUserMedia = getUserMediaHelper();
 			getUserMedia(
 				{
@@ -223,7 +221,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					room.updateClientStream({
 						stream: stream,
 						isVideo: true,
-						socketId: myID
+						sid: myID
 					});
 					io.emit(
 						EVENT_ROOM_SERVER.syncUserState,
@@ -253,7 +251,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 					room.updateClientStream({
 						stream: stream,
 						isAudio: audio,
-						socketId: myID
+						sid: myID
 					});
 					io.emit(
 						EVENT_ROOM_SERVER.syncUserState,
@@ -285,7 +283,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			});
 
 			room.updateClientStream({
-				socketId: me.socketId,
+				sid: me.sid,
 				isAudio: true,
 				stream: undefined as unknown as MediaStream
 			});
@@ -316,7 +314,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			});
 
 			room.updateClientStream({
-				socketId: me.socketId,
+				sid: me.sid,
 				isVideo: true,
 				stream: undefined as unknown as MediaStream
 			});
@@ -382,12 +380,13 @@ function createPeer({
 	isVideo,
 	watchingId: watchingId,
 	share,
-	avatar
+	id
 }: {
 	callerID: string;
 	roomId: string;
 	watchingId: string | null;
 	stream?: MediaStream;
+	id: UserID;
 } & UserConfig &
 	Pick<Client, 'share'>) {
 	let initiator = true;
@@ -412,7 +411,7 @@ function createPeer({
 	peer.on('stream', (stream) => {
 		console.error('got stream from wc', { initiator }, stream);
 		const streamProperties = checkStream(stream);
-		room.updateClientStream({ socketId: callerID, stream: stream, ...streamProperties });
+		room.updateClientStream({ sid: callerID, stream: stream, ...streamProperties });
 	});
 
 	peer.on('data', (data) => {
@@ -423,14 +422,14 @@ function createPeer({
 
 	const client = createClient({
 		initiator: initiator,
-		socketId: callerID,
+		sid: callerID,
 		mediaStream: stream,
 		peer,
 		isAudio: isAudio,
 		isVideo: isVideo,
-		watchingId: watchingId,
+		wid: watchingId,
 		share: share,
-		avatar: avatar
+		id
 	});
 
 	room.updateClient(client);
@@ -440,11 +439,13 @@ function createPeer({
 function addPeer({
 	callerID,
 	roomId,
-	stream
+	stream,
+	id
 }: {
 	callerID: string;
 	roomId: string;
 	stream?: MediaStream;
+	id: string;
 }) {
 	let initiator = false;
 	let peer = new SimplePeer({
@@ -470,7 +471,7 @@ function addPeer({
 	peer.on('stream', (stream) => {
 		console.error('got stream from wc', { initiator }, stream);
 		const streamProperties = checkStream(stream);
-		room.updateClientStream({ socketId: callerID, stream: stream, ...streamProperties });
+		room.updateClientStream({ sid: callerID, stream: stream, ...streamProperties });
 	});
 
 	peer.on('data', (data) => {
@@ -481,9 +482,10 @@ function addPeer({
 
 	const client = createClient({
 		initiator: initiator,
-		socketId: callerID,
+		sid: callerID,
 		mediaStream: stream,
-		peer
+		peer,
+		id
 	});
 
 	room.updateClient(client);

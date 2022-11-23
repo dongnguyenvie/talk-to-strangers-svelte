@@ -4,9 +4,11 @@
 	import Icon from 'svelte-awesome';
 	import { faMicrophoneSlash, faVideoCamera, faGear } from '@fortawesome/free-solid-svg-icons';
 	import { onDestroy } from 'svelte';
+	import type { UserInfo } from '$lib/types/user.type';
+	import { PLAYHOLDER_AVATAR } from '$lib/@core/constants';
 
 	export let watchersMap = {} as Record<string, any>;
-	export let client: Client;
+	export let client: Client & { info: UserInfo };
 	export let idSelected: SocketID;
 	export let myId: SocketID;
 
@@ -63,31 +65,35 @@
 	});
 </script>
 
-<div class={`relative max-w-[96px] min-w-[60px] ml-1`} title={client.socketId}>
+<div class={`relative max-w-[96px] min-w-[60px] ml-1`} title={client.sid}>
 	<div class="flex h-[33px] gap-1 items-end pb-1">
-		{#each watchersMap[client.socketId] || [] as watcher}
+		{#each watchersMap[client.sid] || [] as watcher}
 			<span
 				class={`w-[16px] h-[16px] overflow-hidden rounded-full inline-flex ${
-					client.socketId == watcher.socketId
+					client.sid == watcher.socketId
 						? 'border-2 w-[20px] h-[20px] rounded-sm border-red-600'
 						: ''
 				}`}
 			>
-				<img class="block object-cover w-full h-full" src={client.avatar} alt={client.socketId} />
+				<img
+					class="block object-cover w-full h-full"
+					src={client.info?.avatar || PLAYHOLDER_AVATAR}
+					alt={client.sid}
+				/>
 			</span>
 		{/each}
 	</div>
 
 	<div
 		class={`relative cursor-pointer w-[96px] h-[96px] rounded-sm ${
-			client.socketId === idSelected ? 'avatar-active' : ''
+			client.sid === idSelected ? 'avatar-active' : ''
 		}`}
-		on:click={handleFocusOn(client.socketId)}
+		on:click={handleFocusOn(client.sid)}
 	>
 		<img
 			class="block object-cover w-full h-full rounded-sm"
-			src={client.avatar}
-			alt={client.socketId}
+			src={client.info?.avatar || PLAYHOLDER_AVATAR}
+			alt={client.sid}
 		/>
 
 		<div>
@@ -98,7 +104,7 @@
 					<Icon data={faVideoCamera} scale={2.5} />
 				</span>
 			{/if}
-			{#if client.socketId !== myId}
+			{#if client.sid !== myId}
 				<span
 					class="absolute top-0 right-0 border border-zinc-500 rounded-lg inline-flex justify-center items-center w-[25px] h-[25px]"
 				>

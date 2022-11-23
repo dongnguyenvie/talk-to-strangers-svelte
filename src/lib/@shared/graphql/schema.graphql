@@ -121,6 +121,7 @@ type MeOutput {
   avatar: String!
   email: String!
   id: String!
+  name: String!
   scp: [String!]!
   sub: String!
   username: String!
@@ -168,7 +169,7 @@ type Mutation {
   signin(input: SigninIntput!): SigninOutput!
 
   """
-  {"publ":true,"t":"Đăng nhập","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
+  {"publ":true,"t":"Đăng nhập by gg","desc":"","sys":false,"sub":false,"gr":"auth","d":false}
   """
   signinByGoogle(input: SigninByGoogleIntput!): SigninOutput!
 
