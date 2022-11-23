@@ -5,7 +5,7 @@ query getRooms($input: GetRoomsIntput!) {
 			capacity
 			description
 			language
-      		topic
+			topic
 			clients {
 				id
 				avatar
@@ -16,6 +16,7 @@ query getRooms($input: GetRoomsIntput!) {
 				avatar
 				username
 			}
+			createdAt
 		}
 		pagination {
 			limit

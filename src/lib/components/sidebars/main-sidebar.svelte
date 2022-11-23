@@ -4,6 +4,9 @@
 	import { page } from '$app/stores';
 	import { appSettings } from '$lib/state';
 	import { sidebarConfig } from './sidebar.config';
+	import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
+	import Icon from 'svelte-awesome';
+
 	const { onToggleCollapse, isCollapse } = appSettings;
 	export let className: string = '';
 </script>
@@ -22,10 +25,14 @@
 	</div>
 
 	<div class={`flex ${$isCollapse ? '' : 'justify-end'} px-3 py-2`}>
-		<button on:click={onToggleCollapse}>{$isCollapse ? '>>' : '<<'}</button>
+		{#if $isCollapse}
+			<button on:click={onToggleCollapse}> <Icon data={faAnglesRight} /></button>
+		{:else}
+			<button on:click={onToggleCollapse}> <Icon data={faAnglesLeft} /></button>
+		{/if}
 	</div>
 
-	<div class="bg-gray-300 px-2 flex overflow-hidden h-[60px] rounded-xl py-2">
+	<!-- <div class="bg-gray-300 px-2 flex overflow-hidden h-[60px] rounded-xl py-2">
 		<div class="avatar mr-4 overflow-hidden">
 			<img
 				class="rounded-full w-[40px] h-[40px]"
@@ -37,7 +44,7 @@
 			<p class="username text-sm font-bold leading-[22px]">Carlota Monteiro</p>
 			<p class="role text-sm font-normal leading-[22px]">Admin</p>
 		</div>
-	</div>
+	</div> -->
 
 	<div class="sticky p-0 m-0 top-[90px] mt-4">
 		<div class="rounded overflow-hidden">

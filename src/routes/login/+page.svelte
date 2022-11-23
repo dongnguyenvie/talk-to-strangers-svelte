@@ -11,7 +11,7 @@
 	import FacebookIcon from '$lib/icons/facebook.svg';
 	import TwitterIcon from '$lib/icons/twitter.svg';
 	import GoogleSignin from '$lib/components/buttons/google-signin.button.svelte';
-	import { GQL_signin, GQL_onNewRoom } from '$houdini';
+	import { GQL_signin } from '$houdini';
 
 	const {
 		// observables state

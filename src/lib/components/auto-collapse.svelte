@@ -5,30 +5,31 @@
 
 <script lang="ts">
 	import { appSettings } from '$lib/state';
-	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
 	const { isCollapse, onToggleCollapse } = appSettings;
 	import { get } from 'svelte/store';
+	import _ from 'underscore';
 
-	let innerWidth = 0;
-	let innerHeight = 0;
+	const setWindowWidth = () => {
+		const _isCollapse = get(isCollapse);
+		if (window.innerWidth < 768) {
+			if (!_isCollapse) {
+				onToggleCollapse();
+			}
+		} else {
+			if (_isCollapse) {
+				onToggleCollapse();
+			}
+		}
+	};
 
-	$: isXs = innerWidth <= 768;
+	const debouncedSetWindowWidth = _.debounce(setWindowWidth, 300);
 
-	// onMount(() => {
-	// 	$: {
-	// 		const _isCollapse = get(isCollapse);
-	// 		if (isXs) {
-	// 			if (!_isCollapse) {
-	// 				onToggleCollapse();
-	// 			}
-	// 		} else {
-	// 			if (_isCollapse) {
-	// 				onToggleCollapse();
-	// 			}
-	// 		}
-	// 	}
-	// });
+	onMount(() => {
+		window.addEventListener('resize', debouncedSetWindowWidth);
+
+		return () => {
+			window.removeEventListener('resize', debouncedSetWindowWidth);
+		};
+	});
 </script>
-
-<svelte:window bind:innerWidth bind:innerHeight />

@@ -194,9 +194,10 @@ type Mutation {
   updateUserByAdmin(input: UpdateUserByAdminInput!): UpdateUserByAdminOutput!
 }
 
-type OnNewRoomOutPut {
+type OnRoomAddedOutPut {
   capacity: Float!
   clients: [RoomUserOutPut!]!
+  createdAt: Float!
   creator: RoomUserOutPut!
   description: String
   id: String!
@@ -294,6 +295,7 @@ type RoleEntity {
 type RoomOutput {
   capacity: Float!
   clients: [RoomUserOutPut!]!
+  createdAt: Float!
   creator: RoomUserOutPut!
   description: String
   id: String!
@@ -345,7 +347,7 @@ type Subscription {
   """
   {"publ":true,"t":"Watch new room","desc":"","sys":false,"sub":true,"gr":"room","d":false}
   """
-  onNewRoom: OnNewRoomOutPut!
+  onRoomAdded: OnRoomAddedOutPut!
 }
 
 input UpdateRoleIntput {
