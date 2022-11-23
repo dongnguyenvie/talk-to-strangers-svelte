@@ -1,7 +1,7 @@
 <script lang="ts">
-	import FlagEnIcon from '$lib/icons/ic_flag_en.svg';
 	import RingIcon from '$lib/icons/ic_ring.svg';
 	import UserGroupIcon from '$lib/icons/ic_user_group.svg';
+	import { userPicture } from '$lib/state';
 
 	export let className: string = '';
 </script>
@@ -27,9 +27,9 @@
 
 	<div class="">
 		<ul class="flex items-center gap-x-[32px]">
-			<li>
+			<!-- <li>
 				<img src={FlagEnIcon} alt="" />
-			</li>
+			</li> -->
 			<li>
 				<img src={RingIcon} alt="" />
 			</li>
@@ -38,7 +38,7 @@
 			</li>
 			<li>
 				<img
-					src="https://i.pravatar.cc/300"
+					src={$userPicture}
 					alt=""
 					class="w-[44px] h-[44px] rounded-full border border-gray-500"
 				/>

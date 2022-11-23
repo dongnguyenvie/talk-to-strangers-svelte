@@ -2,9 +2,9 @@ import { browser } from '$app/environment';
 import type { Auth } from '$lib/types';
 import type { CredentialResponse } from 'google-one-tap';
 import type Google from 'google-one-tap';
-import { writable, get } from 'svelte/store';
+import { writable, get, derived } from 'svelte/store';
 import { goto } from '$app/navigation';
-import { ROUTES } from '$lib/@core/constants';
+import { PLAYHOLDER_AVATAR, ROUTES } from '$lib/@core/constants';
 import jwtDecode from 'jwt-decode';
 import { GQL_signinByGoogle } from '$houdini';
 
@@ -17,6 +17,8 @@ const initialAuthState = {
 	id: null
 } as unknown as Auth;
 export const auth = writable<Auth>(stored || initialAuthState);
+
+export const userPicture = derived(auth, ($auth) => $auth.avatar || PLAYHOLDER_AVATAR);
 
 if (browser) {
 	auth.subscribe((value) => {
