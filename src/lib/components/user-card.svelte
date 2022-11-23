@@ -70,22 +70,20 @@
 		{#each watchersMap[client.sid] || [] as watcher}
 			<span
 				class={`w-[16px] h-[16px] overflow-hidden rounded-full inline-flex ${
-					client.sid == watcher.socketId
-						? 'border-2 w-[20px] h-[20px] rounded-sm border-red-600'
-						: ''
+					client.sid == watcher.sid ? 'border-2 w-[20px] h-[20px] rounded-sm border-red-600' : ''
 				}`}
 			>
 				<img
 					class="block object-cover w-full h-full"
-					src={client.info?.avatar || PLAYHOLDER_AVATAR}
-					alt={client.sid}
+					src={watcher.info?.avatar || PLAYHOLDER_AVATAR}
+					alt={watcher.sid}
 				/>
 			</span>
 		{/each}
 	</div>
 
 	<div
-		class={`relative cursor-pointer w-[96px] h-[96px] rounded-sm ${
+		class={`relative cursor-pointer w-[96px] h-[96px] rounded-sm card-hover ${
 			client.sid === idSelected ? 'avatar-active' : ''
 		}`}
 		on:click={handleFocusOn(client.sid)}
@@ -95,6 +93,11 @@
 			src={client.info?.avatar || PLAYHOLDER_AVATAR}
 			alt={client.sid}
 		/>
+		<div
+			class="absolute top-0 left-0 bg-black bg-opacity-50 w-full h-full items-center justify-center z-10 hidden card-name"
+		>
+			<span class="text-white card-name text-center text-sm">{client.info?.name || ''} </span>
+		</div>
 
 		<div>
 			{#if client.isVideo}
