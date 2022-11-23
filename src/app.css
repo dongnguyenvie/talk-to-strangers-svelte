@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* @import '@fontsource/fira-mono';yarn d */
-:root{
+:root {
 	/* color */
 	--text-secondary: #637381;
 	/* background color */
@@ -68,19 +68,23 @@
 		rgb(24 144 255) 0px 0px 1px, rgb(24 144 255) 0px 0px 2px, rgb(24 144 255) 0px 0px 3px,
 		rgb(24 144 255) 0px 0px 4px;
 }
-.btn-google{
+.btn-google {
 	background-color: #ea4335;
 }
-.btn-facebook{
+.btn-facebook {
 	background-color: rgb(56, 92, 168);
 }
-.btn-twitter{
+.btn-twitter {
 	background-color: rgb(29, 155, 240);
 }
-.text-primary{
-	color: #212B36;
+.text-primary {
+	color: #212b36;
 }
-.btn-talk{
+.btn-talk {
 	box-shadow: 0px 8px 16px rgba(0, 171, 85, 0.24);
 	border-radius: 8px;
+}
+
+.card-hover:hover .card-name {
+	display: flex;
 }
