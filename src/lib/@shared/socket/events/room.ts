@@ -121,7 +121,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 			}
 		);
 
-		io.on(EVENT_ROOM_PERSONAL_CLIENT.accessable, (event: { accessable: boolean }) => {
+		io.on(EVENT_ROOM_PERSONAL_CLIENT.accessable, (event: { accessable: number }) => {
 			const { accessable } = event;
 			room.updateAccessableStatus(accessable);
 		});

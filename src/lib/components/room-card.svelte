@@ -4,6 +4,8 @@
 	import Tag from './tag.svelte';
 
 	export let id: string;
+	export let clients: any[];
+	export let capacity: number;
 	export let title: string;
 	export let avatar: string;
 	export let name: string;
@@ -12,13 +14,15 @@
 	export let buttonLabel: string = 'Trò truyện';
 	export let onClick: () => void;
 	export let isFull: boolean = false;
+
+	$: capLabel = `${clients.length} / ${capacity}`;
 </script>
 
 <div class="room w-full bg-white rounded-2xl">
 	<div class="flex flex-col relative">
 		<img class="rounded-tl-2xl rounded-tr-2xl " src={avatar} alt="avatar-room" />
 		<div class="absolute top-[9px] right-[13px] cursor-pointer">
-			<img src={ic_shape} alt="">
+			<img src={ic_shape} alt="" />
 		</div>
 		<div class="room-info mt-[39px] p-6">
 			<h5 class="text-sm leading-[22px] font-bold mb-4 text-primary capitalize">{name}</h5>
@@ -28,6 +32,8 @@
 					<Tag className="mb-2">{tag}</Tag>
 				{/each}
 			</div>
+
+			capacity: {capLabel}
 
 			<div class="flex justify-center">
 				{#if isFull}

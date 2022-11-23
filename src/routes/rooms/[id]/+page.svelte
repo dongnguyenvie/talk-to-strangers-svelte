@@ -7,7 +7,8 @@
 		faMicrophone,
 		faPhone,
 		faAlignRight,
-		faAngleRight
+		faAngleRight,
+		faWarning
 	} from '@fortawesome/free-solid-svg-icons';
 	import { page } from '$app/stores';
 	import { srcObject } from '$lib/@shared/directives/src-object.directive';
@@ -23,6 +24,7 @@
 	import UserCard from '$lib/components/user-card.svelte';
 	import ChatInput from '$lib/components/chat/chat-input.svelte';
 	import Icon from 'svelte-awesome';
+	import { USER_ACCESSABLE } from '$lib/@core/constants';
 
 	if (browser) {
 		window.process = process;
@@ -98,9 +100,13 @@
 	const handleToggleNav = () => {
 		navCollapse = !navCollapse;
 	};
+
+	const handleBackToHome = () => {
+		window.location.replace('/');
+	};
 </script>
 
-{#if !$accessable}
+{#if $accessable == USER_ACCESSABLE.waiting}
 	<section class="bg-slate-800 fixed left-0 top-0 w-screen h-screen">
 		<div class="w-full h-full flex justify-center items-center">
 			<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleEnterRoom}>
@@ -110,7 +116,23 @@
 	</section>
 {/if}
 
-{#if $accessable}
+{#if $accessable == USER_ACCESSABLE.full}
+	<section class="bg-slate-800 fixed left-0 top-0 w-screen h-screen">
+		<div class="w-full h-full flex justify-center items-center">
+			<div class="flex flex-col gap-1 items-center">
+				<span class="text-red-600 font-bold flex items-center text-4xl ml-3"
+					><Icon data={faWarning} scale={3} class="text-red-600" />
+					<span class="ml-2">Room full</span>
+				</span>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleBackToHome}>
+					Back to Home
+				</Button>
+			</div>
+		</div>
+	</section>
+{/if}
+
+{#if $accessable == USER_ACCESSABLE.accepted}
 	<div class="flex flex-grow flex-row justify-between relative h-full bg-slate-800 max-h-screen">
 		<section class="flex flex-col justify-between w-full flex-shrink">
 			<section class="flex justify-center py-2 ">
@@ -253,9 +275,6 @@
 			</div>
 		</section>
 	</div>
-{/if}
-
-{#if $accessable}
 	<div aria-hidden="true" class="hidden">
 		{#each $clientsAudio as media}
 			{#if media.audioStream}

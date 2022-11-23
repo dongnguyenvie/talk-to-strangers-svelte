@@ -5,12 +5,13 @@ import type { SocketID } from '$lib/types/socket';
 import _ from 'underscore';
 import { auth } from './auth.state';
 import type { UserID, UserInfo } from '$lib/types/user.type';
+import { USER_ACCESSABLE } from '$lib/@core/constants';
 
 interface RoomState {
 	socketId: string;
 	roomId: string;
 	selected?: SocketID;
-	accessable: boolean;
+	accessable: number;
 	clientsMap: Record<SocketID, Client>;
 	userInfoMap: Record<UserID, UserInfo>;
 	messages: any[];
@@ -19,7 +20,7 @@ const { subscribe, set, update } = writable<RoomState>({
 	socketId: '',
 	roomId: '',
 	selected: '',
-	accessable: false,
+	accessable: USER_ACCESSABLE.waiting,
 	clientsMap: {},
 	userInfoMap: {},
 	messages: []
@@ -131,7 +132,7 @@ export const room = {
 			return data;
 		});
 	},
-	updateAccessableStatus: (accessable: boolean) => {
+	updateAccessableStatus: (accessable: number) => {
 		update((data) => {
 			data.accessable = accessable;
 			return data;

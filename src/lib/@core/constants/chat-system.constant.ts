@@ -29,3 +29,10 @@ export const EVENT_MESSAGE_SERVER = {
 export const EVENT_MESSAGE_CLIENT = {
 	roomMessage: 'transporter:message'
 };
+
+export const USER_ACCESSABLE = {
+	waiting: 0,
+	accepted: 1,
+	full: 2,
+	rejected: 3
+};

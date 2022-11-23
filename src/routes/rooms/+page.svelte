@@ -93,6 +93,8 @@
 					id={room.id || ''}
 					isFull={false}
 					onClick={handleJoinRoom(room.id || '')}
+					clients={room.clients || []}
+					capacity={room.capacity || 0}
 				/>
 			</div>
 		{/each}
