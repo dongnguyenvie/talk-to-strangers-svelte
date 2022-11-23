@@ -34,14 +34,14 @@ export enum ClientShareable {
 	audio = 'audioStream'
 }
 export interface Client extends UserConfig {
-	socketId: SocketID;
+	id: string;
+	sid: SocketID;
 	mediaStream?: MediaStream;
 	audioStream?: MediaStream;
 	isAudio: boolean;
 	isVideo: boolean;
 	initiator: boolean;
 	peer: SimplePeer.Instance;
-	avatar: string;
-	watchingId: string | null;
+	wid: string | null;
 	share: ClientShareable | null;
 }

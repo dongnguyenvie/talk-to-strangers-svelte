@@ -51,7 +51,7 @@
 	let navCollapse = false;
 	const accessable = derived(room, ($room) => $room.accessable);
 
-	const usersId = derived(clients, ($clients) => $clients.map((c) => c.socketId));
+	const usersId = derived(clients, ($clients) => $clients.map((c) => c.sid));
 
 	const handleChat = () => {
 		roomEvent?.sendText(

@@ -1,4 +1,5 @@
 export interface Auth {
+	avatar: string;
 	username: string;
 	email: string;
 	scp: string[];
