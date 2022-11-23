@@ -1,5 +1,5 @@
-subscription onNewRoom {
-	onNewRoom {
+subscription onRoomAdded {
+	onRoomAdded {
 		id
 		capacity
 		description
@@ -15,6 +15,6 @@ subscription onNewRoom {
 			avatar
 			username
 		}
-        
+		createdAt
 	}
 }

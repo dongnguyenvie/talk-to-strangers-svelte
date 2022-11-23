@@ -9,7 +9,7 @@
 	import Tag from '$lib/components/tag.svelte';
 	import CreateRoomDialog from '$lib/components/dialogs/create-room-dialog.svelte';
 	let isCreateRoomDialog = false;
-	import { GQL_getRooms, GQL_onNewRoom, type getRooms$result } from '$houdini';
+	import { GQL_getRooms, GQL_onRoomAdded, type getRooms$result } from '$houdini';
 	import { onDestroy } from 'svelte';
 
 	const handleToggleCreateRoomDialog = () => {
@@ -31,7 +31,7 @@
 				}
 			}
 		});
-	GQL_onNewRoom.listen(null);
+	GQL_onRoomAdded.listen(null);
 
 	let roomMap = {} as Record<string, getRooms$result['getRooms']['data'][0]>;
 	$: {
@@ -40,16 +40,16 @@
 		});
 	}
 	$: {
-		if (!!$GQL_onNewRoom?.onNewRoom) {
-			roomMap[$GQL_onNewRoom?.onNewRoom.id] = $GQL_onNewRoom?.onNewRoom;
+		if (!!$GQL_onRoomAdded?.onRoomAdded) {
+			roomMap[$GQL_onRoomAdded?.onRoomAdded.id] = $GQL_onRoomAdded?.onRoomAdded;
 		}
 	}
 
 	onDestroy(() => {
-		GQL_onNewRoom.unlisten();
+		GQL_onRoomAdded.unlisten();
 	});
 
-	$: rooms = Object.values(roomMap || {});
+	$: rooms = Object.values(roomMap || {}).sort((a, b) => b.createdAt - a.createdAt);
 
 	const handleJoinRoom = (id: string) => () => {
 		window.open(ROUTES.roomDetail.replace('{{id}}', id), '_blank');
@@ -81,7 +81,7 @@
 			</button>
 		</div>
 	</div>
-	<div class="list-room">
+	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
 		{#each rooms || [] as room}
 			<div class="inline-flex w-full">
 				<RoomCard
@@ -101,10 +101,4 @@
 <CreateRoomDialog isOpen={isCreateRoomDialog} onClose={handleCloseCreateRoomDialog} />
 
 <style>
-	.list-room {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(344px, 1fr));
-		column-gap: 24px;
-		row-gap: 64px;
-	}
 </style>
