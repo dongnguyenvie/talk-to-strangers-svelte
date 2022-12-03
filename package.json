@@ -60,6 +60,7 @@
         "@types/google-one-tap": "^1.2.2",
         "class-transformer": "^0.5.1",
         "cookie": "^0.4.1",
+        "dayjs": "^1.11.6",
         "events": "^3.3.0",
         "gravatar-url": "^4.0.1",
         "jwt-decode": "^3.1.2",

@@ -17,6 +17,7 @@ query getRooms($input: GetRoomsIntput!) {
 				username
 			}
 			createdAt
+			updatedAt
 		}
 		pagination {
 			limit

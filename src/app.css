@@ -88,3 +88,6 @@
 .card-hover:hover .card-name {
 	display: flex;
 }
+.hover\:bg-unset:hover {
+	background-color: unset !important;
+}

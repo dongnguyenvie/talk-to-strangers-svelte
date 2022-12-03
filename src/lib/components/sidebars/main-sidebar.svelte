@@ -2,7 +2,7 @@
 	import logo from '$lib/icons/logo.svg';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { appSettings } from '$lib/state';
+	import { appSettings, auth } from '$lib/state';
 	import { sidebarConfig } from './sidebar.config';
 	import { faAnglesLeft, faAnglesRight } from '@fortawesome/free-solid-svg-icons';
 	import Icon from 'svelte-awesome';
@@ -41,23 +41,25 @@
 			<div class="rounded overflow-hidden">
 				<ul class="space-y-2">
 					{#each sidebarConfig as item}
-						<li
-							class="active py-[14px] rounded-lg hover:bg-primary-80 "
-							class:active={$page.url.pathname === item.path}
-						>
-							<a
-								href="#"
-								class="flex items-center text-base font-normal"
-								on:click={() => {
-									goto(item.path);
-								}}
+						{#if (!!item.auth && !!$auth.id) || !item.auth}
+							<li
+								class="active py-[14px] rounded-lg hover:bg-primary-80 "
+								class:active={$page.url.pathname === item.path}
 							>
-								<span class="px-2">
-									{@html item.icon($page.url.pathname === item.path ? '#4DB6AC' : '#637381')}
-								</span>
-								<span class="ml-2 flex-shrink">{item.name}</span>
-							</a>
-						</li>
+								<a
+									href="#"
+									class="flex items-center text-base font-normal"
+									on:click={() => {
+										goto(item.path);
+									}}
+								>
+									<span class="px-2">
+										{@html item.icon($page.url.pathname === item.path ? '#4DB6AC' : '#637381')}
+									</span>
+									<span class="ml-2 flex-shrink">{item.name}</span>
+								</a>
+							</li>
+						{/if}
 					{/each}
 				</ul>
 			</div>

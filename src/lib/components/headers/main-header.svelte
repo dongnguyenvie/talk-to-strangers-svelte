@@ -2,6 +2,7 @@
 	import RingIcon from '$lib/icons/ic_ring.svg';
 	import UserGroupIcon from '$lib/icons/ic_user_group.svg';
 	import { userPicture } from '$lib/state';
+	import Authencation from '../authencation.svelte';
 
 	export let className: string = '';
 </script>
@@ -24,27 +25,28 @@
 			<path d="M0,0 L0,3 C0.5,3 0.5,3 1,2 L2,0 Z" />
 		</svg>
 	</nav> -->
-
-	<div class="">
-		<ul class="flex items-center gap-x-[32px]">
-			<!-- <li>
-				<img src={FlagEnIcon} alt="" />
-			</li> -->
-			<li>
-				<img src={RingIcon} alt="" />
-			</li>
-			<li>
-				<img src={UserGroupIcon} alt="" />
-			</li>
-			<li>
-				<img
-					src={$userPicture}
-					alt=""
-					class="w-[44px] h-[44px] rounded-full border border-gray-500"
-				/>
-			</li>
-		</ul>
-	</div>
+	<Authencation>
+		<div class="">
+			<ul class="flex items-center gap-x-[32px]">
+				<!-- <li>
+					<img src={FlagEnIcon} alt="" />
+				</li> -->
+				<li>
+					<img src={RingIcon} alt="" />
+				</li>
+				<li>
+					<img src={UserGroupIcon} alt="" />
+				</li>
+				<li>
+					<img
+						src={$userPicture}
+						alt=""
+						class="w-[44px] h-[44px] rounded-full border border-gray-500"
+					/>
+				</li>
+			</ul>
+		</div>
+	</Authencation>
 </header>
 
 <style>
