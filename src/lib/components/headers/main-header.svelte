@@ -1,7 +1,8 @@
 <script lang="ts">
 	import RingIcon from '$lib/icons/ic_ring.svg';
 	import UserGroupIcon from '$lib/icons/ic_user_group.svg';
-	import { userPicture } from '$lib/state';
+	import { logout, userPicture } from '$lib/state';
+	import { Dropdown, DropdownDivider, DropdownItem } from 'flowbite-svelte';
 	import Authencation from '../authencation.svelte';
 
 	export let className: string = '';
@@ -41,8 +42,13 @@
 					<img
 						src={$userPicture}
 						alt=""
-						class="w-[44px] h-[44px] rounded-full border border-gray-500"
+						class="w-[44px] h-[44px] rounded-full border border-gray-500 cursor-pointer"
 					/>
+					<Dropdown>
+						<DropdownItem class="opacity-50 cursor-not-allowed">Settings</DropdownItem>
+						<DropdownDivider />
+						<DropdownItem on:click={logout}>Sign out</DropdownItem>
+					</Dropdown>
 				</li>
 			</ul>
 		</div>
