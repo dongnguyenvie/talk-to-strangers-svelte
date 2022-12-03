@@ -78,34 +78,38 @@
 	};
 </script>
 
-<div>
-	<div class="toolbar mb-[40px]">
+<div class="relative">
+	<div class="sticky top-[92px] left-0 z-10 bg-main-100">
 		<h3 class="text-primary text-2xl leading-[36px] font-bold">Phòng chờ</h3>
-		<div class="toolbar-items mt-[40px] flex gap-x-[50px] gap-y-[20px] items-center flex-wrap">
-			<Authencation>
-				<button
-					class="btn-talk w-[126px] bg-main-300 flex justify-center items-center py-[6px]"
-					on:click={handleToggleCreateRoomDialog}
-				>
-					<img class="pr-[4px]" src={PlusIcon} alt="" />
-					<span class="font-bold text-sm leading-[24px] text-white"> Tạo Phòng </span>
+		<div class="flex items-center flex-wrap py-2">
+			<div class="flex">
+				<Authencation>
+					<button
+						class="btn-talk w-[126px] bg-main-300 flex justify-center items-center mr-1"
+						on:click={handleToggleCreateRoomDialog}
+					>
+						<img class="pr-[4px]" src={PlusIcon} alt="" />
+						<span class="font-bold text-sm leading-[24px] text-white"> Tạo Phòng </span>
+					</button>
+				</Authencation>
+				<Tag>Nhóm Tuổi</Tag>
+				<Tag>Giới Tính</Tag>
+				<Tag>Loại Phòng</Tag>
+				<Tag>Tiêu Chí Người Nghe</Tag>
+			</div>
+			<div class="flex mt-2">
+				<button class="btn-filter flex items-center">
+					<span class="pr-[11px] font-bold text-sm leading-[24px] text-primary"> Lọc Kết Quả </span>
+					<img class="pr-[4px]" src={FilterIcon} alt="" />
 				</button>
-			</Authencation>
-			<Tag>Nhóm Tuổi</Tag>
-			<Tag>Giới Tính</Tag>
-			<Tag>Loại Phòng</Tag>
-			<Tag>Tiêu Chí Người Nghe</Tag>
-			<button class="btn-filter flex items-center py-[6px]">
-				<span class="pr-[11px] font-bold text-sm leading-[24px] text-primary"> Lọc Kết Quả </span>
-				<img class="pr-[4px]" src={FilterIcon} alt="" />
-			</button>
-			<button class="btn-filter flex items-center py-[6px]">
-				<span class="pr-[11px] font-bold text-sm leading-[24px] text-primary"> Sắp Xếp:</span>
-				<img class="pr-[4px]" src={DownIcon} alt="" />
-			</button>
+				<button class="btn-filter flex items-center ml-1">
+					<span class="pr-[11px] font-bold text-sm leading-[24px] text-primary"> Sắp Xếp:</span>
+					<img class="pr-[4px]" src={DownIcon} alt="" />
+				</button>
+			</div>
 		</div>
 	</div>
-	<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+	<div class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
 		{#each rooms || [] as room}
 			<div class="inline-flex w-full">
 				<RoomCard

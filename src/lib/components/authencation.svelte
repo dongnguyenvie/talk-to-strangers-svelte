@@ -4,12 +4,17 @@
 
 	export let redirectIfNotLoggedIn = false;
 	export let showIfLoggedIn = true;
+	export let showIfNotLoggedIn = false;
 </script>
 
 {#if redirectIfNotLoggedIn && !$auth.id}
 	<Redirect to="/login" />
 {/if}
 
-{#if showIfLoggedIn && $auth.id}
+{#if !showIfNotLoggedIn && showIfLoggedIn && $auth.id}
+	<slot {auth} {appSettings} isAuth={!!$auth.id} />
+{/if}
+
+{#if showIfNotLoggedIn && !$auth.id}
 	<slot {auth} {appSettings} isAuth={!!$auth.id} />
 {/if}

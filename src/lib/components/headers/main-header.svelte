@@ -1,11 +1,18 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { ROUTES } from '$lib/@core/constants';
 	import RingIcon from '$lib/icons/ic_ring.svg';
 	import UserGroupIcon from '$lib/icons/ic_user_group.svg';
 	import { logout, userPicture } from '$lib/state';
 	import { Dropdown, DropdownDivider, DropdownItem } from 'flowbite-svelte';
 	import Authencation from '../authencation.svelte';
+	import Button from '../button.svelte';
 
 	export let className: string = '';
+
+	const handleGotoLoginPage = () => {
+		goto(ROUTES.login);
+	};
 </script>
 
 <header class={`sticky top-0 left-0 z-10 flex justify-end px-5 py-2 bg-white ${className}`}>
@@ -52,6 +59,11 @@
 				</li>
 			</ul>
 		</div>
+	</Authencation>
+	<Authencation showIfNotLoggedIn>
+		<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleGotoLoginPage}
+			>Đăng nhập</Button
+		>
 	</Authencation>
 </header>
 
