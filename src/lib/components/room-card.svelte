@@ -1,4 +1,5 @@
 <script lang="ts">
+	import dayjs from '$lib/@core/libs/dayjs';
 	import ic_shape from '$lib/icons/ic_shape.svg';
 	import Button from './button.svelte';
 	import Tag from './tag.svelte';
@@ -12,14 +13,20 @@
 	export let tags: string[];
 	export let emotions: string[];
 	export let buttonLabel: string = 'Trò truyện';
+	export let disabledButton = false;
 	export let onClick: () => void;
+	export let onDelete: () => void;
 	export let isFull: boolean = false;
+	export let lastUpdatedAt: number;
+
+	const roomExpired = parseInt(import.meta.env.VITE_ROOM_EXPIRED || 300);
 
 	$: capLabel = `${clients.length} / ${capacity}`;
+	$: canClear = !clients.length && dayjs().unix() - lastUpdatedAt > roomExpired;
 </script>
 
-<div class="room w-full bg-white rounded-2xl">
-	<div class="flex flex-col relative">
+<div class="room w-full bg-white rounded-2xl relative">
+	<div class={`flex flex-col relative ${canClear ? 'opacity-10' : ''}`}>
 		<img class="rounded-tl-2xl rounded-tr-2xl " src={avatar} alt="avatar-room" />
 		<div class="absolute top-[9px] right-[13px] cursor-pointer">
 			<img src={ic_shape} alt="" />
@@ -40,10 +47,13 @@
 					<Button className="bg-main-c5B5B5B rounded-lg cursor-not-allowed">Phòng Đầy</Button>
 				{/if}
 
-				{#if !isFull}
+				{#if !canClear && !isFull}
 					<Button
-						className="w-[108px] px-[16px] py-[6px] text-center btn-talk bg-main-300 rounded-lg hover:bg-main-500"
+						className={`w-[108px] px-[16px] py-[6px] text-center btn-talk bg-main-300 rounded-lg ${
+							disabledButton ? 'hover:bg-main-300 cursor-not-allowed' : 'hover:bg-main-500'
+						}`}
 						{onClick}
+						disabled={disabledButton}
 					>
 						{buttonLabel}
 					</Button>
@@ -51,6 +61,16 @@
 			</div>
 		</div>
 	</div>
+	{#if canClear}
+		<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+			<Button
+				className={`w-[108px] px-[16px] py-[6px] text-center btn-talk bg-main-300 rounded-lg opacity-100`}
+				onClick={onDelete}
+			>
+				Xóa phòng
+			</Button>
+		</div>
+	{/if}
 </div>
 
 <style>

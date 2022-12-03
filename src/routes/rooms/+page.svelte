@@ -8,9 +8,13 @@
 	import RoomCard from '$lib/components/room-card.svelte';
 	import Tag from '$lib/components/tag.svelte';
 	import CreateRoomDialog from '$lib/components/dialogs/create-room-dialog.svelte';
-	let isCreateRoomDialog = false;
-	import { GQL_getRooms, GQL_onRoomAdded, type getRooms$result } from '$houdini';
+	import { GQL_getRooms, GQL_onRoomSynced, GQL_deleteRoom, type getRooms$result } from '$houdini';
 	import { onDestroy } from 'svelte';
+	import { auth } from '$lib/state';
+	import Authencation from '$lib/components/authencation.svelte';
+	import { RecordAction } from '$lib/@core/enums';
+
+	let isCreateRoomDialog = false;
 
 	const handleToggleCreateRoomDialog = () => {
 		isCreateRoomDialog = !isCreateRoomDialog;
@@ -18,6 +22,14 @@
 
 	const handleCloseCreateRoomDialog = () => {
 		isCreateRoomDialog = false;
+	};
+
+	const handleDeleteRoom = (id: string) => () => {
+		GQL_deleteRoom.mutate({
+			input: {
+				id: id
+			}
+		});
 	};
 
 	browser &&
@@ -31,7 +43,7 @@
 				}
 			}
 		});
-	GQL_onRoomAdded.listen(null);
+	GQL_onRoomSynced.listen(null);
 
 	let roomMap = {} as Record<string, getRooms$result['getRooms']['data'][0]>;
 	$: {
@@ -40,13 +52,22 @@
 		});
 	}
 	$: {
-		if (!!$GQL_onRoomAdded?.onRoomAdded) {
-			roomMap[$GQL_onRoomAdded?.onRoomAdded.id] = $GQL_onRoomAdded?.onRoomAdded;
+		if (!!$GQL_onRoomSynced?.onRoomSynced) {
+			if ($GQL_onRoomSynced?.onRoomSynced.action === RecordAction.insert) {
+				roomMap[$GQL_onRoomSynced?.onRoomSynced.room.id] = $GQL_onRoomSynced?.onRoomSynced.room;
+			}
+			if ($GQL_onRoomSynced?.onRoomSynced.action === RecordAction.update) {
+				roomMap[$GQL_onRoomSynced?.onRoomSynced.room.id] = $GQL_onRoomSynced?.onRoomSynced.room;
+			}
+			if ($GQL_onRoomSynced?.onRoomSynced.action === RecordAction.delete) {
+				delete roomMap[$GQL_onRoomSynced?.onRoomSynced.room.id];
+				roomMap = roomMap;
+			}
 		}
 	}
 
 	onDestroy(() => {
-		GQL_onRoomAdded.unlisten();
+		GQL_onRoomSynced.unlisten();
 	});
 
 	$: rooms = Object.values(roomMap || {}).sort((a, b) => b.createdAt - a.createdAt);
@@ -60,13 +81,15 @@
 	<div class="toolbar mb-[40px]">
 		<h3 class="text-primary text-2xl leading-[36px] font-bold">Phòng chờ</h3>
 		<div class="toolbar-items mt-[40px] flex gap-x-[50px] gap-y-[20px] items-center flex-wrap">
-			<button
-				class="btn-talk w-[126px] bg-main-300 flex justify-center items-center py-[6px]"
-				on:click={handleToggleCreateRoomDialog}
-			>
-				<img class="pr-[4px]" src={PlusIcon} alt="" />
-				<span class="font-bold text-sm leading-[24px] text-white"> Tạo Phòng </span>
-			</button>
+			<Authencation>
+				<button
+					class="btn-talk w-[126px] bg-main-300 flex justify-center items-center py-[6px]"
+					on:click={handleToggleCreateRoomDialog}
+				>
+					<img class="pr-[4px]" src={PlusIcon} alt="" />
+					<span class="font-bold text-sm leading-[24px] text-white"> Tạo Phòng </span>
+				</button>
+			</Authencation>
 			<Tag>Nhóm Tuổi</Tag>
 			<Tag>Giới Tính</Tag>
 			<Tag>Loại Phòng</Tag>
@@ -95,6 +118,9 @@
 					onClick={handleJoinRoom(room.id || '')}
 					clients={room.clients || []}
 					capacity={room.capacity || 0}
+					lastUpdatedAt={room.updatedAt}
+					disabledButton={!$auth.id || room.clients.length >= room.capacity}
+					onDelete={handleDeleteRoom(room.id)}
 				/>
 			</div>
 		{/each}

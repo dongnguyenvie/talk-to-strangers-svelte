@@ -6,3 +6,4 @@ export * from './status.enum';
 export * from './room.enum';
 export * from './user.enum';
 export * from './media.enum';
+export * from './action.enum';

@@ -40,6 +40,14 @@ type DeleteRoleOutput {
   id: String!
 }
 
+input DeleteRoomIntput {
+  id: String!
+}
+
+type DeleteRoomOutput {
+  id: String!
+}
+
 input DeleteUserInput {
   id: String!
 }
@@ -149,6 +157,11 @@ type Mutation {
   deleteRole(input: DeleteRoleIntput!): DeleteRoleOutput!
 
   """
+  {"publ":false,"t":"Xóa room","desc":"","sys":false,"sub":false,"gr":"room","d":false}
+  """
+  deleteRoom(input: DeleteRoomIntput!): DeleteRoomOutput!
+
+  """
   {"publ":false,"t":"Xóa user","desc":"","sys":false,"sub":false,"gr":"user","d":false}
   """
   deleteUser(input: DeleteUserInput!): DeleteUserOuput!
@@ -194,15 +207,9 @@ type Mutation {
   updateUserByAdmin(input: UpdateUserByAdminInput!): UpdateUserByAdminOutput!
 }
 
-type OnRoomAddedOutPut {
-  capacity: Float!
-  clients: [RoomUserOutPut!]!
-  createdAt: Float!
-  creator: RoomUserOutPut!
-  description: String
-  id: String!
-  language: String!
-  topic: String
+type OnRoomSyncedOutPut {
+  action: Float!
+  room: RoomOutput!
 }
 
 type Pagination {
@@ -301,6 +308,7 @@ type RoomOutput {
   id: String!
   language: String!
   topic: String
+  updatedAt: Float
 }
 
 type RoomUserOutPut {
@@ -345,9 +353,9 @@ type SignupOutput {
 
 type Subscription {
   """
-  {"publ":true,"t":"Watch new room","desc":"","sys":false,"sub":true,"gr":"room","d":false}
+  {"publ":true,"t":"Watch synced room","desc":"","sys":false,"sub":true,"gr":"room","d":false}
   """
-  onRoomAdded: OnRoomAddedOutPut!
+  onRoomSynced: OnRoomSyncedOutPut!
 }
 
 input UpdateRoleIntput {
