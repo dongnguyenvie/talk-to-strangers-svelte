@@ -64,8 +64,10 @@
 	{#if canClear}
 		<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
 			<Button
-				className={`w-[108px] px-[16px] py-[6px] text-center btn-talk bg-main-300 rounded-lg opacity-100`}
+				className={`w-[108px] px-[16px] py-[6px] text-center btn-talk bg-main-300 rounded-lg opacity-100 
+				${disabledButton ? 'cursor-not-allowed' : ''}`}
 				onClick={onDelete}
+				disabled={disabledButton}
 			>
 				Xóa phòng
 			</Button>

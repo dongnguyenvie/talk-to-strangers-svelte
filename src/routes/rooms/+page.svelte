@@ -13,6 +13,7 @@
 	import { auth } from '$lib/state';
 	import Authencation from '$lib/components/authencation.svelte';
 	import { RecordAction } from '$lib/@core/enums';
+	import { nonNullAssert } from '$lib/@shared/util/operator';
 
 	let isCreateRoomDialog = false;
 
@@ -108,9 +109,9 @@
 		{#each rooms || [] as room}
 			<div class="inline-flex w-full">
 				<RoomCard
-					name={room.description || 'xx'}
+					name={room.description || ''}
 					title={room.topic || ''}
-					tags={['freedom']}
+					tags={[]}
 					avatar={RoomImage}
 					emotions={[]}
 					id={room.id || ''}
@@ -118,7 +119,7 @@
 					onClick={handleJoinRoom(room.id || '')}
 					clients={room.clients || []}
 					capacity={room.capacity || 0}
-					lastUpdatedAt={room.updatedAt}
+					lastUpdatedAt={nonNullAssert(room.updatedAt)}
 					disabledButton={!$auth.id || room.clients.length >= room.capacity}
 					onDelete={handleDeleteRoom(room.id)}
 				/>

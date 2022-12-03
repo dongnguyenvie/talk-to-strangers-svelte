@@ -89,3 +89,8 @@ export const validAndInjectToken = (token: string, isRedirect = true) => {
 	if (!isRedirect) return;
 	goto(ROUTES.rooms);
 };
+
+export const logout = () => {
+	localStorage.clear();
+	auth.set(initialAuthState);
+};
