@@ -45,7 +45,7 @@
 						class="w-[44px] h-[44px] rounded-full border border-gray-500 cursor-pointer"
 					/>
 					<Dropdown>
-						<DropdownItem>Settings</DropdownItem>
+						<DropdownItem class="opacity-50 cursor-not-allowed">Settings</DropdownItem>
 						<DropdownDivider />
 						<DropdownItem on:click={logout}>Sign out</DropdownItem>
 					</Dropdown>

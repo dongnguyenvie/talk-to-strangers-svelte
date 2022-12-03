@@ -67,7 +67,7 @@ if (browser) {
 
 export const googleOAuth2 = {
 	signin: () => {
-		window.location.replace('https://api.noinghe.com/api/auth/google');
+		window.location.replace('http://localhost:7001/api/auth/google');
 	},
 	signout: () => {
 		google.accounts.id.disableAutoSelect();
@@ -76,7 +76,7 @@ export const googleOAuth2 = {
 
 export const facebookOAuth2 = {
 	signin: () => {
-		window.location.replace('https://api.noinghe.com/api/auth/facebook');
+		window.location.replace('http://localhost:7001/api/auth/facebook');
 	},
 	signout: () => {
 		google.accounts.id.disableAutoSelect();

@@ -26,7 +26,9 @@
 		},
 		validationSchema: yup.object().shape({
 			topic: yup.string().required(),
-			capacity: yup.number().required()
+			capacity: yup.number().required(),
+			description: yup.string(),
+			language: yup.string()
 		}),
 		onSubmit: async (values) => {
 			try {
@@ -48,7 +50,7 @@
 	});
 </script>
 
-<Modal bind:open={isOpen} on:hide={onClose} size="xs" autoclose={true}>
+<Modal bind:open={isOpen} on:hide={onClose} size="xs" autoclose={false}>
 	<form class="flex flex-col space-y-6" action="#" on:submit={handleSubmit}>
 		<h3 class="text-xl font-medium text-gray-900 dark:text-white p-0">Tạo phòng trò chuyện</h3>
 		<Label class="space-y-2">
