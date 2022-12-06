@@ -48,6 +48,9 @@ const myMedia = derived([clientsMap, mySocketId], ($values) => {
 const messages = derived({ subscribe }, ($room) => {
 	return $room.messages;
 });
+const userInfoMap = derived({ subscribe }, ($room) => {
+	return $room.userInfoMap;
+});
 const clientIdSelected = derived(myMedia, ($me) => $me?.wid);
 const clientSelected = derived([clientsMap, clientIdSelected], ($values) => {
 	const [clientsMap, selectId] = $values;
@@ -85,6 +88,7 @@ export const room = {
 	messages,
 	mediaSelected,
 	accessable,
+	userInfoMap,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.sid] = client;
