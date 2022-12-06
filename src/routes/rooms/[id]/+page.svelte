@@ -25,6 +25,7 @@
 	import ChatInput from '$lib/components/chat/chat-input.svelte';
 	import Icon from 'svelte-awesome';
 	import { USER_ACCESSABLE } from '$lib/@core/constants';
+	import { Avatar } from 'flowbite-svelte';
 
 	if (browser) {
 		window.process = process;
@@ -41,7 +42,8 @@
 		watchersMap,
 		messages,
 		mediaSelected,
-		accessable
+		accessable,
+		userInfoMap
 	} = room;
 
 	const roomId = $page.params.id as string;
@@ -275,12 +277,21 @@
 					</span>
 				</div>
 
-				<div class="flex-grow bg-slate-400">
-					{#each $messages as message}
-						<div>
-							<p class="w-full break-before-all">{message.createBy}: {message.content || ''}</p>
-						</div>
-					{/each}
+				<div class="flex-grow bg-slate-400 overflow-y-auto px-2 py-2">
+					<div class="grid grid-cols-1 gap-2">
+						{#each $messages as message}
+							<p class="w-full">
+								<span class="float-left" title={$userInfoMap[message.createBy].name || ''}>
+									<Avatar size="xs" src={$userInfoMap[message.createBy].avatar}
+										>{$userInfoMap[message.createBy].name?.[0] || ''}
+									</Avatar>
+								</span>
+								<span class="ml-1">
+									{message.content || ''}
+								</span>
+							</p>
+						{/each}
+					</div>
 				</div>
 				<div class="h-[113px] bg-slate-500 flex flex-col p-[10px] pt-0">
 					<div class="h-[30px] pt-2">

@@ -117,7 +117,7 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 						id: client.id
 					});
 				});
-				room.onUpdateUserInfo(userInfos);
+				room.onUpdateUserInfo(userInfos || []);
 				console.log('all users', event);
 			}
 		);
