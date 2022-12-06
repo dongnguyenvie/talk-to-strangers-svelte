@@ -35,7 +35,7 @@
 				const { capacity, description, language, topic } = values;
 				const result = await GQL_createRoom.mutate({
 					input: {
-						capacity: Number(capacity),
+						capacity: Math.max(0, Number(capacity)),
 						description,
 						language,
 						topic

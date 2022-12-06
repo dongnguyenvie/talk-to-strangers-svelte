@@ -40,7 +40,8 @@
 		myMedia,
 		watchersMap,
 		messages,
-		mediaSelected
+		mediaSelected,
+		accessable
 	} = room;
 
 	const roomId = $page.params.id as string;
@@ -51,7 +52,6 @@
 	});
 
 	let navCollapse = false;
-	const accessable = derived(room, ($room) => $room.accessable);
 
 	const usersId = derived(clients, ($clients) => $clients.map((c) => c.sid));
 
@@ -123,6 +123,22 @@
 				<span class="text-red-600 font-bold flex items-center text-4xl ml-3"
 					><Icon data={faWarning} scale={3} class="text-red-600" />
 					<span class="ml-2">Room full</span>
+				</span>
+				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleBackToHome}>
+					Back to Home
+				</Button>
+			</div>
+		</div>
+	</section>
+{/if}
+
+{#if $accessable == USER_ACCESSABLE.duplicateUser}
+	<section class="bg-slate-800 fixed left-0 top-0 w-screen h-screen">
+		<div class="w-full h-full flex justify-center items-center">
+			<div class="flex flex-col gap-1 items-center">
+				<span class="text-red-600 font-bold flex items-center text-4xl ml-3"
+					><Icon data={faWarning} scale={3} class="text-red-600" />
+					<span class="ml-2">Your account join this room from other place</span>
 				</span>
 				<Button className="bg-main-500 rounded-lg hover:bg-main-800" onClick={handleBackToHome}>
 					Back to Home

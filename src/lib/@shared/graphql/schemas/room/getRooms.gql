@@ -9,12 +9,12 @@ query getRooms($input: GetRoomsIntput!) {
 			clients {
 				id
 				avatar
-				username
+				name
 			}
 			creator {
 				id
 				avatar
-				username
+				name
 			}
 			createdAt
 			updatedAt

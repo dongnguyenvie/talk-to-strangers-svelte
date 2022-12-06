@@ -2,7 +2,8 @@ import {
 	EVENT_MESSAGE_CLIENT,
 	EVENT_ROOM_CLIENT,
 	EVENT_ROOM_PERSONAL_CLIENT,
-	EVENT_ROOM_SERVER
+	EVENT_ROOM_SERVER,
+	USER_ACCESSABLE
 } from '$lib/@core/constants';
 import { io } from '..';
 import SimplePeer, { createClient, getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
@@ -20,7 +21,7 @@ import _ from 'underscore';
 import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
 import type { UserID, UserInfo } from '$lib/types/user.type';
 
-const { myMedia, watchersMap, onUpdateMessage } = room;
+const { myMedia, watchersMap, onUpdateMessage, accessable } = room;
 
 interface PeerState {
 	inst: SimplePeer.Instance;

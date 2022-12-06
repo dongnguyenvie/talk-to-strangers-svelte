@@ -1,3 +1,13 @@
+type BlogEntity {
+  createdAt: DateTime
+  createdBy: UserEntity!
+  deletedAt: DateTime
+  deletedBy: String
+  id: String
+  title: String!
+  updatedAt: DateTime
+}
+
 input CreateBlogInput {
   title: String!
 }
@@ -32,6 +42,14 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+input DeleteBlogInput {
+  id: String!
+}
+
+type DeleteBlogOutput {
+  id: String!
+}
+
 input DeleteRoleIntput {
   id: String!
 }
@@ -54,6 +72,34 @@ input DeleteUserInput {
 
 type DeleteUserOuput {
   id: String!
+}
+
+input GetBlogInput {
+  id: String!
+  relations: [String!] = []
+}
+
+type GetBlogOutput {
+  capacity: Float!
+  clients: [UserEntity!]
+  createdAt: DateTime
+  deletedAt: DateTime
+  deletedBy: String
+  description: String
+  id: String
+  language: String!
+  topic: String!
+  updatedAt: DateTime
+}
+
+input GetBlogsInput {
+  pagination: PaginationInput!
+  relations: [String!] = []
+}
+
+type GetBlogsOutput {
+  data: [BlogEntity!]!
+  pagination: Pagination!
 }
 
 type GetDeletedRolesOutput {
@@ -100,6 +146,8 @@ input GetUserInput {
 type GetUserOutput {
   avatar: String
   createdAt: DateTime
+  deletedAt: DateTime
+  deletedBy: String
   email: String!
   emailVerified: Boolean
   fullName: String
@@ -152,6 +200,11 @@ type Mutation {
   createRoom(input: CreateRoomInput!): CreateRoomOutput!
 
   """
+  {"publ":false,"t":"Xóa Blog","desc":"","sys":false,"sub":false,"gr":"blog","d":false}
+  """
+  deleteBlog(input: DeleteBlogInput!): DeleteBlogOutput!
+
+  """
   {"publ":false,"t":"Xóa vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   """
   deleteRole(input: DeleteRoleIntput!): DeleteRoleOutput!
@@ -192,6 +245,11 @@ type Mutation {
   signup(input: Signup!): SignupOutput!
 
   """
+  {"publ":false,"t":"Sửa Blog","desc":"","sys":false,"sub":false,"gr":"blog","d":false}
+  """
+  updateBlog(input: UpdateBlogInput!): UpdateBlogOutput!
+
+  """
   {"publ":false,"t":"Cập nhập vai trò người dùng","desc":"","sys":false,"sub":false,"gr":"role","d":false}
   """
   updateRole(input: UpdateRoleIntput!): UpdateRoleOuput!
@@ -229,6 +287,21 @@ enum Privilege {
 }
 
 type Query {
+  """
+  {"publ":false,"t":"Lấy thông tin blog","desc":"","sys":false,"sub":false,"gr":"blog","d":false}
+  """
+  getBlog(input: GetBlogInput!): GetBlogOutput!
+
+  """
+  {"publ":false,"t":"Lấy danh sách blog","desc":"","sys":false,"sub":false,"gr":"blog","d":false}
+  """
+  getBlogs(input: GetBlogsInput!): GetBlogsOutput!
+
+  """
+  {"publ":false,"t":"Find deleted Blog by Pagination","desc":"","sys":false,"sub":false,"gr":"blog","d":false}
+  """
+  getDeletedBlogs(input: GetBlogsInput!): GetBlogsOutput!
+
   """
   {"publ":false,"t":"Danh sách vai trò đã xóa","desc":"","sys":true,"sub":false,"gr":"role","d":false}
   """
@@ -292,6 +365,8 @@ input RelationshipInput {
 
 type RoleEntity {
   createdAt: DateTime
+  deletedAt: DateTime
+  deletedBy: String
   id: String
   isDefault: Boolean
   scp: [String!]
@@ -314,7 +389,7 @@ type RoomOutput {
 type RoomUserOutPut {
   avatar: String!
   id: String!
-  username: String!
+  name: String!
 }
 
 input SigninByGoogleIntput {
@@ -358,6 +433,16 @@ type Subscription {
   onRoomSynced: OnRoomSyncedOutPut!
 }
 
+input UpdateBlogInput {
+  id: String!
+  title: String!
+}
+
+type UpdateBlogOutput {
+  id: String!
+  title: String!
+}
+
 input UpdateRoleIntput {
   id: String!
   isDefault: Boolean
@@ -394,6 +479,8 @@ type UpdateUserOutput {
 type UserEntity {
   avatar: String
   createdAt: DateTime
+  deletedAt: DateTime
+  deletedBy: String
   email: String!
   emailVerified: Boolean
   fullName: String

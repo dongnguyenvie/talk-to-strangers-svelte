@@ -64,6 +64,8 @@ const watchersMap = derived(clients, ($clients) => {
 	return _.groupBy($clients, 'wid');
 });
 
+const accessable = derived({ subscribe }, ($room) => $room.accessable);
+
 const watchersEntries = derived(watchersMap, ($watchersMap) => {
 	return Object.entries($watchersMap);
 });
@@ -82,6 +84,7 @@ export const room = {
 	watchersEntries,
 	messages,
 	mediaSelected,
+	accessable,
 	updateClient: (client: Client) => {
 		update((data) => {
 			data.clientsMap[client.sid] = client;
