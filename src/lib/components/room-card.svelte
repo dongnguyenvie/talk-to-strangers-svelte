@@ -2,6 +2,7 @@
 	import dayjs from '$lib/@core/libs/dayjs';
 	import ic_shape from '$lib/icons/ic_shape.svg';
 	import { auth } from '$lib/state';
+	import type { IRoomUser } from '$lib/types';
 	import { Avatar } from 'flowbite-svelte';
 	import { loop } from 'svelte/internal';
 	import ClientAvatar from './avatars/client-avatar.svelte';
@@ -9,7 +10,7 @@
 	import Tag from './tag.svelte';
 
 	export let id: string;
-	export let clients: any[];
+	export let clients: Omit<IRoomUser, 'sid'>[];
 	export let capacity: number;
 	export let title: string;
 	export let avatar: string;
@@ -28,10 +29,6 @@
 	$: canClear = !clients.length && dayjs().unix() - lastUpdatedAt > roomExpired;
 
 	$: clientSlots = Array.from(Array(capacity || 0)).map((_, index) => clients[index] || null);
-	$: {
-		console.log(clients);
-		console.log(clientSlots);
-	}
 </script>
 
 <div class="room w-full bg-white rounded-2xl relative">

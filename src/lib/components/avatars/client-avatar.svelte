@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { PLAYHOLDER_AVATAR } from '$lib/@core/constants';
+	import type { IRoomUser } from '$lib/types';
 	import { Avatar } from 'flowbite-svelte';
 
-	export let client: any;
+	export let client: Omit<IRoomUser, 'sid'>;
 
 	const handleViewDetail = () => {
 		alert('You can not view profile');
@@ -14,7 +15,7 @@
 {/if}
 
 {#if !!client}
-	<span class="cursor-pointer" on:click={handleViewDetail}>
+	<span title={client?.name || ''} class="cursor-pointer" on:click={handleViewDetail}>
 		<Avatar src={client?.avatar || PLAYHOLDER_AVATAR}>..</Avatar>
 	</span>
 {/if}

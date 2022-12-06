@@ -34,5 +34,6 @@ export const USER_ACCESSABLE = {
 	waiting: 0,
 	accepted: 1,
 	full: 2,
-	rejected: 3
+	rejected: 3,
+	duplicateUser: 4
 };
