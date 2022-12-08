@@ -169,6 +169,20 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 
 		let prevWatchers = [] as Client[];
 
+		// TODO: move this logic to a function, destroy event stream or audio also
+		accessable.subscribe((value) => {
+			if (value === USER_ACCESSABLE.duplicateUser) {
+				let clientPeersState = getPeers();
+				clientPeersState.forEach((item) => {
+					try {
+						item.inst.destroy();
+					} catch (error) {
+						console.log('destroy peer', error);
+					}
+				});
+			}
+		});
+
 		watchersMap.subscribe((map) => {
 			const currentWatchers = map[myID] || [];
 			const newWatchers = _.difference(currentWatchers, prevWatchers);
