@@ -1,12 +1,11 @@
 import {
-	EVENT_MESSAGE_CLIENT,
 	EVENT_ROOM_CLIENT,
 	EVENT_ROOM_PERSONAL_CLIENT,
 	EVENT_ROOM_SERVER,
 	USER_ACCESSABLE
 } from '$lib/@core/constants';
 import { io } from '..';
-import SimplePeer, { createClient, getRemoteStreams } from '$lib/@shared/libs/simple-peerjs';
+import SimplePeer, { createClient } from '$lib/@shared/libs/simple-peerjs';
 import { checkStream, getUserMediaHelper } from '$lib/@shared/util/media';
 import { auth, room } from '$lib/state';
 import { browser } from '$app/environment';
@@ -22,6 +21,14 @@ import { ChatEvent, MessageType } from '$lib/@core/events/sockets/chat.event';
 import type { UserID, UserInfo } from '$lib/types/user.type';
 
 const { myMedia, watchersMap, onUpdateMessage, accessable } = room;
+
+let lastMedia = {} as { mediaStream: MediaStream };
+
+myMedia.subscribe((me) => {
+	if (!!me?.mediaStream) {
+		lastMedia.mediaStream = me.mediaStream;
+	}
+});
 
 interface PeerState {
 	inst: SimplePeer.Instance;
@@ -171,7 +178,13 @@ export const initRoomEvent = ({ roomId }: { roomId: string }) => {
 
 		// TODO: move this logic to a function, destroy event stream or audio also
 		accessable.subscribe((value) => {
+			console.log({ value });
 			if (value === USER_ACCESSABLE.duplicateUser) {
+				try {
+					stopBothVideoAndAudio(lastMedia?.mediaStream);
+				} catch (error) {
+					console.log('stopBothVideoAndAudio::', lastMedia);
+				}
 				let clientPeersState = getPeers();
 				clientPeersState.forEach((item) => {
 					try {
@@ -586,19 +599,31 @@ function addTracksToPeerFcn(peer: SimplePeer.Instance, stream: MediaStream, isAd
 		console.log('Track vidtracks: ', vidtracks); // Check to make sure track exists: it does
 		console.log('Track audtracks: ', audtracks);
 		if (isAdd) {
-			if (vidtracks.length) {
-				peer.addTrack(vidtracks[0], stream);
-			}
-			if (audtracks.length) {
-				peer.addTrack(audtracks[0], stream);
-			}
+			try {
+				if (vidtracks.length) {
+					peer.addTrack(vidtracks[0], stream);
+				}
+			} catch (error) {}
+			try {
+				if (audtracks.length) {
+					peer.addTrack(audtracks[0], stream);
+				}
+			} catch (error) {}
 		} else {
-			// if (vidtracks.length) {
-			// 	peer.removeTrack(vidtracks[0], stream);
-			// }
-			// if (audtracks.length) {
-			// 	peer.removeTrack(audtracks[0], stream);
-			// }
+			try {
+				if (vidtracks.length) {
+					peer.removeTrack(vidtracks[0], stream);
+				}
+				if (audtracks.length) {
+					peer.removeTrack(audtracks[0], stream);
+				}
+			} catch (error) {}
+			try {
+				vidtracks[0].stop();
+			} catch (error) {}
+			try {
+				audtracks[0].stop();
+			} catch (error) {}
 		}
 
 		// Check for added streams: none.
