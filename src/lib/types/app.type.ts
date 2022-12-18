@@ -3,8 +3,14 @@ export enum SideBarMode {
 	SIDE = 'SIDE',
 	PUSH = 'PUSH'
 }
+interface MicConfig {
+	echoCancellation: boolean;
+	noiseSuppression: boolean;
+	autoGainControl: boolean;
+}
 
 export interface App {
 	isCollapse: boolean;
-	sideBarMode: SideBarMode
+	mic: MicConfig;
+	sideBarMode: SideBarMode;
 }

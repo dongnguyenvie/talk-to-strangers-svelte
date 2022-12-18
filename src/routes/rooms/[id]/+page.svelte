@@ -26,6 +26,8 @@
 	import Icon from 'svelte-awesome';
 	import { USER_ACCESSABLE } from '$lib/@core/constants';
 	import { Avatar } from 'flowbite-svelte';
+	import InputDevicesDialog from '$lib/components/dialogs/input-devices-dialog.svelte';
+	import DeviceSetting from '$lib/components/device-setting/device-setting.svelte';
 
 	if (browser) {
 		window.process = process;
@@ -270,7 +272,7 @@
 			<div class="flex flex-col justify-between w-full h-full">
 				<div class="h-[45px] bg-slate-700 flex flex-row justify-between items-center px-2">
 					<div>
-						<span>.</span>
+						<DeviceSetting />
 					</div>
 					<span class="cursor-pointer" on:click={handleToggleNav}>
 						<Icon data={faAngleRight} />
@@ -309,4 +311,5 @@
 			{/if}
 		{/each}
 	</div>
+	<InputDevicesDialog />
 {/if}
