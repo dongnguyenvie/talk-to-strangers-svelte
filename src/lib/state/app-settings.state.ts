@@ -10,12 +10,18 @@ const stored =
 
 const initApp = {
 	isCollapse: false,
-	sideBarMode: SideBarMode.SIDE,
+	mic: {
+		echoCancellation: true,
+		noiseSuppression: true,
+		autoGainControl: true
+	},
+	sideBarMode: SideBarMode.SIDE
 } as unknown as App;
 const { subscribe, set, update } = writable<App>(initApp);
 
 const isCollapse = derived({ subscribe }, ($app) => $app.isCollapse);
 const sideBarMode = derived({ subscribe }, ($app) => $app.sideBarMode);
+const micConfig = derived({ subscribe }, ($app) => $app.mic || initApp.mic);
 
 export const appSettings = {
 	subscribe,
@@ -23,6 +29,7 @@ export const appSettings = {
 	update,
 	isCollapse,
 	sideBarMode,
+	micConfig,
 	onToggleCollapse: () => {
 		update((data) => {
 			data.isCollapse = !data.isCollapse;
