@@ -133,7 +133,7 @@
 	</div>
 </div>
 <CreateRoomDialog isOpen={isCreateRoomDialog} onClose={handleCloseCreateRoomDialog} />
-<!-- <SettingWebcamsDialog isOpen={true}  /> -->
+<SettingWebcamsDialog isOpen={true}  />
 
 <style>
 </style>
