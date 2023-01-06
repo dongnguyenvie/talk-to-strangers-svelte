@@ -5,7 +5,7 @@ module.exports = {
 		'./node_modules/flowbite-svelte/**/*.{html,js,svelte,ts}'
 	],
 	presets: [],
-	darkMode: 'media', // or 'class'
+	darkMode: 'class', // or 'class'
 	theme: {
 		screens: {
 			sm: '640px',
@@ -42,6 +42,8 @@ module.exports = {
 			fuchsia: colors.fuchsia,
 			pink: colors.pink,
 			rose: colors.rose,
+			secondary: '#637381',
+			disabled: '#919EAB',
 			main: {
 				50: '#E0F2F1',
 				100: '#B2DFDB',

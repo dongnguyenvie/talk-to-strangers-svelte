@@ -8,6 +8,7 @@
 	import RoomCard from '$lib/components/room-card.svelte';
 	import Tag from '$lib/components/tag.svelte';
 	import CreateRoomDialog from '$lib/components/dialogs/create-room-dialog.svelte';
+	import SettingWebcamsDialog from '$lib/components/dialogs/setting-webcams-dialog.svelte';
 	import { GQL_getRooms, GQL_onRoomSynced, GQL_deleteRoom, type getRooms$result } from '$houdini';
 	import { onDestroy } from 'svelte';
 	import { auth } from '$lib/state';
@@ -132,6 +133,7 @@
 	</div>
 </div>
 <CreateRoomDialog isOpen={isCreateRoomDialog} onClose={handleCloseCreateRoomDialog} />
+<SettingWebcamsDialog isOpen={true}  />
 
 <style>
 </style>
